@@ -503,7 +503,7 @@ a{color:var(--accent)}
     </div>
 
     <div class="card">
-      <h2>自動バックアップ（GitHub）</h2>
+      <h2>同期・バックアップ（GitHub）</h2>
       <div id="ab-status" class="hint" style="font-size:13px;margin-bottom:10px">未設定</div>
       <div id="ab-form">
         <label class="hint">GitHubユーザー名</label>
@@ -517,11 +517,10 @@ a{color:var(--accent)}
         </div>
       </div>
       <div id="ab-actions" class="row wrap" style="display:none">
-        <button class="btn primary" onclick="abBackup(true)">今すぐバックアップ</button>
-        <button class="btn" onclick="abRestore()">GitHubから復元</button>
+        <button class="btn primary" onclick="abSync(true)">今すぐ同期</button>
         <button class="btn danger" onclick="abDisconnect()">接続を解除</button>
       </div>
-      <div class="hint">記録を変えると約1分後、アプリを開いたとき、アプリを閉じたときに自動で保存します。iPhoneとiPadで同じ設定にすると、もう一方の端末で「GitHubから復元」できます。</div>
+      <div class="hint">iPhoneとiPadに同じ3項目を設定すると、記録が自動で揃います。アプリを開いたとき・記録を変えた約3秒後・開いている間は30秒ごとに同期します。画面の色は端末ごとの設定です。</div>
     </div>
 
     <div class="card">
@@ -529,7 +528,7 @@ a{color:var(--accent)}
       <button class="btn danger block" onclick="clearAll()">すべての記録を削除</button>
     </div>
 
-    <div class="hint" style="text-align:center;margin-top:16px">StudyTime v1.6 · ローカル保存＋GitHub自動バックアップ</div>
+    <div class="hint" style="text-align:center;margin-top:16px">StudyTime v1.7 · ローカル保存＋GitHub自動バックアップ</div>
   </div>
 
 </div>
@@ -700,7 +699,7 @@ function uid(){return Math.random().toString(36).slice(2,10)+Date.now().toString
 function loadState(){
   try{
     const raw = localStorage.getItem(STORE_KEY);
-    if(raw){ state = JSON.parse(raw); return; }
+    if(raw){ state = JSON.parse(raw); takeSnap(); return; }
   }catch(e){}
   // First run: seed defaults
   const subjMap = {};
@@ -719,7 +718,7 @@ function loadState(){
   saveState();
 }
 function saveState(){
-  try{ localStorage.setItem(STORE_KEY, JSON.stringify(state)); syncBadge('saved'); abSchedule() }
+  try{ stampChanges(); localStorage.setItem(STORE_KEY, JSON.stringify(state)); syncBadge('saved'); abSchedule() }
   catch(e){ syncBadge('error'); toast('保存できませんでした'); }
 }
 function syncBadge(kind){
@@ -1582,34 +1581,131 @@ function abErr(status){
   if(status===409) return '競合しました。もう一度お試しください';
   return 'エラー (HTTP '+status+')';
 }
-async function abGetSha(c){
+async function abGetFile(c){
   const r = await abApi(c,'GET','/contents/'+AB_PATH);
   if(r.status===404) return {sha:null};
   if(!r.ok) throw new Error(abErr(r.status));
-  const j = await r.json(); return {sha:j.sha, content:j.content};
+  const j = await r.json(); let b64 = j.content;
+  if(!b64 && j.size>0){
+    const b = await abApi(c,'GET','/git/blobs/'+j.sha);
+    if(!b.ok) throw new Error(abErr(b.status));
+    b64 = (await b.json()).content;
+  }
+  return {sha:j.sha, text: b64?abUnB64(b64):''};
 }
-function abSchedule(){
+function abSchedule(ms){
   if(!abCfg()) return;
   clearTimeout(abTimer);
-  abTimer = setTimeout(()=>abBackup(false), 60000);
+  abTimer = setTimeout(()=>abSync(false), ms||3000);
 }
-async function abBackup(manual){
-  const c = abCfg(); if(!c || abBusy) return;
+
+/* ---- 同期（iPhone・iPadの記録を合体する） ---- */
+const SYNC_COLS = ['sessions','activities','subjects','exams'];
+let syncSnap = null, abPending = false;
+function itemSig(o){ const {u, ...r} = o; return JSON.stringify(r) }
+function takeSnap(){
+  syncSnap = {};
+  SYNC_COLS.forEach(k=>(state[k]||[]).forEach(o=>{ syncSnap[k+':'+o.id] = itemSig(o) }));
+  syncSnap['@goals'] = JSON.stringify(state.goals||{});
+}
+function stampChanges(){
+  if(!syncSnap){ takeSnap(); return }
+  const now = Date.now(), seen = {};
+  state.deleted = state.deleted||{};
+  SYNC_COLS.forEach(k=>(state[k]||[]).forEach(o=>{
+    const key = k+':'+o.id; seen[key] = 1;
+    if(syncSnap[key]!==itemSig(o)) o.u = now;
+  }));
+  Object.keys(syncSnap).forEach(key=>{ if(key!=='@goals' && !seen[key]) state.deleted[key] = now });
+  if(syncSnap['@goals']!==JSON.stringify(state.goals||{})) state.goalsU = now;
+  takeSnap();
+}
+function syncSig(x){
+  const o = {g:x.goals||{}, gu:x.goalsU||0, d:x.deleted||{}};
+  SYNC_COLS.forEach(k=>o[k]=x[k]||[]);
+  return JSON.stringify(o);
+}
+function mergeStates(L, R){
+  const out = Object.assign({}, R, L);
+  const del = Object.assign({}, R.deleted||{});
+  Object.entries(L.deleted||{}).forEach(([k,t])=>{ if(!(del[k]>=t)) del[k]=t });
+  const cutoff = Date.now()-120*DAY_MS;
+  Object.keys(del).forEach(k=>{ if(del[k]<cutoff) delete del[k] });
+  SYNC_COLS.forEach(k=>{
+    const map = new Map(), order = [];
+    const add = o=>{ const ex = map.get(o.id);
+      if(!ex){ map.set(o.id,o); order.push(o.id) } else if((o.u||0)>(ex.u||0) || ((o.u||0)===(ex.u||0) && JSON.stringify(o)>JSON.stringify(ex))) map.set(o.id,o) };
+    (L[k]||[]).forEach(add); (R[k]||[]).forEach(add);
+    out[k] = order.map(id=>map.get(id)).filter(o=>!(del[k+':'+o.id] >= (o.u||0)));
+  });
+  out.sessions.sort((a,b)=>a.start<b.start?-1:a.start>b.start?1:0);
+  // 計測中は1つだけ：古い「計測中」は次の記録の開始で終わらせる
+  const open = out.sessions.filter(x=>!x.end);
+  for(let i=0;i<open.length-1;i++){ open[i].end = open[i+1].start; open[i].u = Date.now() }
+  if((R.goalsU||0) > (L.goalsU||0)){ out.goals = R.goals; out.goalsU = R.goalsU }
+  out.settings = L.settings; // 画面の色などは端末ごと
+  out.deleted = del;
+  return out;
+}
+function applySynced(M){
+  state = M;
+  state.goals = state.goals||{daily:360,weekly:2520};
+  state.exams = state.exams||[]; state.subjects = state.subjects||[]; state.settings = state.settings||{theme:'dark'};
+  localStorage.setItem(STORE_KEY, JSON.stringify(state));
+  takeSnap();
+  renderAll();
+}
+async function abSync(manual){
+  const c = abCfg(); if(!c) return;
+  if(abBusy){ abPending = true; return }
   if(!navigator.onLine){ if(manual) toast('オフラインです'); return }
   abBusy = true; clearTimeout(abTimer);
   try{
-    const payload = JSON.stringify({app:'StudyTime', savedAt:new Date().toISOString(), device:navigator.platform||'', state}, null, 1);
-    let {sha} = await abGetSha(c);
-    let r = await abApi(c,'PUT','/contents/'+AB_PATH,{message:'auto backup '+new Date().toISOString(), content:abB64(payload), ...(sha?{sha}:{})});
-    if(r.status===409 || r.status===422){ ({sha} = await abGetSha(c)); r = await abApi(c,'PUT','/contents/'+AB_PATH,{message:'auto backup', content:abB64(payload), ...(sha?{sha}:{})}); }
-    if(!r.ok) throw new Error(abErr(r.status));
-    c.last = new Date().toISOString(); c.lastError = null; abSetCfg(c);
-    if(manual) toast('GitHubにバックアップしました');
+    let done = false;
+    for(let attempt=0; attempt<4 && !done; attempt++){
+      const {sha, text} = await abGetFile(c);
+      let R = null;
+      if(sha && text){
+        const d = JSON.parse(text); R = d.state||d;
+        if(!R.activities||!R.sessions) throw new Error('GitHubのデータ形式が不正です');
+      }
+      if(R && !c.syncV){
+        const lids = new Set((state.activities||[]).map(a=>a.id));
+        const same = R.activities.some(a=>lids.has(a.id));
+        if(!same && confirm('GitHubに別の端末の記録があります。\nこの端末の記録をGitHubの記録に合わせますか？（おすすめ）\n\nOK＝GitHubに合わせる（この端末だけの記録は消えます）\nキャンセル＝両方の記録を合体する（活動名が重複することがあります）')){
+          applySynced(Object.assign(JSON.parse(text).state||JSON.parse(text), {settings:state.settings}));
+        }
+        else if(!R.sessions.some(x=>x.u)){ const t = Date.now(); SYNC_COLS.forEach(k=>(state[k]||[]).forEach(o=>{ if(!o.u) o.u = t })); localStorage.setItem(STORE_KEY, JSON.stringify(state)); takeSnap(); } // 最初に同期する端末の記録を優先（2台目はGitHub側を優先）
+        c.syncV = 1; abSetCfg(c);
+      }
+      const L = JSON.parse(JSON.stringify(state));
+      const lSig = syncSig(L), rSig = R ? syncSig(R) : null;
+      const M = R ? mergeStates(L, JSON.parse(JSON.stringify(R))) : L;
+      const mSig = syncSig(M);
+      if(mSig!==lSig){
+        if(syncSig(state)!==lSig) continue; // 通信中にこの端末で操作があった → やり直し
+        applySynced(M);
+      }
+      if(mSig!==rSig){
+        const payload = JSON.stringify({app:'StudyTime', v:2, savedAt:new Date().toISOString(), device:navigator.platform||'', state:M});
+        const r = await abApi(c,'PUT','/contents/'+AB_PATH,{message:'sync '+new Date().toISOString(), content:abB64(payload), ...(sha?{sha}:{})});
+        if(r.status===409 || r.status===422) continue; // もう一方の端末が先に保存 → 取り直して合体
+        if(!r.ok) throw new Error(abErr(r.status));
+      }
+      done = true;
+    }
+    if(!done) throw new Error('混み合っています。少し後に自動で再試行します');
+    c.syncV = 1; c.last = new Date().toISOString(); c.lastError = null; abSetCfg(c);
+    if(manual) toast('同期しました');
   }catch(e){
     c.lastError = e.message||'通信エラー'; abSetCfg(c);
-    if(manual) alert('バックアップ失敗: '+c.lastError);
-  }finally{ abBusy = false; renderAutoBackup() }
+    if(manual) alert('同期できませんでした: '+c.lastError);
+  }finally{
+    abBusy = false; renderAutoBackup();
+    if(abPending){ abPending = false; abSchedule(1500) }
+  }
 }
+function abBackup(manual){ return abSync(manual) }
 async function abDiagnose(c){
   try{
     const h = { 'Authorization':'Bearer '+c.token, 'Accept':'application/vnd.github+json' };
@@ -1642,40 +1738,21 @@ async function abSaveConfig(){
     const j = await r.json();
     if(!j.private && !confirm('このリポジトリは「公開」です。勉強記録が誰でも見られる状態になります。それでも続けますか？\n（おすすめ：キャンセルして非公開リポジトリを使う）')) return;
     abSetCfg(c);
-    const remote = await abGetSha(c);
-    if(remote.sha && confirm('GitHubに既存のバックアップがあります。今すぐこの端末に復元しますか？\n（キャンセル＝この端末のデータでGitHubを上書き）')){ await abRestore(true); }
-    else { await abBackup(true); }
+    await abSync(true);
   }catch(e){ alert('接続できませんでした: '+e.message) }
   renderAutoBackup();
 }
-async function abRestore(skipConfirm){
-  const c = abCfg(); if(!c) return;
-  try{
-    const {sha, content} = await abGetSha(c);
-    if(!sha){ alert('GitHubにまだバックアップがありません'); return }
-    const d = JSON.parse(abUnB64(content));
-    const s = d.state||d;
-    if(!s.activities||!s.sessions) throw new Error('形式が不正');
-    if(!skipConfirm && !confirm(`GitHubのバックアップ（${d.savedAt?new Date(d.savedAt).toLocaleString('ja-JP'):'日時不明'}）でこの端末のデータを上書きします。よろしいですか？`)) return;
-    state = s;
-    state.goals = state.goals||{daily:360,weekly:2520};
-    state.exams = state.exams||[]; state.subjects = state.subjects||[]; state.settings = state.settings||{theme:'dark'};
-    localStorage.setItem(STORE_KEY, JSON.stringify(state));
-    c.last = d.savedAt||new Date().toISOString(); abSetCfg(c);
-    renderAll(); toast('GitHubから復元しました');
-  }catch(e){ alert('復元失敗: '+e.message) }
-}
 function abDisconnect(){
-  if(!confirm('この端末の自動バックアップ設定を解除します（GitHub上のバックアップは残ります）')) return;
+  if(!confirm('この端末の同期を解除します（GitHub上のデータとこの端末の記録は残ります）')) return;
   abSetCfg(null); renderAutoBackup(); toast('解除しました');
 }
 function renderAutoBackup(){
   const c = abCfg(); const st = document.getElementById('ab-status'); if(!st) return;
   document.getElementById('ab-form').style.display = c?'none':'block';
   document.getElementById('ab-actions').style.display = c?'flex':'none';
-  if(!c){ st.textContent='未設定 — 下の3項目を入力すると自動バックアップが始まります'; st.style.color='var(--text-dim)'; return }
+  if(!c){ st.textContent='未設定 — 下の3項目を入力すると同期が始まります'; st.style.color='var(--text-dim)'; return }
   const last = c.last ? new Date(c.last).toLocaleString('ja-JP',{month:'numeric',day:'numeric',hour:'2-digit',minute:'2-digit'}) : 'まだ';
-  st.innerHTML = `✓ 自動バックアップ中（${escapeHtml(c.owner)}/${escapeHtml(c.repo)}）<br>最終保存: ${last}` + (c.lastError?`<br><span style="color:var(--bad)">前回失敗: ${escapeHtml(c.lastError)}</span>`:'');
+  st.innerHTML = `✓ 同期中（${escapeHtml(c.owner)}/${escapeHtml(c.repo)}）<br>最終同期: ${last}` + (c.lastError?`<br><span style="color:var(--bad)">前回の同期に失敗: ${escapeHtml(c.lastError)}</span>`:'');
   st.style.color = c.lastError?'var(--bad)':'var(--text)';
 }
 
@@ -1754,17 +1831,14 @@ window.addEventListener('DOMContentLoaded', ()=>{
   });
   // Re-render when tab becomes visible (in case app was in background)
   document.addEventListener('visibilitychange', ()=>{
-    if(!document.hidden){ renderAll(); tick(); abMaybeBackup(); }
-    else if(abCfg()){ abBackup(false); }
+    if(!document.hidden){ renderAll(); tick(); abSync(false); }
+    else if(abCfg()){ abSync(false); }
   });
   // ブラウザにデータ保持をお願いする（消されにくくする）
   if(navigator.storage && navigator.storage.persist) navigator.storage.persist().catch(()=>{});
-  abMaybeBackup();
+  abSync(false);
+  setInterval(()=>{ if(!document.hidden && abCfg()) abSync(false) }, 30000);
 });
-function abMaybeBackup(){
-  const c = abCfg(); if(!c) return;
-  if(!c.last || Date.now()-new Date(c.last).getTime() > 3*3600*1000) abBackup(false);
-}
 
 // Service Worker 登録（オフライン動作用）
 if ('serviceWorker' in navigator) {
