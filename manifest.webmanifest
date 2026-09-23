@@ -1,0 +1,17 @@
+{
+  "name": "StudyTime — 24時間・勉強管理",
+  "short_name": "StudyTime",
+  "description": "受験生向け 24時間・勉強時間管理アプリ。活動を切り替えるだけで自動で時間を記録し、円グラフ・週間分析・教科別集計・目標管理まで一つに。",
+  "lang": "ja",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#0b0d12",
+  "theme_color": "#0b0d12",
+  "icons": [
+    { "src": "./icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "./icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "./icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}
