@@ -481,7 +481,7 @@ a{color:var(--accent)}
       <button class="btn danger block" onclick="clearAll()">すべての記録を削除</button>
     </div>
 
-    <div class="hint" style="text-align:center;margin-top:16px">StudyTime v1.2 · ローカル保存＋GitHub自動バックアップ</div>
+    <div class="hint" style="text-align:center;margin-top:16px">StudyTime v1.3 · ローカル保存＋GitHub自動バックアップ</div>
   </div>
 
 </div>
@@ -1571,12 +1571,35 @@ async function abBackup(manual){
     if(manual) alert('バックアップ失敗: '+c.lastError);
   }finally{ abBusy = false; renderAutoBackup() }
 }
+async function abDiagnose(c){
+  try{
+    const h = { 'Authorization':'Bearer '+c.token, 'Accept':'application/vnd.github+json' };
+    const u = await fetch('https://api.github.com/user',{headers:h,cache:'no-store'});
+    if(u.status===401) return 'トークンが無効です（コピーが途中で切れていないか確認）';
+    if(!u.ok) return 'リポジトリが見つかりません (HTTP 404)';
+    const login = (await u.json()).login;
+    const rr = await fetch('https://api.github.com/user/repos?per_page=100&affiliation=owner',{headers:h,cache:'no-store'});
+    const names = rr.ok ? (await rr.json()).map(x=>x.name) : [];
+    let msg = '';
+    if(login.toLowerCase()!==c.owner.toLowerCase()) msg += `\n・ユーザー名が違います。正しくは「${login}」です`;
+    if(names.length && !names.some(n=>n.toLowerCase()===c.repo.toLowerCase())) msg += `\n・トークンが「${c.repo}」を使える設定になっていないか、その名前のリポジトリがありません`;
+    msg += names.length ? `\n（このトークンで使えるリポジトリ: ${names.join(', ')}）` : '\n（このトークンで使えるリポジトリがありません → トークン作成時に studytime-data を選んでください）';
+    return 'リポジトリが見つかりません' + msg;
+  }catch(e){ return 'リポジトリが見つかりません (HTTP 404)'; }
+}
 async function abSaveConfig(){
-  const c = { owner:document.getElementById('ab-owner').value.trim(), repo:document.getElementById('ab-repo').value.trim(), token:document.getElementById('ab-token').value.trim() };
+  const clean = v => v.replace(/[\s\u200B-\u200D\uFEFF]/g,'');
+  let owner = clean(document.getElementById('ab-owner').value).replace(/^https?:\/\//,'').replace(/^(www\.)?github\.com\//,'').replace(/\.github\.io.*$/,'').replace(/^@/,'').split('/')[0];
+  let repo = clean(document.getElementById('ab-repo').value).replace(/\.git$/,'').split('/').pop();
+  const c = { owner, repo, token:clean(document.getElementById('ab-token').value) };
+  document.getElementById('ab-owner').value = owner; document.getElementById('ab-repo').value = repo;
   if(!c.owner||!c.repo||!c.token){ alert('3つとも入力してください'); return }
   try{
     const r = await abApi(c,'GET','');
-    if(!r.ok) throw new Error(abErr(r.status));
+    if(!r.ok){
+      if(r.status===404) throw new Error(await abDiagnose(c));
+      throw new Error(abErr(r.status));
+    }
     const j = await r.json();
     if(!j.private && !confirm('このリポジトリは「公開」です。勉強記録が誰でも見られる状態になります。それでも続けますか？\n（おすすめ：キャンセルして非公開リポジトリを使う）')) return;
     abSetCfg(c);
