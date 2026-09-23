@@ -1,5 +1,5 @@
 // StudyTime Service Worker — オフライン動作用
-const CACHE_NAME = 'studytime-v2';
+const CACHE_NAME = 'studytime-v3';
 const ASSETS = [
   './',
   './index.html',

@@ -434,7 +434,29 @@ a{color:var(--accent)}
     </div>
 
     <div class="card">
-      <h2>バックアップ</h2>
+      <h2>自動バックアップ（GitHub）</h2>
+      <div id="ab-status" class="hint" style="font-size:13px;margin-bottom:10px">未設定</div>
+      <div id="ab-form">
+        <label class="hint">GitHubユーザー名</label>
+        <input id="ab-owner" class="input" style="width:100%;margin-bottom:8px" placeholder="例: taro123" autocapitalize="off" autocorrect="off" spellcheck="false">
+        <label class="hint">バックアップ用リポジトリ名（非公開で作成）</label>
+        <input id="ab-repo" class="input" style="width:100%;margin-bottom:8px" value="studytime-data" autocapitalize="off" autocorrect="off" spellcheck="false">
+        <label class="hint">トークン（github_pat_ で始まる文字列）</label>
+        <input id="ab-token" class="input" style="width:100%;margin-bottom:8px" type="password" placeholder="github_pat_..." autocapitalize="off" autocorrect="off" spellcheck="false">
+        <div class="row wrap" style="margin-top:10px">
+          <button class="btn primary" onclick="abSaveConfig()">保存して接続テスト</button>
+        </div>
+      </div>
+      <div id="ab-actions" class="row wrap" style="display:none">
+        <button class="btn primary" onclick="abBackup(true)">今すぐバックアップ</button>
+        <button class="btn" onclick="abRestore()">GitHubから復元</button>
+        <button class="btn danger" onclick="abDisconnect()">接続を解除</button>
+      </div>
+      <div class="hint">記録を変えると約1分後、アプリを開いたとき、アプリを閉じたときに自動で保存します。iPhoneとiPadで同じ設定にすると、もう一方の端末で「GitHubから復元」できます。</div>
+    </div>
+
+    <div class="card">
+      <h2>手動バックアップ</h2>
       <div class="row wrap">
         <button class="btn" onclick="exportJSON()">JSONで書き出し</button>
         <button class="btn" onclick="exportCSV()">CSVで書き出し</button>
@@ -459,7 +481,7 @@ a{color:var(--accent)}
       <button class="btn danger block" onclick="clearAll()">すべての記録を削除</button>
     </div>
 
-    <div class="hint" style="text-align:center;margin-top:16px">StudyTime v1.0 · ローカル保存</div>
+    <div class="hint" style="text-align:center;margin-top:16px">StudyTime v1.1 · ローカル保存＋GitHub自動バックアップ</div>
   </div>
 
 </div>
@@ -652,7 +674,7 @@ function loadState(){
   saveState();
 }
 function saveState(){
-  try{ localStorage.setItem(STORE_KEY, JSON.stringify(state)); syncBadge('saved') }
+  try{ localStorage.setItem(STORE_KEY, JSON.stringify(state)); syncBadge('saved'); abSchedule() }
   catch(e){ syncBadge('error'); toast('保存できませんでした'); }
 }
 function syncBadge(kind){
@@ -1498,6 +1520,103 @@ function clearAll(){
   toast('削除しました');
 }
 
+/* ---------------- Auto backup (GitHub) ---------------- */
+const AB_KEY = 'studytime.autobackup';
+const AB_PATH = 'studytime-backup.json';
+let abTimer = null, abBusy = false;
+function abCfg(){ try{ return JSON.parse(localStorage.getItem(AB_KEY))||null }catch(e){ return null } }
+function abSetCfg(c){ if(c) localStorage.setItem(AB_KEY, JSON.stringify(c)); else localStorage.removeItem(AB_KEY) }
+function abB64(str){ const b = new TextEncoder().encode(str); let s=''; for(let i=0;i<b.length;i+=0x8000) s+=String.fromCharCode.apply(null,b.subarray(i,i+0x8000)); return btoa(s) }
+function abUnB64(b64){ const bin = atob(b64.replace(/\s/g,'')); const u = new Uint8Array(bin.length); for(let i=0;i<bin.length;i++) u[i]=bin.charCodeAt(i); return new TextDecoder().decode(u) }
+async function abApi(c, method, path, body){
+  const res = await fetch(`https://api.github.com/repos/${encodeURIComponent(c.owner)}/${encodeURIComponent(c.repo)}${path}`, {
+    method, cache:'no-store',
+    headers:{ 'Authorization':'Bearer '+c.token, 'Accept':'application/vnd.github+json', ...(body?{'Content-Type':'application/json'}:{}) },
+    body: body?JSON.stringify(body):undefined
+  });
+  return res;
+}
+function abErr(status){
+  if(status===401) return 'トークンが無効か期限切れです';
+  if(status===403) return 'トークンに書き込み権限がありません（Contents: Read and write）';
+  if(status===404) return 'リポジトリが見つかりません（名前・トークンの対象リポジトリを確認）';
+  if(status===409) return '競合しました。もう一度お試しください';
+  return 'エラー (HTTP '+status+')';
+}
+async function abGetSha(c){
+  const r = await abApi(c,'GET','/contents/'+AB_PATH);
+  if(r.status===404) return {sha:null};
+  if(!r.ok) throw new Error(abErr(r.status));
+  const j = await r.json(); return {sha:j.sha, content:j.content};
+}
+function abSchedule(){
+  if(!abCfg()) return;
+  clearTimeout(abTimer);
+  abTimer = setTimeout(()=>abBackup(false), 60000);
+}
+async function abBackup(manual){
+  const c = abCfg(); if(!c || abBusy) return;
+  if(!navigator.onLine){ if(manual) toast('オフラインです'); return }
+  abBusy = true; clearTimeout(abTimer);
+  try{
+    const payload = JSON.stringify({app:'StudyTime', savedAt:new Date().toISOString(), device:navigator.platform||'', state}, null, 1);
+    let {sha} = await abGetSha(c);
+    let r = await abApi(c,'PUT','/contents/'+AB_PATH,{message:'auto backup '+new Date().toISOString(), content:abB64(payload), ...(sha?{sha}:{})});
+    if(r.status===409 || r.status===422){ ({sha} = await abGetSha(c)); r = await abApi(c,'PUT','/contents/'+AB_PATH,{message:'auto backup', content:abB64(payload), ...(sha?{sha}:{})}); }
+    if(!r.ok) throw new Error(abErr(r.status));
+    c.last = new Date().toISOString(); c.lastError = null; abSetCfg(c);
+    if(manual) toast('GitHubにバックアップしました');
+  }catch(e){
+    c.lastError = e.message||'通信エラー'; abSetCfg(c);
+    if(manual) alert('バックアップ失敗: '+c.lastError);
+  }finally{ abBusy = false; renderAutoBackup() }
+}
+async function abSaveConfig(){
+  const c = { owner:document.getElementById('ab-owner').value.trim(), repo:document.getElementById('ab-repo').value.trim(), token:document.getElementById('ab-token').value.trim() };
+  if(!c.owner||!c.repo||!c.token){ alert('3つとも入力してください'); return }
+  try{
+    const r = await abApi(c,'GET','');
+    if(!r.ok) throw new Error(abErr(r.status));
+    const j = await r.json();
+    if(!j.private && !confirm('このリポジトリは「公開」です。勉強記録が誰でも見られる状態になります。それでも続けますか？\n（おすすめ：キャンセルして非公開リポジトリを使う）')) return;
+    abSetCfg(c);
+    const remote = await abGetSha(c);
+    if(remote.sha && confirm('GitHubに既存のバックアップがあります。今すぐこの端末に復元しますか？\n（キャンセル＝この端末のデータでGitHubを上書き）')){ await abRestore(true); }
+    else { await abBackup(true); }
+  }catch(e){ alert('接続できませんでした: '+e.message) }
+  renderAutoBackup();
+}
+async function abRestore(skipConfirm){
+  const c = abCfg(); if(!c) return;
+  try{
+    const {sha, content} = await abGetSha(c);
+    if(!sha){ alert('GitHubにまだバックアップがありません'); return }
+    const d = JSON.parse(abUnB64(content));
+    const s = d.state||d;
+    if(!s.activities||!s.sessions) throw new Error('形式が不正');
+    if(!skipConfirm && !confirm(`GitHubのバックアップ（${d.savedAt?new Date(d.savedAt).toLocaleString('ja-JP'):'日時不明'}）でこの端末のデータを上書きします。よろしいですか？`)) return;
+    state = s;
+    state.goals = state.goals||{daily:360,weekly:2520};
+    state.exams = state.exams||[]; state.subjects = state.subjects||[]; state.settings = state.settings||{theme:'dark'};
+    localStorage.setItem(STORE_KEY, JSON.stringify(state));
+    c.last = d.savedAt||new Date().toISOString(); abSetCfg(c);
+    renderAll(); toast('GitHubから復元しました');
+  }catch(e){ alert('復元失敗: '+e.message) }
+}
+function abDisconnect(){
+  if(!confirm('この端末の自動バックアップ設定を解除します（GitHub上のバックアップは残ります）')) return;
+  abSetCfg(null); renderAutoBackup(); toast('解除しました');
+}
+function renderAutoBackup(){
+  const c = abCfg(); const st = document.getElementById('ab-status'); if(!st) return;
+  document.getElementById('ab-form').style.display = c?'none':'block';
+  document.getElementById('ab-actions').style.display = c?'flex':'none';
+  if(!c){ st.textContent='未設定 — 下の3項目を入力すると自動バックアップが始まります'; st.style.color='var(--text-dim)'; return }
+  const last = c.last ? new Date(c.last).toLocaleString('ja-JP',{month:'numeric',day:'numeric',hour:'2-digit',minute:'2-digit'}) : 'まだ';
+  st.innerHTML = `✓ 自動バックアップ中（${escapeHtml(c.owner)}/${escapeHtml(c.repo)}）<br>最終保存: ${last}` + (c.lastError?`<br><span style="color:#f87171">前回失敗: ${escapeHtml(c.lastError)}</span>`:'');
+  st.style.color = c.lastError?'#f87171':'var(--text)';
+}
+
 /* ---------------- Color picker ---------------- */
 function renderColorPicker(elId, current, onPick){
   const el = document.getElementById(elId);
@@ -1546,6 +1665,7 @@ function renderAll(){
   renderSubjects();
   renderActConfig();
   renderAllSessions();
+  renderAutoBackup();
 }
 
 /* ---------------- Init ---------------- */
@@ -1559,9 +1679,17 @@ window.addEventListener('DOMContentLoaded', ()=>{
   });
   // Re-render when tab becomes visible (in case app was in background)
   document.addEventListener('visibilitychange', ()=>{
-    if(!document.hidden){ renderAll(); tick(); }
+    if(!document.hidden){ renderAll(); tick(); abMaybeBackup(); }
+    else if(abCfg()){ abBackup(false); }
   });
+  // ブラウザにデータ保持をお願いする（消されにくくする）
+  if(navigator.storage && navigator.storage.persist) navigator.storage.persist().catch(()=>{});
+  abMaybeBackup();
 });
+function abMaybeBackup(){
+  const c = abCfg(); if(!c) return;
+  if(!c.last || Date.now()-new Date(c.last).getTime() > 3*3600*1000) abBackup(false);
+}
 
 // Service Worker 登録（オフライン動作用）
 if ('serviceWorker' in navigator) {
