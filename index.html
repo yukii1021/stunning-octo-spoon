@@ -174,23 +174,29 @@ a{color:var(--accent)}
 /* Timeline 24h */
 .tl-day-nav{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
 .tl-day-nav .date{font-size:16px;font-weight:700}
-.timeline-wrap{position:relative;padding-left:46px;margin-top:10px}
-.tl-hour{position:relative;height:40px;border-top:1px solid var(--line)}
-.tl-hour.q{border-top-color:var(--line-strong)}
+.timeline-wrap{position:relative;padding-left:44px;margin-top:6px}
+.tl-hour{position:relative;height:40px;border-top:1px solid color-mix(in srgb,var(--line) 70%,transparent)}
+.tl-hour.q{border-top:1px solid var(--line-strong)}
 .tl-hour:nth-child(24){border-bottom:1px solid var(--line-strong)}
-.tl-hour .hour-label{position:absolute;left:-46px;top:-7px;font-size:11px;color:var(--text-mute);width:38px;text-align:right;font-variant-numeric:tabular-nums}
-.tl-hour.q .hour-label{color:var(--text-dim);font-weight:700}
-.tl-blocks{position:absolute;left:46px;right:0;top:0;pointer-events:none}
-.tl-block{position:absolute;left:4px;right:0;border-radius:8px;padding:3px 10px;overflow:hidden;
-  font-size:12px;font-weight:700;pointer-events:auto;cursor:pointer;display:flex;flex-direction:column;justify-content:center;
-  box-shadow:inset 0 0 0 1px rgba(127,127,127,.28)}
-.tl-block.row{flex-direction:row;align-items:center;gap:6px;padding:0 10px}
-.tl-block .b-name{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;line-height:1.25}
-.tl-block .b-time{opacity:.8;font-size:11px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-variant-numeric:tabular-nums}
-.tl-block.row .b-time{font-size:10px}
-.tl-block.live{box-shadow:inset 0 0 0 2px var(--accent)}
-.tl-now{position:absolute;left:-6px;right:0;height:0;border-top:2px solid var(--bad);z-index:3;pointer-events:none}
+.tl-hour .hour-label{position:absolute;left:-44px;top:-7px;font-size:10.5px;color:var(--text-mute);width:36px;text-align:right;font-variant-numeric:tabular-nums}
+.tl-hour.q .hour-label{color:var(--text-dim);font-weight:700;font-size:11px}
+.tl-blocks{position:absolute;left:44px;right:0;top:0;pointer-events:none}
+.tl-block{position:absolute;left:0;right:0;border-radius:10px;padding:0 12px;overflow:hidden;
+  font-size:12.5px;font-weight:700;pointer-events:auto;cursor:pointer;display:flex;flex-direction:column;justify-content:center;gap:1px}
+.tl-block.jt{border-top-left-radius:0;border-top-right-radius:0;box-shadow:inset 0 1px 0 rgba(255,255,255,.35)}
+.tl-block.jb{border-bottom-left-radius:0;border-bottom-right-radius:0}
+.tl-block.row{flex-direction:row;align-items:center;gap:8px}
+.tl-block.row .b-name{flex:0 1 auto}
+.tl-block .b-name{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;line-height:1.2}
+.tl-block .b-time{opacity:.78;font-size:11px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-variant-numeric:tabular-nums}
+.tl-block.row .b-time{font-size:10.5px}
+.tl-block.live::after{content:'';position:absolute;left:0;right:0;bottom:0;height:3px;background:repeating-linear-gradient(90deg,rgba(255,255,255,.85) 0 6px,transparent 6px 12px);opacity:.9}
+.tl-now{position:absolute;left:-8px;right:0;height:0;border-top:2px solid var(--bad);z-index:3;pointer-events:none}
 .tl-now::before{content:'';position:absolute;left:-4px;top:-5px;width:8px;height:8px;border-radius:50%;background:var(--bad)}
+.pie-modes{display:grid;grid-template-columns:repeat(4,1fr);gap:4px;background:var(--bg-elev-2);border:1px solid var(--line);border-radius:12px;padding:4px;margin:-2px 0 14px}
+.pie-modes button{min-height:36px;padding:0 2px;border-radius:9px;font-size:12.5px;font-weight:600;color:var(--text-dim);white-space:nowrap}
+.pie-modes button.on{background:var(--bg-elev);color:var(--text);font-weight:700;box-shadow:var(--shadow);outline:1px solid var(--line)}
+.pie-note{font-size:11.5px;color:var(--text-mute);margin-top:10px}
 .tl-empty{position:absolute;left:4px;right:0;top:40%;text-align:center;color:var(--text-mute);font-size:13px;pointer-events:none}
 .rec-day{font-size:12px;font-weight:700;color:var(--text-dim);padding:14px 4px 4px;border-bottom:1px solid var(--line-strong);display:flex;justify-content:space-between}
 .rec-day:first-child{padding-top:2px}
@@ -392,10 +398,17 @@ a{color:var(--accent)}
 
     <div class="card">
       <h2>この日の内訳</h2>
+      <div class="pie-modes" id="pie-modes">
+        <button data-m="clock" onclick="setPieMode('clock')">24時間</button>
+        <button data-m="act" onclick="setPieMode('act')">活動別</button>
+        <button data-m="group" onclick="setPieMode('group')">分類別</button>
+        <button data-m="bal" onclick="setPieMode('bal')">勉強/睡眠</button>
+      </div>
       <div class="pie-wrap">
         <canvas class="pie-canvas" id="tl-pie" width="260" height="260"></canvas>
         <div class="legend" id="tl-legend"></div>
       </div>
+      <div class="pie-note" id="pie-note"></div>
     </div>
 
     <div class="card">
@@ -536,7 +549,7 @@ a{color:var(--accent)}
       <button class="btn danger block" onclick="clearAll()">すべての記録を削除</button>
     </div>
 
-    <div class="hint" style="text-align:center;margin-top:16px">StudyTime v1.9 · ローカル保存＋GitHub自動バックアップ</div>
+    <div class="hint" style="text-align:center;margin-top:16px">StudyTime v1.91 · ローカル保存＋GitHub自動バックアップ</div>
   </div>
 
 </div>
@@ -1024,6 +1037,113 @@ function aggregateBySubject(date){
   return Object.values(map);
 }
 
+/* ---- この日の内訳：表示モード ---- */
+function unrecordedFor(date, recorded){
+  const from = dayStart(date);
+  const now = Date.now();
+  let dayMin = 24*60;
+  if(now < from.getTime()) dayMin = 0;
+  else if(now < dayEnd(date).getTime()) dayMin = (now-from.getTime())/60000;
+  return Math.max(0, dayMin-recorded);
+}
+function withUnrec(date, arr){
+  arr = arr.filter(x=>x.value>0).sort((x,y)=>y.value-x.value);
+  const u = unrecordedFor(date, arr.reduce((t,x)=>t+x.value,0));
+  if(u>1) arr.push({name:'未記録', value:u, color:cssVar('--unrec')});
+  return arr;
+}
+function aggregateByActivity(date){
+  const from = dayStart(date), to = dayEnd(date), map = {};
+  sessionsInRange(from,to).forEach(s=>{
+    const a = findActivity(s.activityId); if(!a) return;
+    if(!map[a.id]) map[a.id] = {name:a.name, value:0, color:a.color};
+    map[a.id].value += sessionMinutesInRange(s,from,to);
+  });
+  return withUnrec(date, Object.values(map));
+}
+function aggregateBalance(date){
+  const from = dayStart(date), to = dayEnd(date);
+  const m = {study:{name:'勉強',value:0,color:'#7cc4ff'}, sleep:{name:'睡眠',value:0,color:'#818cf8'}, other:{name:'その他',value:0,color:'#fbbf24'}};
+  sessionsInRange(from,to).forEach(s=>{
+    const a = findActivity(s.activityId); if(!a) return;
+    const k = a.isStudy ? 'study' : isSleepAct(a) ? 'sleep' : 'other';
+    m[k].value += sessionMinutesInRange(s,from,to);
+  });
+  return withUnrec(date, [m.study, m.sleep, m.other]);
+}
+let pieMode = localStorage.getItem('studytime.piemode') || 'clock';
+function setPieMode(m){ pieMode = m; localStorage.setItem('studytime.piemode', m); renderDayPie() }
+function renderDayPie(){
+  document.querySelectorAll('#pie-modes button').forEach(b=>b.classList.toggle('on', b.dataset.m===pieMode));
+  const note = document.getElementById('pie-note');
+  if(pieMode==='clock'){
+    drawClockPie('tl-pie', tlDate);
+    renderLegend('tl-legend', aggregateByActivity(tlDate));
+    note.textContent = '円を時計に見立てて、上が0:00・右が6:00・下が12:00・左が18:00。タイムラインをそのまま丸くした表示です。';
+    return;
+  }
+  const data = pieMode==='act' ? aggregateByActivity(tlDate) : pieMode==='bal' ? aggregateBalance(tlDate) : aggregateByGroup(tlDate);
+  drawPie('tl-pie', data);
+  renderLegend('tl-legend', data);
+  note.textContent = pieMode==='act' ? '活動ごとの合計時間です。' : pieMode==='bal' ? '勉強・睡眠・それ以外の3つに分けた割合です。' : 'カテゴリー（勉強・生活・自由時間など）ごとの合計です。';
+}
+function drawClockPie(canvasId, date){
+  const c = document.getElementById(canvasId); if(!c) return;
+  const dpr = window.devicePixelRatio||1;
+  const W = c.clientWidth||260, H = c.clientHeight||260;
+  c.width = W*dpr; c.height = H*dpr;
+  const ctx = c.getContext('2d'); ctx.scale(dpr,dpr); ctx.clearRect(0,0,W,H);
+  const cx=W/2, cy=H/2, r=Math.min(W,H)/2-22, inner=r*0.6;
+  const from = dayStart(date), to = dayEnd(date), DAY = 864e5;
+  const ang = t => -Math.PI/2 + ((t-from.getTime())/DAY)*Math.PI*2;
+  // 背景（未記録）
+  ctx.fillStyle = cssVar('--unrec');
+  ctx.beginPath(); ctx.arc(cx,cy,r,0,Math.PI*2); ctx.arc(cx,cy,inner,0,Math.PI*2,true); ctx.fill();
+  // 未来の部分は薄く
+  const now = Date.now();
+  if(now>from.getTime() && now<to.getTime()){
+    ctx.fillStyle = cssVar('--bg-elev-2');
+    ctx.beginPath(); ctx.arc(cx,cy,r,ang(now),ang(to.getTime())); ctx.arc(cx,cy,inner,ang(to.getTime()),ang(now),true); ctx.closePath(); ctx.fill();
+  } else if(now<=from.getTime()){
+    ctx.fillStyle = cssVar('--bg-elev-2');
+    ctx.beginPath(); ctx.arc(cx,cy,r,0,Math.PI*2); ctx.arc(cx,cy,inner,0,Math.PI*2,true); ctx.fill();
+  }
+  let total = 0;
+  sessionsInRange(from,to).forEach(s=>{
+    const a = findActivity(s.activityId); if(!a) return;
+    const st = Math.max(new Date(s.start).getTime(), from.getTime());
+    const en = Math.min(s.end?new Date(s.end).getTime():now, to.getTime());
+    if(en<=st) return;
+    total += (en-st)/60000;
+    ctx.fillStyle = a.color;
+    ctx.beginPath(); ctx.arc(cx,cy,r,ang(st),ang(en)); ctx.arc(cx,cy,inner,ang(en),ang(st),true); ctx.closePath(); ctx.fill();
+  });
+  // 目盛り
+  ctx.strokeStyle = cssVar('--bg-elev'); ctx.lineWidth = 1.5;
+  for(let h=0; h<24; h++){
+    const t = -Math.PI/2 + h/24*Math.PI*2, major = h%6===0;
+    ctx.beginPath();
+    ctx.moveTo(cx+Math.cos(t)*(major?inner:r-6), cy+Math.sin(t)*(major?inner:r-6));
+    ctx.lineTo(cx+Math.cos(t)*r, cy+Math.sin(t)*r); ctx.stroke();
+  }
+  ctx.font='700 11px -apple-system,sans-serif'; ctx.textAlign='center'; ctx.textBaseline='middle';
+  [0,3,6,9,12,15,18,21].forEach(h=>{
+    const t = -Math.PI/2 + h/24*Math.PI*2;
+    ctx.fillStyle = h%6===0 ? cssVar('--text-dim') : cssVar('--text-mute');
+    ctx.fillText(String(h), cx+Math.cos(t)*(r+12), cy+Math.sin(t)*(r+12));
+  });
+  // 現在時刻の針
+  if(now>from.getTime() && now<to.getTime()){
+    const t = ang(now);
+    ctx.strokeStyle = cssVar('--bad'); ctx.lineWidth = 2.5;
+    ctx.beginPath(); ctx.moveTo(cx+Math.cos(t)*(inner-6), cy+Math.sin(t)*(inner-6)); ctx.lineTo(cx+Math.cos(t)*(r+3), cy+Math.sin(t)*(r+3)); ctx.stroke();
+  }
+  ctx.fillStyle=cssVar('--text'); ctx.font='800 22px -apple-system,sans-serif';
+  ctx.fillText(fmtHM(total), cx, cy-6);
+  ctx.font='500 11px -apple-system,sans-serif'; ctx.fillStyle=cssVar('--text-dim');
+  ctx.fillText('記録', cx, cy+14);
+}
+
 function renderHomePie(){
   const data = aggregateByGroup(new Date());
   drawPie('home-pie', data);
@@ -1099,26 +1219,36 @@ function renderTimeline(){
   const blocks = document.getElementById('tl-blocks');
   const list = sessionsInRange(from,to);
   let total = 0;
+  const segs = [];
   list.forEach(s=>{
     const a = findActivity(s.activityId); if(!a) return;
     const start = Math.max(new Date(s.start).getTime(), from.getTime());
     const end = Math.min(s.end?new Date(s.end).getTime():Date.now(), to.getTime());
-    const durMin = (end - start)/60000;
-    if(durMin<=0) return;
+    if(end-start<=0) return;
+    segs.push({s,a,start,end});
+  });
+  segs.sort((x,y)=>x.start-y.start);
+  segs.forEach((g,idx)=>{
+    const {s,a,start,end} = g;
+    const durMin = (end-start)/60000;
     total += durMin;
-    const top = ((start - from.getTime())/60000/60) * rowH;
-    const height = Math.max(3, (durMin/60) * rowH - 2);
+    const prev = segs[idx-1], next = segs[idx+1];
+    const joinTop = prev && Math.abs(prev.end-start) < 90e3;
+    const joinBot = next && Math.abs(next.start-end) < 90e3;
+    const top = ((start - from.getTime())/3600000) * rowH;
+    const bottom = ((end - from.getTime())/3600000) * rowH;
+    const height = Math.max(3, bottom-top);
     const el = document.createElement('div');
-    el.className = 'tl-block' + (height<34 ? ' row' : '') + (s.end ? '' : ' live');
-    el.style.top = (top+1)+'px';
+    el.className = 'tl-block' + (height<34 ? ' row' : '') + (s.end ? '' : ' live') + (joinTop?' jt':'') + (joinBot?' jb':'');
+    el.style.top = top+'px';
     el.style.height = height+'px';
     el.style.background = a.color;
     el.style.color = textOnColor(a.color);
     el.dataset.sid = s.id;
-    el.title = `${a.name} ${fmtTime(s.start)}〜${s.end?fmtTime(s.end):'計測中'}（${fmtHM(durMin)}）`;
     const range = `${fmtTime(s.start)}〜${s.end?fmtTime(s.end):'計測中'}`;
+    el.title = `${a.name} ${range}（${fmtHM(durMin)}）`;
     if(height>=34) el.innerHTML = `<div class="b-name">${escapeHtml(a.name)}</div><div class="b-time">${range} · ${fmtHM(durMin)}</div>`;
-    else if(height>=14) el.innerHTML = `<div class="b-name">${escapeHtml(a.name)}</div><div class="b-time">${fmtHM(durMin)}</div>`;
+    else if(height>=15) el.innerHTML = `<div class="b-name">${escapeHtml(a.name)}</div><div class="b-time">${fmtHM(durMin)}</div>`;
     el.onclick = ()=> openSessionModal(s.id);
     blocks.appendChild(el);
   });
@@ -1131,8 +1261,7 @@ function renderTimeline(){
   document.getElementById('tl-total').textContent = fmtHM(total);
 
   // Pies for the day
-  drawPie('tl-pie', aggregateByGroup(tlDate));
-  renderLegend('tl-legend', aggregateByGroup(tlDate));
+  renderDayPie();
   drawPie('tl-subj-pie', aggregateBySubject(tlDate));
   renderLegend('tl-subj-legend', aggregateBySubject(tlDate));
 
