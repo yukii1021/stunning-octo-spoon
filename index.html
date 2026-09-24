@@ -332,17 +332,17 @@ a{color:var(--accent)}
     <div class="grid-3">
       <div class="stat">
         <div class="label">勉強</div>
-        <div class="value" id="stat-study">0h</div>
+        <div class="value" id="stat-study">0h00</div>
         <div class="sub" id="stat-study-goal">目標 —</div>
       </div>
       <div class="stat">
         <div class="label">睡眠</div>
-        <div class="value" id="stat-sleep">0h</div>
+        <div class="value" id="stat-sleep">0h00</div>
         <div class="sub">昨夜〜今</div>
       </div>
       <div class="stat">
         <div class="label">記録</div>
-        <div class="value" id="stat-total">0h</div>
+        <div class="value" id="stat-total">0h00</div>
         <div class="sub">合計 / 24h</div>
       </div>
     </div>
@@ -356,6 +356,7 @@ a{color:var(--accent)}
     <div class="card">
       <h2>直近の活動履歴</h2>
       <div id="recent-list"></div>
+      <button class="btn block rec-more" id="recent-more" onclick="toggleRecent()" style="display:none"></button>
     </div>
 
     <div class="card">
@@ -384,7 +385,7 @@ a{color:var(--accent)}
       <div class="row" style="gap:8px;margin-bottom:8px">
         <button class="btn sm ghost" onclick="setToday()">今日</button>
         <div class="spacer"></div>
-        <span class="chip"><span class="dot" style="background:var(--accent)"></span><span id="tl-total">0h</span></span>
+        <span class="chip"><span class="dot" style="background:var(--accent)"></span><span id="tl-total">0h00</span></span>
       </div>
       <div class="timeline-wrap" id="timeline"></div>
     </div>
@@ -421,8 +422,8 @@ a{color:var(--accent)}
       <h2>週間の勉強時間</h2>
       <div class="bar-chart-wrap"><div class="bar-chart" id="week-chart"></div></div>
       <div class="row" style="gap:12px;margin-top:8px;flex-wrap:wrap">
-        <div class="chip">週合計 <b id="week-total" style="color:var(--text);margin-left:4px">0h</b></div>
-        <div class="chip">日平均 <b id="week-avg" style="color:var(--text);margin-left:4px">0h</b></div>
+        <div class="chip">週合計 <b id="week-total" style="color:var(--text);margin-left:4px">0h00</b></div>
+        <div class="chip">日平均 <b id="week-avg" style="color:var(--text);margin-left:4px">0h00</b></div>
         <div class="chip">目標達成 <b id="week-hit" style="color:var(--text);margin-left:4px">0/7</b></div>
       </div>
     </div>
@@ -435,9 +436,9 @@ a{color:var(--accent)}
     <div class="card">
       <h2>睡眠・娯楽</h2>
       <div class="grid-3">
-        <div class="stat"><div class="label">睡眠 週平均</div><div class="value sm" id="an-sleep">0h</div></div>
-        <div class="stat"><div class="label">娯楽 週合計</div><div class="value sm" id="an-fun">0h</div></div>
-        <div class="stat"><div class="label">未分類 週合計</div><div class="value sm" id="an-unc">0h</div></div>
+        <div class="stat"><div class="label">睡眠 週平均</div><div class="value sm" id="an-sleep">0h00</div></div>
+        <div class="stat"><div class="label">娯楽 週合計</div><div class="value sm" id="an-fun">0h00</div></div>
+        <div class="stat"><div class="label">未分類 週合計</div><div class="value sm" id="an-unc">0h00</div></div>
       </div>
     </div>
 
@@ -510,12 +511,6 @@ a{color:var(--accent)}
     </div>
 
     <div class="card">
-      <h2>記録（新しい順）</h2>
-      <div id="all-sessions"></div>
-      <button class="btn block rec-more" id="all-sessions-more" onclick="toggleAllSessions()" style="display:none"></button>
-    </div>
-
-    <div class="card">
       <h2>同期・バックアップ（GitHub）</h2>
       <div id="ab-status" class="hint" style="font-size:13px;margin-bottom:10px">未設定</div>
       <div id="ab-form">
@@ -541,7 +536,7 @@ a{color:var(--accent)}
       <button class="btn danger block" onclick="clearAll()">すべての記録を削除</button>
     </div>
 
-    <div class="hint" style="text-align:center;margin-top:16px">StudyTime v1.8 · ローカル保存＋GitHub自動バックアップ</div>
+    <div class="hint" style="text-align:center;margin-top:16px">StudyTime v1.9 · ローカル保存＋GitHub自動バックアップ</div>
   </div>
 
 </div>
@@ -747,7 +742,7 @@ function pad2(n){return String(n).padStart(2,'0')}
 function fmtHM(mins){
   mins = Math.max(0, Math.round(mins));
   const h = Math.floor(mins/60), m = mins%60;
-  return h+':'+pad2(m);
+  return h+'h'+pad2(m);
 }
 function fmtHMS(sec){
   sec = Math.max(0, Math.round(sec));
@@ -925,23 +920,7 @@ function renderSwitchModal(){
 }
 function closeModal(id){ document.getElementById(id).classList.remove('show') }
 
-/* ---------------- Recent history ---------------- */
-function renderRecent(){
-  const el = document.getElementById('recent-list');
-  const list = state.sessions.slice().sort((a,b)=>new Date(b.start)-new Date(a.start)).slice(0,8);
-  if(list.length===0){ el.innerHTML='<div class="empty">まだ記録がありません</div>'; return; }
-  el.innerHTML = list.map(s=>{
-    const a = findActivity(s.activityId); if(!a) return '';
-    const end = s.end?new Date(s.end):new Date();
-    const dur = (end - new Date(s.start))/60000;
-    return `<div class="hist" onclick="openSessionModal('${s.id}')">
-      <span class="dot" style="background:${a.color}"></span>
-      <div class="n">${escapeHtml(a.name)}</div>
-      <div class="t">${fmtTime(s.start)}${s.end?'〜'+fmtTime(s.end):' 〜 進行中'}</div>
-      <div class="d">${fmtHM(dur)}</div>
-    </div>`;
-  }).join('');
-}
+/* ---------------- Recent history: see renderRecent() below ---------------- */
 
 /* ---------------- Pie chart ---------------- */
 function cssVar(n){return getComputedStyle(document.documentElement).getPropertyValue(n).trim()}
@@ -1498,19 +1477,19 @@ function deleteSession(){
   closeModal('modal-session');
   renderAll();
 }
-let allSessionsOpen = false;
-const ALL_SESSIONS_PREVIEW = 8;
-function toggleAllSessions(){
-  allSessionsOpen = !allSessionsOpen;
-  renderAllSessions();
-  if(!allSessionsOpen) document.getElementById('all-sessions').closest('.card').scrollIntoView({block:'start',behavior:'smooth'});
+let recentOpen = false;
+const RECENT_PREVIEW = 5;
+function toggleRecent(){
+  recentOpen = !recentOpen;
+  renderRecent();
+  if(!recentOpen) document.getElementById('recent-list').closest('.card').scrollIntoView({block:'start',behavior:'smooth'});
 }
-function renderAllSessions(){
-  const el = document.getElementById('all-sessions');
-  const btn = document.getElementById('all-sessions-more');
+function renderRecent(){
+  const el = document.getElementById('recent-list');
+  const btn = document.getElementById('recent-more');
   const list = state.sessions.filter(s=>findActivity(s.activityId)).sort((a,b)=>new Date(b.start)-new Date(a.start));
-  if(list.length===0){ el.innerHTML='<div class="empty">記録がありません</div>'; btn.style.display='none'; return; }
-  const shown = allSessionsOpen ? list : list.slice(0, ALL_SESSIONS_PREVIEW);
+  if(list.length===0){ el.innerHTML='<div class="empty">まだ記録がありません</div>'; btn.style.display='none'; return; }
+  const shown = recentOpen ? list : list.slice(0, RECENT_PREVIEW);
   const wk = ['日','月','火','水','木','金','土'];
   const dayTotals = {};
   list.forEach(s=>{ const k = fmtISODate(new Date(s.start)); dayTotals[k] = (dayTotals[k]||0)+1 });
@@ -1530,9 +1509,9 @@ function renderAllSessions(){
     </div>`;
   });
   el.innerHTML = html;
-  if(list.length > ALL_SESSIONS_PREVIEW){
+  if(list.length > RECENT_PREVIEW){
     btn.style.display = '';
-    btn.textContent = allSessionsOpen ? '折りたたむ' : `すべて表示（全${list.length}件）`;
+    btn.textContent = recentOpen ? '折りたたむ' : `すべて表示（全${list.length}件）`;
   } else btn.style.display = 'none';
 }
 
@@ -1853,7 +1832,6 @@ function renderAll(){
   renderAnalytics();
   renderSubjects();
   renderActConfig();
-  renderAllSessions();
   renderAutoBackup();
 }
 
