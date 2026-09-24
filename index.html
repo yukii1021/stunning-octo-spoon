@@ -174,16 +174,28 @@ a{color:var(--accent)}
 /* Timeline 24h */
 .tl-day-nav{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
 .tl-day-nav .date{font-size:16px;font-weight:700}
-.timeline-wrap{position:relative;padding-left:44px;margin-top:8px}
-.tl-hour{position:relative;height:32px;border-top:1px dashed var(--line)}
-.tl-hour:last-child{border-bottom:1px dashed var(--line)}
-.tl-hour .hour-label{position:absolute;left:-44px;top:-8px;font-size:11px;color:var(--text-mute);width:40px;text-align:right;font-variant-numeric:tabular-nums}
-.tl-blocks{position:absolute;left:44px;right:0;top:0;bottom:0;pointer-events:none}
-.tl-block{position:absolute;left:0;right:0;border-radius:6px;padding:2px 8px;overflow:hidden;
-  font-size:11px;color:#0b0d12;font-weight:700;pointer-events:auto;cursor:pointer;
-  box-shadow:inset 0 0 0 1px rgba(0,0,0,.15)}
-.tl-block .b-name{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.tl-block .b-time{opacity:.75;font-size:10px}
+.timeline-wrap{position:relative;padding-left:46px;margin-top:10px}
+.tl-hour{position:relative;height:40px;border-top:1px solid var(--line)}
+.tl-hour.q{border-top-color:var(--line-strong)}
+.tl-hour:nth-child(24){border-bottom:1px solid var(--line-strong)}
+.tl-hour .hour-label{position:absolute;left:-46px;top:-7px;font-size:11px;color:var(--text-mute);width:38px;text-align:right;font-variant-numeric:tabular-nums}
+.tl-hour.q .hour-label{color:var(--text-dim);font-weight:700}
+.tl-blocks{position:absolute;left:46px;right:0;top:0;pointer-events:none}
+.tl-block{position:absolute;left:4px;right:0;border-radius:8px;padding:3px 10px;overflow:hidden;
+  font-size:12px;font-weight:700;pointer-events:auto;cursor:pointer;display:flex;flex-direction:column;justify-content:center;
+  box-shadow:inset 0 0 0 1px rgba(127,127,127,.28)}
+.tl-block.row{flex-direction:row;align-items:center;gap:6px;padding:0 10px}
+.tl-block .b-name{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;line-height:1.25}
+.tl-block .b-time{opacity:.8;font-size:11px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-variant-numeric:tabular-nums}
+.tl-block.row .b-time{font-size:10px}
+.tl-block.live{box-shadow:inset 0 0 0 2px var(--accent)}
+.tl-now{position:absolute;left:-6px;right:0;height:0;border-top:2px solid var(--bad);z-index:3;pointer-events:none}
+.tl-now::before{content:'';position:absolute;left:-4px;top:-5px;width:8px;height:8px;border-radius:50%;background:var(--bad)}
+.tl-empty{position:absolute;left:4px;right:0;top:40%;text-align:center;color:var(--text-mute);font-size:13px;pointer-events:none}
+.rec-day{font-size:12px;font-weight:700;color:var(--text-dim);padding:14px 4px 4px;border-bottom:1px solid var(--line-strong);display:flex;justify-content:space-between}
+.rec-day:first-child{padding-top:2px}
+.rec-day span{font-weight:600;color:var(--text-mute);font-variant-numeric:tabular-nums}
+.rec-more{margin-top:12px}
 
 /* Pie chart legend */
 .pie-wrap{display:flex;align-items:center;gap:16px;flex-wrap:wrap}
@@ -498,8 +510,9 @@ a{color:var(--accent)}
     </div>
 
     <div class="card">
-      <h2>すべての記録（新しい順）</h2>
-      <div id="all-sessions" style="max-height:400px;overflow-y:auto"></div>
+      <h2>記録（新しい順）</h2>
+      <div id="all-sessions"></div>
+      <button class="btn block rec-more" id="all-sessions-more" onclick="toggleAllSessions()" style="display:none"></button>
     </div>
 
     <div class="card">
@@ -528,7 +541,7 @@ a{color:var(--accent)}
       <button class="btn danger block" onclick="clearAll()">すべての記録を削除</button>
     </div>
 
-    <div class="hint" style="text-align:center;margin-top:16px">StudyTime v1.7 · ローカル保存＋GitHub自動バックアップ</div>
+    <div class="hint" style="text-align:center;margin-top:16px">StudyTime v1.8 · ローカル保存＋GitHub自動バックアップ</div>
   </div>
 
 </div>
@@ -1089,50 +1102,53 @@ let tlDate = new Date();
 function shiftDay(d){ tlDate = new Date(tlDate); tlDate.setDate(tlDate.getDate()+d); renderTimeline() }
 function setToday(){ tlDate = new Date(); renderTimeline() }
 
+function textOnColor(hex){
+  const m = /^#?([0-9a-f]{6})$/i.exec(String(hex||'').trim()); if(!m) return '#0b0d12';
+  const n = parseInt(m[1],16), ch = [n>>16&255, n>>8&255, n&255].map(v=>{ v/=255; return v<=0.03928? v/12.92 : Math.pow((v+0.055)/1.055,2.4) });
+  const L = 0.2126*ch[0]+0.7152*ch[1]+0.0722*ch[2];
+  return L > 0.36 ? '#0b0d12' : '#ffffff';
+}
 function renderTimeline(){
   document.getElementById('tl-date').textContent = fmtDateJP(tlDate);
   const from = dayStart(tlDate), to = dayEnd(tlDate);
   const tl = document.getElementById('timeline');
-  // Build hour rows
+  const rowH = 40, totalH = 24*rowH;
   let html = '';
-  for(let h=0; h<24; h++){
-    html += `<div class="tl-hour"><span class="hour-label">${pad2(h)}:00</span></div>`;
-  }
-  html += '<div class="tl-blocks" id="tl-blocks"></div>';
+  for(let h=0; h<24; h++) html += `<div class="tl-hour${h%6===0?' q':''}"><span class="hour-label">${h}:00</span></div>`;
+  html += `<div class="tl-blocks" id="tl-blocks" style="height:${totalH}px"></div>`;
   tl.innerHTML = html;
   const blocks = document.getElementById('tl-blocks');
-  // Total container height = 24 hours * 32px = 768px (visual reference)
-  const rowH = 32;
-  const totalH = 24 * rowH;
-  blocks.style.height = totalH+'px';
-  blocks.style.top = '0px';
   const list = sessionsInRange(from,to);
   let total = 0;
   list.forEach(s=>{
     const a = findActivity(s.activityId); if(!a) return;
     const start = Math.max(new Date(s.start).getTime(), from.getTime());
     const end = Math.min(s.end?new Date(s.end).getTime():Date.now(), to.getTime());
-    const topMin = (start - from.getTime())/60000;
     const durMin = (end - start)/60000;
     if(durMin<=0) return;
     total += durMin;
-    const top = (topMin/60) * rowH;
-    const height = Math.max(2, (durMin/60) * rowH - 1);
+    const top = ((start - from.getTime())/60000/60) * rowH;
+    const height = Math.max(3, (durMin/60) * rowH - 2);
     const el = document.createElement('div');
-    el.className='tl-block';
-    el.style.top = top+'px';
+    el.className = 'tl-block' + (height<34 ? ' row' : '') + (s.end ? '' : ' live');
+    el.style.top = (top+1)+'px';
     el.style.height = height+'px';
     el.style.background = a.color;
+    el.style.color = textOnColor(a.color);
     el.dataset.sid = s.id;
-    if(height>18){
-      el.innerHTML = `<div class="b-name">${escapeHtml(a.name)}</div>
-      <div class="b-time">${fmtTime(s.start)}〜${s.end?fmtTime(s.end):'now'} · ${fmtHM(durMin)}</div>`;
-    } else {
-      el.innerHTML = `<div class="b-name">${escapeHtml(a.name)}</div>`;
-    }
+    el.title = `${a.name} ${fmtTime(s.start)}〜${s.end?fmtTime(s.end):'計測中'}（${fmtHM(durMin)}）`;
+    const range = `${fmtTime(s.start)}〜${s.end?fmtTime(s.end):'計測中'}`;
+    if(height>=34) el.innerHTML = `<div class="b-name">${escapeHtml(a.name)}</div><div class="b-time">${range} · ${fmtHM(durMin)}</div>`;
+    else if(height>=14) el.innerHTML = `<div class="b-name">${escapeHtml(a.name)}</div><div class="b-time">${fmtHM(durMin)}</div>`;
     el.onclick = ()=> openSessionModal(s.id);
     blocks.appendChild(el);
   });
+  if(!list.length) blocks.insertAdjacentHTML('beforeend','<div class="tl-empty">この日は記録がありません</div>');
+  const nowT = Date.now();
+  if(nowT>=from.getTime() && nowT<to.getTime()){
+    const y = (nowT-from.getTime())/3600000*rowH;
+    blocks.insertAdjacentHTML('beforeend', `<div class="tl-now" style="top:${y}px"></div>`);
+  }
   document.getElementById('tl-total').textContent = fmtHM(total);
 
   // Pies for the day
@@ -1482,21 +1498,42 @@ function deleteSession(){
   closeModal('modal-session');
   renderAll();
 }
+let allSessionsOpen = false;
+const ALL_SESSIONS_PREVIEW = 8;
+function toggleAllSessions(){
+  allSessionsOpen = !allSessionsOpen;
+  renderAllSessions();
+  if(!allSessionsOpen) document.getElementById('all-sessions').closest('.card').scrollIntoView({block:'start',behavior:'smooth'});
+}
 function renderAllSessions(){
   const el = document.getElementById('all-sessions');
-  const list = state.sessions.slice().sort((a,b)=>new Date(b.start)-new Date(a.start));
-  if(list.length===0){ el.innerHTML='<div class="empty">記録がありません</div>'; return; }
-  el.innerHTML = list.map(s=>{
-    const a = findActivity(s.activityId); if(!a) return '';
-    const end = s.end?new Date(s.end):new Date();
-    const dur = (end - new Date(s.start))/60000;
-    const d = new Date(s.start);
-    return `<div class="hist" onclick="openSessionModal('${s.id}')">
-      <span class="dot" style="background:${a.color}"></span>
-      <div class="n">${escapeHtml(a.name)}<div style="font-size:11px;color:var(--text-mute);font-weight:500">${pad2(d.getMonth()+1)}/${pad2(d.getDate())} ${fmtTime(s.start)}${s.end?'〜'+fmtTime(s.end):' 〜 進行中'}</div></div>
+  const btn = document.getElementById('all-sessions-more');
+  const list = state.sessions.filter(s=>findActivity(s.activityId)).sort((a,b)=>new Date(b.start)-new Date(a.start));
+  if(list.length===0){ el.innerHTML='<div class="empty">記録がありません</div>'; btn.style.display='none'; return; }
+  const shown = allSessionsOpen ? list : list.slice(0, ALL_SESSIONS_PREVIEW);
+  const wk = ['日','月','火','水','木','金','土'];
+  const dayTotals = {};
+  list.forEach(s=>{ const k = fmtISODate(new Date(s.start)); dayTotals[k] = (dayTotals[k]||0)+1 });
+  let html = '', lastKey = '';
+  shown.forEach(s=>{
+    const a = findActivity(s.activityId);
+    const d = new Date(s.start), k = fmtISODate(d);
+    if(k!==lastKey){
+      lastKey = k;
+      html += `<div class="rec-day">${d.getMonth()+1}月${d.getDate()}日（${wk[d.getDay()]}）<span>${dayTotals[k]}件</span></div>`;
+    }
+    const dur = ((s.end?new Date(s.end):new Date()) - d)/60000;
+    html += `<div class="hist" onclick="openSessionModal('${s.id}')">
+      <span class="dot" style="background:${a.color};box-shadow:0 0 0 1px rgba(127,127,127,.4)"></span>
+      <div class="n">${escapeHtml(a.name)}<div style="font-size:11px;color:var(--text-mute);font-weight:500">${fmtTime(s.start)}${s.end?'〜'+fmtTime(s.end):' 〜 計測中'}</div></div>
       <div class="d">${fmtHM(dur)}</div>
     </div>`;
-  }).join('');
+  });
+  el.innerHTML = html;
+  if(list.length > ALL_SESSIONS_PREVIEW){
+    btn.style.display = '';
+    btn.textContent = allSessionsOpen ? '折りたたむ' : `すべて表示（全${list.length}件）`;
+  } else btn.style.display = 'none';
 }
 
 /* ---------------- Backup ---------------- */
