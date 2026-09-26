@@ -266,7 +266,7 @@ a{color:var(--accent)}
 .cp-tones .t .u{position:absolute;right:4px;top:4px;width:6px;height:6px;border-radius:50%;background:currentColor;opacity:.7}
 
 
-/* ================= 教科ノート（v2.02） ================= */
+/* ================= 教科ノート（v2.03） ================= */
 .modal-bg{z-index:120}
 #toast{z-index:200}
 .deck{position:fixed;inset:0;background:var(--bg);z-index:80;display:none;flex-direction:column}
@@ -608,7 +608,7 @@ a{color:var(--accent)}
       <button class="btn danger block" onclick="clearAll()">すべての記録を削除</button>
     </div>
 
-    <div class="hint" style="text-align:center;margin-top:16px">StudyTime v2.02 · ローカル保存＋GitHub自動バックアップ</div>
+    <div class="hint" style="text-align:center;margin-top:16px">StudyTime v2.03 · ローカル保存＋GitHub自動バックアップ</div>
   </div>
 
 </div>
@@ -1839,14 +1839,14 @@ function clearAll(){
 }
 
 
-/* ================= 教科ノート（v2.02） ================= */
+/* ================= 教科ノート（v2.03） ================= */
 const SRS_STEPS = [0,3,7,14,30,60,120];
 let deckSid = null, deckTab = 'today', sess = null, cardEditId = null, addKind = 'card';
 const deckSorts = {};
 const DECK_KIND_RULES = [
   [/数学|算数|物理/, ['prob']],
-  [/化学|地理/, ['card','prob']],
-  [/英語|英単語|国語|古文|漢文|現代文|世界史|日本史|社会|生物|地学|公民|倫理|政治|経済/, ['card']]
+  [/化学|地理|英語|英単語/, ['card','prob']],
+  [/国語|古文|漢文|現代文|世界史|日本史|社会|生物|地学|公民|倫理|政治|経済/, ['card']]
 ];
 function deckKinds(s){ const n = (s&&s.name)||''; for(const r of DECK_KIND_RULES){ if(r[0].test(n)) return r[1].slice() } return ['card','prob'] }
 function kindLabel(k){ return k==='card' ? '単語カード' : '問題' }
