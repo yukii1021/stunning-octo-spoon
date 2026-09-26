@@ -631,7 +631,7 @@ a{color:var(--accent)}
     </div>
 
 
-    <div class="hint" style="text-align:center;margin-top:16px">StudyTime v2.13 · ローカル保存＋GitHub自動バックアップ</div>
+    <div class="hint" style="text-align:center;margin-top:16px">StudyTime v2.14 · ローカル保存＋GitHub自動バックアップ</div>
   </div>
 
 </div>
@@ -1865,6 +1865,14 @@ const SRS_STEPS = [0,1,2,4,7,14,30,60];
 let deckSid = null, deckTab = 'today', sess = null, cardEditId = null, addKind = 'card';
 const deckSorts = {}, deckShuffle = {};
 let lastMemOrder = '';
+/* 暗記モードの出題順（教科ごと）: 'add'=追加順 / 'rand'=ランダム */
+const memOrders = (function(){ try{ return JSON.parse(localStorage.getItem('studytime.memorder')||'{}')||{} }catch(e){ return {} } })();
+function memOrderOf(sid){ return memOrders[sid]==='add' ? 'add' : 'rand' }
+function setMemOrder(sid, v){
+  memOrders[sid] = (v==='add') ? 'add' : 'rand';
+  try{ localStorage.setItem('studytime.memorder', JSON.stringify(memOrders)) }catch(e){}
+  renderDeck();
+}
 const DECK_KIND_RULES = [
   [/数学|算数|物理/, ['prob']],
   [/化学|地理|英語|英単語|国語|古文|漢文|現代文/, ['card','prob']],
@@ -2008,7 +2016,15 @@ function deckToday(){
       const n = st.due;
       out.push(`<div class="deck-box"><div class="deck-big">${n}</div>
         <div class="hint" style="text-align:center">今日の分（${mdShort(todayKey())}）</div></div>
-      <button class="btn primary block" onclick="startMemorize('${deckSid}')">暗記モード</button>
+      <div class="hint" style="margin-top:14px">暗記モードの出題順</div>
+      <div class="seg" style="grid-template-columns:repeat(2,1fr);margin-top:6px">
+        <button class="${memOrderOf(deckSid)==='add'?'on':''}" onclick="setMemOrder('${deckSid}','add')">追加順</button>
+        <button class="${memOrderOf(deckSid)==='rand'?'on':''}" onclick="setMemOrder('${deckSid}','rand')">ランダム</button>
+      </div>
+      <div class="hint" style="margin-top:6px">${memOrderOf(deckSid)==='add'
+        ? '登録した順に出ます。今日の分（未習得・復習）から順に進みます'
+        : '出る順番が毎回変わります（覚えたカードと新規を混ぜます）'}</div>
+      <button class="btn primary block" style="margin-top:10px" onclick="startMemorize('${deckSid}')">暗記モード</button>
       <button class="btn block" style="margin-top:8px" ${st.total>=4?'':'disabled'} onclick="startQuiz('${deckSid}')">テストモード</button>
       ${st.total>=4?'':'<div class="hint" style="text-align:center;margin-top:8px">テストモードはカードが4件以上で使えます</div>'}
       ${n?'':'<div class="hint" style="text-align:center;margin-top:8px">今日の分は終わりです</div>'}`);
@@ -2252,7 +2268,14 @@ function deleteCard(id){
   saveState(); renderDeck(); toast('削除しました');
 }
 /* ---- 学習セッション ---- */
-function memorizePick(sid, n){
+function memorizePickOrdered(sid, n){   // 追加順: state.cards の並び（＝登録順）を保つ
+  const all = subjCards(sid,'card'), t = todayKey();
+  const due = all.filter(c=>(c.due||'0000-01-01')<=t);
+  const ids = (due.length?due:all).map(c=>c.id);
+  if(ids.length < n) all.forEach(c=>{ if(ids.length<n && ids.indexOf(c.id)<0) ids.push(c.id) });
+  return ids.slice(0,n);
+}
+function memorizePick(sid, n){          // ランダム: 覚えた半分・新規半分を混ぜて並べ替え
   const all = subjCards(sid,'card');
   const learned = shuffle(all.filter(c=>(c.box||0)>=1).map(c=>c.id));
   const fresh = shuffle(all.filter(c=>(c.box||0)<1).map(c=>c.id));
@@ -2268,10 +2291,18 @@ function startMemorize(sid){
   const all = subjCards(sid,'card');
   if(!all.length){ toast('カードがありません'); return }
   const n = Math.min(30, all.length);
+  if(memOrderOf(sid)==='add'){
+    const q = memorizePickOrdered(sid, n);
+    if(!q.length){ toast('カードがありません'); return }
+    lastMemOrder = q.join(',');
+    sess = { mode:'memorize', sid, q, i:0, flip:false, ok:0, order:'add' };
+    openSess();
+    return;
+  }
   let q = memorizePick(sid, n);
   for(let k=0; k<8 && lastMemOrder && q.join(',')===lastMemOrder; k++) q = memorizePick(sid, n);
   lastMemOrder = q.join(',');
-  sess = { mode:'memorize', sid, q, i:0, flip:false, ok:0 };
+  sess = { mode:'memorize', sid, q, i:0, flip:false, ok:0, order:'rand' };
   openSess();
 }
 function againSess(){
@@ -2382,7 +2413,7 @@ function renderSess(){
       <button class="btn block" style="margin-top:8px" onclick="closeSess()">終わる</button>`;
     return;
   }
-  cnt.textContent = (sess.i+1)+' / '+sess.q.length;
+  cnt.textContent = (sess.i+1)+' / '+sess.q.length + ((sess.mode==='memorize' && sess.order==='add') ? '・追加順' : '');
   if(sess.mode==='memorize'){
     body.innerHTML = `<div class="flip" onclick="flipCard()">
         <div class="flip-in">${sess.flip
