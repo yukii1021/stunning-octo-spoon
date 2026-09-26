@@ -299,6 +299,11 @@ a{color:var(--accent)}
 .mini{flex:1;background:var(--bg-elev-2);border:1px solid var(--line);border-radius:12px;padding:10px;text-align:center}
 .mini b{display:block;font-size:20px}
 .mini span{font-size:11.5px;color:var(--text-mute)}
+.mini.tap{cursor:pointer;border-color:rgba(248,113,113,.35)}
+.mini.tap:active{transform:scale(.97)}
+.ang{margin-top:10px;background:var(--bg-elev-2);border:1px solid var(--line);border-radius:12px;padding:10px;font-size:13px;line-height:1.75;text-align:left}
+.ang b{display:block;font-size:11.5px;color:var(--accent);margin-bottom:4px;letter-spacing:.04em}
+.ang + .ang{margin-top:8px}
 .deck-prob{background:var(--bg-elev);border:1px solid var(--line);border-radius:14px;padding:14px}
 .pq{font-size:16px;line-height:1.65;margin:8px 0;white-space:pre-wrap;word-break:break-word}
 .ans{font-size:17px;font-weight:700;white-space:pre-wrap;word-break:break-word}
@@ -622,7 +627,7 @@ a{color:var(--accent)}
     </div>
 
 
-    <div class="hint" style="text-align:center;margin-top:16px">StudyTime v2.11 · ローカル保存＋GitHub自動バックアップ</div>
+    <div class="hint" style="text-align:center;margin-top:16px">StudyTime v2.12 · ローカル保存＋GitHub自動バックアップ</div>
   </div>
 
 </div>
@@ -754,7 +759,8 @@ a{color:var(--accent)}
   <h3 id="card-modal-title">カードを編集</h3>
   <div class="field"><label id="cf-label">表</label><textarea id="c-f" rows="2"></textarea></div>
   <div class="field"><label id="cb-label">裏</label><textarea id="c-b" rows="2"></textarea></div>
-  <div class="field" id="cx-wrap"><label>解説</label><textarea id="c-x" rows="2"></textarea></div>
+  <div class="field" id="cx-wrap"><label id="cx-label">解説</label><textarea id="c-x" rows="2"></textarea></div>
+  <div class="field" id="cy-wrap"><label>入試アングル</label><textarea id="c-y" rows="2"></textarea></div>
   <div class="field" id="ctag-wrap"><label>分野</label><input type="text" id="c-tag" /></div>
   <div class="field" id="cw-wrap"><label>ほかの選択肢</label><textarea id="c-w" rows="2" placeholder="まちがいの選択肢を3つまで"></textarea><div class="hint">ここに入れると4択になります。1行に1つ、または「/」で区切って書きます</div></div>
   <div class="row">
@@ -1850,8 +1856,8 @@ const deckSorts = {}, deckShuffle = {};
 let lastMemOrder = '';
 const DECK_KIND_RULES = [
   [/数学|算数|物理/, ['prob']],
-  [/化学|地理|英語|英単語/, ['card','prob']],
-  [/国語|古文|漢文|現代文|世界史|日本史|社会|生物|地学|公民|倫理|政治|経済/, ['card']]
+  [/化学|地理|英語|英単語|国語|古文|漢文|現代文/, ['card','prob']],
+  [/世界史|日本史|社会|生物|地学|公民|倫理|政治|経済/, ['card']]
 ];
 function deckKinds(s){ const n = (s&&s.name)||''; for(const r of DECK_KIND_RULES){ if(r[0].test(n)) return r[1].slice() } return ['card','prob'] }
 function kindLabel(k){ return k==='card' ? '単語カード' : '問題' }
@@ -1866,6 +1872,7 @@ function probDoneToday(sid){ const t = todayKey(); return subjCards(sid,'prob').
 function cardStats(sid, kind){ const cs = subjCards(sid, kind);
   return { total:cs.length, learned:cs.filter(c=>(c.box||0)>=1).length, due:dueCards(sid, kind).length,
            weak:cs.filter(c=>(c.n||0)>0 && (c.box||0)===0).length } }
+function weakCards(sid, kind){ return subjCards(sid, kind||'prob').filter(c=>(c.n||0)>0 && (c.box||0)===0) }
 function streakDays(sid){ const st = (state.streak||{})[sid]; if(!st||!st.d) return 0;
   const t = todayKey(); return (st.d===t || st.d===addDaysKey(-1)) ? (st.n||0) : 0 }
 function bumpStreak(sid){ state.streak = state.streak||{}; const t = todayKey();
@@ -1877,6 +1884,13 @@ function dueInDays(due){ if(!due) return 0; const a = new Date(due+'T00:00:00'),
   const n = Math.round((a-b)/DAY_MS); return n<0?0:n }
 function gradeCard(c, g){
   const t = todayKey(), again = (c.grDate===t);   // 今日すでに判定済みか
+  if(g==='retry'){
+    // 要復習の練習で正解した場合：1発目で正解したのと同じ扱いにはしない（box を上げない）
+    c.n = (c.n||0)+1; c.last = t; c.retry = (c.retry||0)+1;
+    c.due = addDaysKey(1);
+    saveState();
+    return false;
+  }
   c.n = (c.n||0)+1; c.last = t;
   if(g==='ok'){
     if(!again){ c.box = Math.min((c.box||0)+1, SRS_STEPS.length-1); c.due = addDaysKey(SRS_STEPS[c.box]) }
@@ -1925,7 +1939,7 @@ function setDeckTab(t){ deckTab = t; renderDeck() }
 function deckTabsHTML(s){
   const ks = deckKinds(s), t = [['today','今日']];
   if(ks.indexOf('card')>=0) t.push(['card','単語']);
-  if(ks.indexOf('prob')>=0) t.push(['prob','問題']);
+  if(ks.indexOf('prob')>=0){ t.push(['prob','問題']); t.push(['weak','要復習']); }
   t.push(['add','追加']);
   return t.map(x=>`<button data-t="${x[0]}" class="${deckTab===x[0]?'on':''}" onclick="setDeckTab('${x[0]}')">${x[1]}</button>`).join('');
 }
@@ -1962,6 +1976,7 @@ function renderDeck(){
   pane.innerHTML = deckTab==='add' ? deckAdd()
     : deckTab==='card' ? deckList('card')
     : deckTab==='prob' ? deckList('prob')
+    : deckTab==='weak' ? deckWeak()
     : deckToday();
   if(deckTab==='card' || deckTab==='prob'){
     const q = document.getElementById('deck-search');
@@ -2002,13 +2017,38 @@ function deckToday(){
     <div class="row" style="gap:8px;margin-top:14px">
       <div class="mini"><b>${st.total}</b><span>問題</span></div>
       <div class="mini"><b>${st.learned}</b><span>解けた</span></div>
-      <div class="mini"><b>${st.weak}</b><span>要復習</span></div>
+      <button class="mini${st.weak?' tap':''}" onclick="openWeak('${deckSid}')"><b>${st.weak}</b><span>要復習</span></button>
     </div>
     <button class="btn primary block" style="margin-top:14px" onclick="startProbSession('${deckSid}')">ランダム演習</button>
     <button class="btn block" style="margin-top:8px" onclick="setDeckTab('prob')">自由演習</button>`);
     }
   }
   return out.join(two ? '<div style="height:16px"></div>' : '');
+}
+function openWeak(sid){
+  const n = weakCards(sid,'prob').length;
+  if(!n){ toast('要復習の問題はまだありません'); return }
+  deckTab = 'weak'; renderDeck();
+}
+function deckWeak(){
+  const cs = weakCards(deckSid,'prob');
+  if(!cs.length) return `<div class="empty">要復習の問題はありません。<br>まちがえた問題がここにたまります。</div>`;
+  return `<div class="hint">まちがえた問題 <b>${cs.length}件</b>。ここでとき直しても「1発目で正解」と同じ扱いにはなりません（要復習に残したまま、練習した回数だけ記録します）。</div>
+  <button class="btn primary block" style="margin-top:10px" onclick="startWeakSession('${deckSid}')">まとめて挑戦（${Math.min(20,cs.length)}問）</button>
+  <div style="height:12px"></div>` + cs.map(c=>`<div class="crow">
+    <div style="flex:1;min-width:0">
+      <div class="cf">${escapeHtml(c.f)}</div>
+      <div class="cb">${escapeHtml(c.b||'')}</div>
+      <div class="ct">${c.tag?escapeHtml(c.tag)+' · ':''}まちがえ ${c.n||0}回${(c.retry||0)>0?' · 練習'+c.retry+'回':''}</div>
+    </div>
+    <button class="icon-btn" onclick="startCard2('${c.id}',true)" title="挑戦">▶</button>
+  </div>`).join('');
+}
+function startWeakSession(sid){
+  const cs = weakCards(sid,'prob');
+  if(!cs.length){ toast('要復習の問題がありません'); return }
+  sess = { mode:'prob', sid, q:shuffle(cs.map(c=>c.id)).slice(0,20), i:0, revealed:false, ok:0, retry:true };
+  openSess();
 }
 function sortOpts(kind){
   return kind==='prob'
@@ -2056,7 +2096,7 @@ function deckAdd(){
   const s = findSubject(deckSid); if(!s) return '';
   const ks = deckKinds(s), two = ks.length>1, kind = addKind;
   const hint = kind==='card'
-    ? '1行に1件、「表 | 裏」の形で貼り付けてください。<br>例：apple | りんご'
+    ? '1行に1件、「表 | 裏 | 基本アングル | 入試アングル」の形で貼り付けてください（うしろ2つは省略できます）。<br>例：apple | りんご<br>例：あく | ①十分満足する ②飽きる | 「あかず」は「飽きない」 | 「あかで」「あかなくに」も頻出'
     : '1行に1問「問題 | 答え | 解説 | 分野」で貼り付けます。解説と分野は省略できます。<br>長い問題は、空行で区切って「---」の行をはさむ形でも登録できます。<br>4択にしたいときは、うしろに「|」で区切って、まちがいの選択肢を3つまで足します。「/」で区切って書きます。<br><b>整序（語句をならべかえる問題）</b>は、分野を「整序」で始め、答えを「/」で区切って語句ごとに書きます。下に出た語句をタップして並べる練習になります。';
   const ph = kind==='card' ? 'apple | りんご\nbook | 本' : '2x+3=11 | x=4 | 3を移項して 2x=8 | 一次方程式';
   return `${two?`<div class="card" style="margin-bottom:12px">
@@ -2070,6 +2110,8 @@ function deckAdd(){
       <h2>1件ずつ追加</h2>
       <div class="field"><label>${kind==='card'?'表':'問題'}</label><textarea id="nc-f" rows="2" placeholder="${kind==='card'?'例：apple':'例：2x+3=11 のとき x を求めよ'}"></textarea></div>
       <div class="field"><label>${kind==='card'?'裏':'答え'}</label><textarea id="nc-b" rows="2" placeholder="${kind==='card'?'例：りんご':'例：x=4'}"></textarea></div>
+      ${kind==='card'?`<div class="field"><label>基本アングル</label><textarea id="nc-x" rows="2"></textarea></div>
+      <div class="field"><label>入試アングル</label><textarea id="nc-y" rows="2"></textarea></div>`:''}
       ${kind==='prob'?`<div class="field"><label>解説</label><textarea id="nc-x" rows="2"></textarea></div>
       <div class="field"><label>分野</label><input type="text" id="nc-tag" placeholder="例：無機 / 二次関数" /></div>
       <div class="field"><label>ほかの選択肢</label><textarea id="nc-w" rows="2" placeholder="まちがいの選択肢を3つまで"></textarea><div class="hint">ここに入れると4択になります。1行に1つ、または「/」で区切って書きます</div></div>`:''}
@@ -2085,11 +2127,15 @@ function deckAdd(){
 function setDeckKind(k){ addKind = k; renderDeck() }
 function newCard(o){
   return Object.assign({ id:uid(), sid:deckSid, kind:addKind,
-    f:'', b:'', x:'', tag:'', w:[], box:0, n:0, due:todayKey(), u:Date.now() }, o) }
+    f:'', b:'', x:'', y:'', tag:'', w:[], box:0, n:0, due:todayKey(), u:Date.now() }, o) }
 function addCardManual(){
   const f = document.getElementById('nc-f').value.trim(); if(!f){ toast('内容を入力してください'); return }
   const kind = addKind;
   const c = newCard({ f, b:(document.getElementById('nc-b').value||'').trim() });
+  if(kind==='card'){
+    const xEl = document.getElementById('nc-x'), yEl = document.getElementById('nc-y');
+    c.x = xEl ? xEl.value.trim() : ''; c.y = yEl ? yEl.value.trim() : '';
+  }
   if(kind==='prob'){ c.x = (document.getElementById('nc-x').value||'').trim(); c.tag = (document.getElementById('nc-tag').value||'').trim();
     const wEl = document.getElementById('nc-w'); c.w = wEl ? splitWrongs(wEl.value) : [] }
   state.cards = state.cards||[]; state.cards.push(c);
@@ -2134,7 +2180,7 @@ function parseBulk(text, kind){
     if(kind==='prob') out.push(probRec(p));
     else if(p.length===1){ const m = ln.match(/^(.+?)[\s　]+(.+)$/);
       if(m) out.push({ f:m[1], b:m[2] }); else out.push({ f:p[0], b:'' }) }
-    else out.push({ f:p[0], b:p.slice(1).join(',').trim() });
+    else out.push({ f:p[0], b:p[1]||'', x:p[2]||'', y:p[3]||'' });
   });
   return out;
 }
@@ -2153,15 +2199,18 @@ function editCard(id){
   cardEditId = id;
   const kind = cardKind(c);
   document.getElementById('card-modal-title').textContent = (kind==='card'?'単語カードを編集':'問題を編集');
-  document.getElementById('cf-label').textContent = kind==='card'?'表':'問題';
-  document.getElementById('cb-label').textContent = kind==='card'?'裏':'答え';
+  document.getElementById('cf-label').textContent = kind==='card'?'表（古語）':'問題';
+  document.getElementById('cb-label').textContent = kind==='card'?'裏（意味）':'答え';
+  document.getElementById('cx-label').textContent = kind==='card'?'基本アングル':'解説';
   document.getElementById('c-f').value = c.f||'';
   document.getElementById('c-b').value = c.b||'';
   document.getElementById('c-x').value = c.x||'';
   document.getElementById('c-tag').value = c.tag||'';
   document.getElementById('c-w').value = (c.w||[]).join('\n');
   document.getElementById('cw-wrap').style.display = kind==='prob'?'block':'none';
-  document.getElementById('cx-wrap').style.display = kind==='prob'?'block':'none';
+  document.getElementById('cy-wrap').style.display = kind==='card'?'block':'none';
+  document.getElementById('c-y').value = c.y||'';
+  document.getElementById('cx-wrap').style.display = 'block';
   document.getElementById('ctag-wrap').style.display = kind==='prob'?'block':'none';
   document.getElementById('c-delete').style.display = 'inline-flex';
   document.getElementById('modal-card').classList.add('show');
@@ -2172,6 +2221,7 @@ function saveCard(){
   c.f = f; c.b = document.getElementById('c-b').value.trim();
   c.x = document.getElementById('c-x').value.trim();
   c.tag = document.getElementById('c-tag').value.trim();
+  const cyEl = document.getElementById('c-y'); if(cyEl && cardKind(c)==='card') c.y = cyEl.value.trim();
   if(cardKind(c)==='prob'){ const wEl = document.getElementById('c-w'); if(wEl) c.w = splitWrongs(wEl.value) }
   u_mark(c);
   saveState(); closeModal('modal-card'); renderDeck(); toast('保存しました');
@@ -2234,9 +2284,10 @@ function startProbSession(sid, ids){
   sess = { mode:'prob', sid, q:q.slice(0,20), i:0, revealed:false, ok:0 };
   openSess();
 }
-function startCard(id){
+function startCard(id){ startCard2(id, false) }
+function startCard2(id, retry){
   const c = (state.cards||[]).find(x=>x.id===id); if(!c) return;
-  sess = { mode:'prob', sid:c.sid, q:[id], i:0, revealed:false, ok:0 };
+  sess = { mode:'prob', sid:c.sid, q:[id], i:0, revealed:false, ok:0, retry:!!retry };
   openSess();
 }
 function findActivityBySubject(sid){ return state.activities.find(a=>a.subjectId===sid && !a.isSleep) || null }
@@ -2315,6 +2366,7 @@ function renderSess(){
     body.innerHTML = `<div class="deck-prob" style="text-align:center">
         <div class="deck-big">${sess.ok} / ${sess.q.length}</div>
         <div class="hint">${md==='memorize'?'おぼえた':'正解'}</div></div>
+      ${sess.retry?`<div class="hint" style="margin-top:10px">要復習の練習です。ここでの正解は1発目で正解したのと同じ扱いにはしていません（要復習に残ります）。</div>`:''}
       <button class="btn primary block" style="margin-top:16px" onclick="againSess()">もう一度</button>
       <button class="btn block" style="margin-top:8px" onclick="closeSess()">終わる</button>`;
     return;
@@ -2323,7 +2375,9 @@ function renderSess(){
   if(sess.mode==='memorize'){
     body.innerHTML = `<div class="flip" onclick="flipCard()">
         <div class="flip-in">${sess.flip
-          ? `<div class="fb">${escapeHtml(cur.b||'意味なし')}</div>`
+          ? `<div class="fb">${escapeHtml(cur.b||'意味なし')}</div>
+             ${cur.x?`<div class="ang"><b>基本アングル</b>${escapeHtml(cur.x)}</div>`:''}
+             ${cur.y?`<div class="ang"><b>入試アングル</b>${escapeHtml(cur.y)}</div>`:''}`
           : `<div class="ff">${escapeHtml(cur.f)}</div>`}</div>
         <div class="hint">${sess.flip?'':'タップして答えを見る'}</div></div>
       ${sess.flip?`<div class="row" style="gap:10px;margin-top:14px">
@@ -2363,6 +2417,7 @@ function renderSess(){
         let cls = '';
         if(sess.picked!=null){ if(c.ok) cls='good'; else if(sess.picked===n) cls='bad' }
         return `<button class="q-choice ${cls}" ${sess.picked!=null?'disabled':''} onclick="pickChoice(${n})">${escapeHtml(c.text)}</button>` }).join('')}</div>
+      ${(sess.picked!=null && cardKind(cur)==='card' && (cur.x||cur.y))?`${cur.x?`<div class="ang"><b>基本アングル</b>${escapeHtml(cur.x)}</div>`:''}${cur.y?`<div class="ang"><b>入試アングル</b>${escapeHtml(cur.y)}</div>`:''}`:''}
       ${sess.picked!=null?`<button class="btn primary block" style="margin-top:14px" onclick="gradeSession(${L[sess.picked].ok?'\'ok\'':'\'no\''})">次へ</button>`:''}`;
     return;
   }
@@ -2418,7 +2473,7 @@ function gradeSession(g){
   if(!sess) return;
   const cur = (state.cards||[]).find(c=>c.id===sess.q[sess.i]); if(!cur) return;
   const ok = (g===true || g==='ok');
-  gradeCard(cur, ok ? 'ok' : 'no');
+  gradeCard(cur, ok ? (sess.retry ? 'retry' : 'ok') : 'no');
   if(ok) sess.ok = (sess.ok||0)+1;
   sess.i++; sess.flip = false; sess.picked = null; sess.choices = null; sess.revealed = false; sess.exp = false;
   sess.ordTiles = null; sess.ordSlots = null; sess.ordDone = false; sess.ordOk = false;
