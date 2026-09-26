@@ -245,10 +245,10 @@ a{color:var(--accent)}
 
 /* Modal */
 .modal-bg{position:fixed;inset:0;background:var(--overlay);backdrop-filter:blur(8px);
-  display:none;align-items:flex-end;justify-content:center;z-index:100;padding:0}
+  display:none;align-items:center;justify-content:center;z-index:100;padding:16px}
 .modal-bg.show{display:flex}
-.modal{background:var(--bg-elev);border-top:1px solid var(--line);border-radius:20px 20px 0 0;
-  width:100%;max-width:640px;max-height:90vh;overflow-y:auto;padding:20px;padding-bottom:calc(20px + var(--safe-bot))}
+.modal{background:var(--bg-elev);border:1px solid var(--line);border-radius:20px;
+  width:100%;max-width:640px;max-height:88vh;overflow-y:auto;padding:20px;box-shadow:0 24px 64px rgba(0,0,0,.55)}
 @media (min-width:640px){
   .modal-bg{align-items:center;padding:16px}
   .modal{border-radius:20px;border:1px solid var(--line)}
@@ -266,7 +266,7 @@ a{color:var(--accent)}
 .cp-tones .t .u{position:absolute;right:4px;top:4px;width:6px;height:6px;border-radius:50%;background:currentColor;opacity:.7}
 
 
-/* ================= 教科ノート（v2.08） ================= */
+/* ================= 教科ノート（v2.09） ================= */
 .modal-bg{z-index:120}
 #toast{z-index:200}
 .deck{position:fixed;inset:0;background:var(--bg);z-index:80;display:none;flex-direction:column}
@@ -606,12 +606,8 @@ a{color:var(--accent)}
       <div class="hint">iPhoneとiPadに同じ3項目を設定すると、記録が自動で揃います。アプリを開いたとき・記録を変えた約3秒後・開いている間は30秒ごとに同期します。画面の色は端末ごとの設定です。</div>
     </div>
 
-    <div class="card">
-      <h2>危険な操作</h2>
-      <button class="btn danger block" onclick="clearAll()">すべての記録を削除</button>
-    </div>
 
-    <div class="hint" style="text-align:center;margin-top:16px">StudyTime v2.08 · ローカル保存＋GitHub自動バックアップ</div>
+    <div class="hint" style="text-align:center;margin-top:16px">StudyTime v2.09 · ローカル保存＋GitHub自動バックアップ</div>
   </div>
 
 </div>
@@ -733,7 +729,6 @@ a{color:var(--accent)}
   <div class="field dt-field"><label>終了時刻</label><input type="datetime-local" id="e-end" /></div>
   <div class="hint">終了時刻を空にすると「進行中」として扱われます。</div>
   <div class="row" style="margin-top:12px">
-    <button class="btn danger" onclick="deleteSession()">削除</button>
     <div class="spacer"></div>
     <button class="btn ghost" onclick="closeModal('modal-session')">キャンセル</button>
     <button class="btn primary" onclick="saveSession()">保存</button>
@@ -1530,7 +1525,7 @@ function renderSubjects(){
   } else {
     el.innerHTML = state.subjects.map(s=>{
       const nc = subjCards(s.id,'card').length, np = subjCards(s.id,'prob').length;
-      const d = dueCards(s.id,'card').length + (np?1:0);
+      const d = dueCards(s.id,'card').length + (np && !probDoneToday(s.id) ? 1 : 0);
       const pill = (nc||np) ? (d>0 ? `<span class="pill hot">今日 ${d}</span>` : `<span class="pill">✓</span>`) : '';
       return `
       <div class="subj-row" onclick="openDeck('${s.id}')">
@@ -1733,13 +1728,6 @@ function saveSession(){
   renderAll();
   toast('保存しました');
 }
-function deleteSession(){
-  if(!confirm('この記録を削除しますか?')) return;
-  state.sessions = state.sessions.filter(x=>x.id!==editingSessionId);
-  saveState();
-  closeModal('modal-session');
-  renderAll();
-}
 let recentOpen = false;
 function recentMore(){ recentLimit += RECENT_STEP; renderRecent(); }
 const RECENT_PREVIEW = 3;
@@ -1840,17 +1828,7 @@ function importJSON(ev){
   reader.readAsText(file);
   ev.target.value='';
 }
-function clearAll(){
-  if(!confirm('本当にすべての記録を削除しますか?（活動カテゴリー・教科・目標は残ります）')) return;
-  if(!confirm('最終確認: すべてのセッション記録が消えます。')) return;
-  state.sessions = [];
-  saveState();
-  renderAll();
-  toast('削除しました');
-}
-
-
-/* ================= 教科ノート（v2.08） ================= */
+/* ================= 教科ノート（v2.09） ================= */
 const SRS_STEPS = [0,1,2,4,7,14,30,60];
 let deckSid = null, deckTab = 'today', sess = null, cardEditId = null, addKind = 'card';
 const deckSorts = {}, deckShuffle = {};
@@ -1869,6 +1847,7 @@ function mdShort(d){ if(!d) return '—'; const p = String(d).split('-'); return
 function cardKind(c){ return (c && c.kind==='card') ? 'card' : 'prob' }
 function subjCards(sid, kind){ const a = (state.cards||[]).filter(c=>c.sid===sid); return kind ? a.filter(c=>cardKind(c)===kind) : a }
 function dueCards(sid, kind){ const t = todayKey(); return subjCards(sid, kind).filter(c=>(c.due||'0000-01-01')<=t) }
+function probDoneToday(sid){ const t = todayKey(); return subjCards(sid,'prob').some(c=>c.last===t) }
 function cardStats(sid, kind){ const cs = subjCards(sid, kind);
   return { total:cs.length, learned:cs.filter(c=>(c.box||0)>=1).length, due:dueCards(sid, kind).length,
            weak:cs.filter(c=>(c.n||0)>0 && (c.box||0)===0).length } }
@@ -1898,7 +1877,7 @@ function dailyPick(sid){
   const t = todayKey(), cs = subjCards(sid,'prob'); if(!cs.length) return null;
   const due = cs.filter(c=>(c.due||'0000-01-01')<=t);
   const pool = (due.length?due:cs).slice().sort((a,b)=>
-    (a.box||0)-(b.box||0) || String(a.last||'').localeCompare(String(b.last||'')) || String(a.id).localeCompare(String(b.id)));
+    ((a.last===t)?1:0)-((b.last===t)?1:0) || (a.box||0)-(b.box||0) || String(a.last||'').localeCompare(String(b.last||'')) || String(a.id).localeCompare(String(b.id)));
   const weak = pool.slice(0, Math.min(5, pool.length));
   const dn = Math.floor(new Date(t+'T00:00:00').getTime()/DAY_MS);
   return weak[dn % weak.length];
@@ -1943,7 +1922,7 @@ function renderDeck(){
   if(ks.indexOf(addKind)<0) addKind = ks[0];
   const two = ks.indexOf('card')>=0 && ks.indexOf('prob')>=0;
   const stc = cardStats(deckSid,'card'), stp = cardStats(deckSid,'prob');
-  const todo = stc.due + (stp.total?1:0);
+  const todo = stc.due + (stp.total && !probDoneToday(deckSid) ? 1 : 0);
   const counts = two ? `単語 ${stc.total}件 · 問題 ${stp.total}件`
     : (ks.indexOf('card')>=0 ? `単語カード · 全${stc.total}件` : `問題 · 全${stp.total}件`);
   const prog = ks.indexOf('card')>=0 ? (stc.total?Math.round(stc.learned/stc.total*100):0)
@@ -1987,7 +1966,7 @@ function deckToday(){
     } else {
       const n = st.due;
       out.push(`<div class="deck-box"><div class="deck-big">${n}</div>
-        <div class="hint" style="text-align:center">今日の分</div></div>
+        <div class="hint" style="text-align:center">今日の分（${mdShort(todayKey())}）</div></div>
       <button class="btn primary block" onclick="startMemorize('${deckSid}')">暗記モード</button>
       <button class="btn block" style="margin-top:8px" ${st.total>=4?'':'disabled'} onclick="startQuiz('${deckSid}')">テストモード</button>
       ${st.total>=4?'':'<div class="hint" style="text-align:center;margin-top:8px">テストモードはカードが4件以上で使えます</div>'}
@@ -2233,8 +2212,17 @@ function startCard(id){
   sess = { mode:'prob', sid:c.sid, q:[id], i:0, revealed:false, ok:0 };
   openSess();
 }
+function findActivityBySubject(sid){ return state.activities.find(a=>a.subjectId===sid && !a.isSleep) || null }
+function switchToSubjectActivity(sid){
+  const t = findActivityBySubject(sid); if(!t) return false;
+  const cur = currentSession();
+  if(cur && cur.activityId===t.id) return false;
+  startActivity(t.id);
+  return true;
+}
 function openSess(){
   const s = findSubject(sess.sid);
+  switchToSubjectActivity(sess.sid);
   document.getElementById('sess-title').textContent = s?s.name:'';
   document.getElementById('deck-view').classList.remove('show');
   document.getElementById('sess-view').classList.add('show');
