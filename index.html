@@ -266,7 +266,7 @@ a{color:var(--accent)}
 .cp-tones .t .u{position:absolute;right:4px;top:4px;width:6px;height:6px;border-radius:50%;background:currentColor;opacity:.7}
 
 
-/* ================= 教科ノート（v2.03） ================= */
+/* ================= 教科ノート（v2.04） ================= */
 .modal-bg{z-index:120}
 #toast{z-index:200}
 .deck{position:fixed;inset:0;background:var(--bg);z-index:80;display:none;flex-direction:column}
@@ -608,7 +608,7 @@ a{color:var(--accent)}
       <button class="btn danger block" onclick="clearAll()">すべての記録を削除</button>
     </div>
 
-    <div class="hint" style="text-align:center;margin-top:16px">StudyTime v2.03 · ローカル保存＋GitHub自動バックアップ</div>
+    <div class="hint" style="text-align:center;margin-top:16px">StudyTime v2.04 · ローカル保存＋GitHub自動バックアップ</div>
   </div>
 
 </div>
@@ -1839,10 +1839,10 @@ function clearAll(){
 }
 
 
-/* ================= 教科ノート（v2.03） ================= */
+/* ================= 教科ノート（v2.04） ================= */
 const SRS_STEPS = [0,3,7,14,30,60,120];
 let deckSid = null, deckTab = 'today', sess = null, cardEditId = null, addKind = 'card';
-const deckSorts = {};
+const deckSorts = {}, deckShuffle = {};
 const DECK_KIND_RULES = [
   [/数学|算数|物理/, ['prob']],
   [/化学|地理|英語|英単語/, ['card','prob']],
@@ -1886,11 +1886,18 @@ function dailyPick(sid){
 }
 function shuffle(a){ for(let i=a.length-1;i>0;i--){ const j = Math.floor(Math.random()*(i+1)); const t=a[i]; a[i]=a[j]; a[j]=t } return a }
 function deckSortOf(k){ return deckSorts[k]||'add' }
-function setDeckSort(k,v){ deckSorts[k]=v; renderDeck() }
+function shuffleKey(kind){ return deckSid+'|'+kind }
+function newShuffle(kind){ const a = subjCards(deckSid, kind).map(c=>c.id); shuffle(a); deckShuffle[shuffleKey(kind)] = a; return a }
+function setDeckSort(k,v){ if(v==='rand') newShuffle(k); deckSorts[k]=v; renderDeck() }
 function sortCards(cs, kind){
   const m = deckSortOf(kind), a = cs.slice();
   if(m==='kana') a.sort((x,y)=>String(x.f||'').localeCompare(String(y.f||''),'ja'));
   else if(m==='tag') a.sort((x,y)=>String(x.tag||'').localeCompare(String(y.tag||''),'ja') || String(x.f||'').localeCompare(String(y.f||''),'ja'));
+  else if(m==='rand'){
+    const k = shuffleKey(kind), ord = (deckShuffle[k]&&deckShuffle[k].length) ? deckShuffle[k] : newShuffle(kind);
+    const ix = {}; ord.forEach((id,i)=>{ ix[id]=i });
+    a.sort((x,y)=>(ix[x.id]==null?1e9:ix[x.id])-(ix[y.id]==null?1e9:ix[y.id]))
+  }
   return a;
 }
 
@@ -1963,7 +1970,7 @@ function deckToday(){
       out.push(`<div class="deck-box"><div class="deck-big">${n}</div>
         <div class="hint" style="text-align:center">今日の分（${mdShort(todayKey())}）</div></div>
       <button class="btn primary block" ${n?'':'disabled'} onclick="startMemorize('${deckSid}')">暗記モード（めくる）</button>
-      <button class="btn block" style="margin-top:8px" ${st.total>=4?'':'disabled'} onclick="startQuiz('${deckSid}')">テストモード（4択）</button>
+      <button class="btn block" style="margin-top:8px" ${st.total>=4?'':'disabled'} onclick="startQuiz('${deckSid}')">テストモード（4択・ランダム出題）</button>
       ${st.total>=4?'':'<div class="hint" style="text-align:center;margin-top:8px">テストモードはカードが4件以上で使えます</div>'}
       ${n?'':'<div class="hint" style="text-align:center;margin-top:8px">今日の分は終わりです</div>'}`);
     }
@@ -1984,15 +1991,16 @@ function deckToday(){
       <div class="mini"><b>${st.learned}</b><span>解けた</span></div>
       <div class="mini"><b>${st.weak}</b><span>要復習</span></div>
     </div>
-    <button class="btn block" style="margin-top:14px" onclick="setDeckTab('prob')">自由演習（一覧から選ぶ）</button>`);
+    <button class="btn primary block" style="margin-top:14px" onclick="startProbSession('${deckSid}')">ランダム演習（${Math.min(20,st.total)}問を順に出題）</button>
+    <button class="btn block" style="margin-top:8px" onclick="setDeckTab('prob')">自由演習（一覧から選ぶ）</button>`);
     }
   }
   return out.join(two ? '<div style="height:16px"></div>' : '');
 }
 function sortOpts(kind){
   return kind==='prob'
-    ? [['add','追加順','登録した順'],['kana','五十音順','名前の順'],['tag','分野順','分野ごとにまとめる']]
-    : [['add','追加順','登録した順'],['kana','五十音順','名前の順']];
+    ? [['add','追加順','登録した順'],['kana','五十音順','名前の順'],['tag','分野順','分野ごとにまとめる'],['rand','ランダム','出る順番が毎回変わります']]
+    : [['add','追加順','登録した順'],['kana','五十音順','名前の順'],['rand','ランダム','出る順番が毎回変わります']];
 }
 function deckList(kind){
   const os = sortOpts(kind);
@@ -2153,14 +2161,21 @@ function deleteCard(id){
 function startMemorize(sid){
   const q = dueCards(sid,'card').map(c=>c.id);
   if(!q.length){ toast('今日の分は終わりです'); return }
-  sess = { mode:'memorize', sid, q:q.slice(0,30), i:0, flip:false, ok:0 };
+  sess = { mode:'memorize', sid, q:shuffle(q).slice(0,30), i:0, flip:false, ok:0 };
   openSess();
 }
 function startQuiz(sid){
   const cs = subjCards(sid,'card');
   if(cs.length<4){ toast('カードが4件以上必要です'); return }
   const due = dueCards(sid,'card').map(c=>c.id);
-  sess = { mode:'quiz', sid, q:(due.length?due:cs.map(c=>c.id)).slice(0,20), i:0, ok:0, picked:null, choices:null };
+  sess = { mode:'quiz', sid, q:shuffle(due.length?due.slice():cs.map(c=>c.id)).slice(0,20), i:0, ok:0, picked:null, choices:null };
+  openSess();
+}
+function startProbSession(sid, ids){
+  let q = (ids&&ids.length) ? ids.slice() : subjCards(sid,'prob').map(c=>c.id);
+  q = shuffle(q);
+  if(!q.length){ toast('問題がありません'); return }
+  sess = { mode:'prob', sid, q:q.slice(0,20), i:0, revealed:false, ok:0 };
   openSess();
 }
 function startCard(id){
