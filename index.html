@@ -266,7 +266,7 @@ a{color:var(--accent)}
 .cp-tones .t .u{position:absolute;right:4px;top:4px;width:6px;height:6px;border-radius:50%;background:currentColor;opacity:.7}
 
 
-/* ================= 教科ノート（v2.05） ================= */
+/* ================= 教科ノート（v2.06） ================= */
 .modal-bg{z-index:120}
 #toast{z-index:200}
 .deck{position:fixed;inset:0;background:var(--bg);z-index:80;display:none;flex-direction:column}
@@ -310,6 +310,7 @@ a{color:var(--accent)}
 .q-choice{min-height:52px;border-radius:12px;border:1px solid var(--line);background:var(--bg-elev);color:var(--text);font-size:15px;font-weight:600;padding:10px 12px;text-align:left}
 .q-choice.good{background:#16a34a;border-color:#16a34a;color:#fff}
 .q-choice.bad{background:#dc2626;border-color:#dc2626;color:#fff}
+.q-exp{font-size:13.5px;line-height:1.75;color:var(--text);white-space:pre-wrap;word-break:break-word;margin-top:10px}
 .crow{display:flex;align-items:center;gap:8px;padding:10px 0;border-bottom:1px solid var(--line)}
 .crow:last-child{border-bottom:none}
 .cf{font-size:15px;font-weight:600;line-height:1.35;word-break:break-word}
@@ -608,7 +609,7 @@ a{color:var(--accent)}
       <button class="btn danger block" onclick="clearAll()">すべての記録を削除</button>
     </div>
 
-    <div class="hint" style="text-align:center;margin-top:16px">StudyTime v2.05 · ローカル保存＋GitHub自動バックアップ</div>
+    <div class="hint" style="text-align:center;margin-top:16px">StudyTime v2.06 · ローカル保存＋GitHub自動バックアップ</div>
   </div>
 
 </div>
@@ -1840,8 +1841,8 @@ function clearAll(){
 }
 
 
-/* ================= 教科ノート（v2.05） ================= */
-const SRS_STEPS = [0,3,7,14,30,60,120];
+/* ================= 教科ノート（v2.06） ================= */
+const SRS_STEPS = [0,1,2,4,7,14,30,60];
 let deckSid = null, deckTab = 'today', sess = null, cardEditId = null, addKind = 'card';
 const deckSorts = {}, deckShuffle = {};
 const DECK_KIND_RULES = [
@@ -1868,13 +1869,21 @@ function bumpStreak(sid){ state.streak = state.streak||{}; const t = todayKey();
   if(st.d===t) return;
   st.n = (st.d===addDaysKey(-1)) ? (st.n||0)+1 : 1;
   st.d = t; state.streak[sid] = st; state.streakU = Date.now() }
+function dueInDays(due){ if(!due) return 0; const a = new Date(due+'T00:00:00'), b = new Date(todayKey()+'T00:00:00');
+  const n = Math.round((a-b)/DAY_MS); return n<0?0:n }
 function gradeCard(c, g){
-  c.n = (c.n||0)+1; c.last = todayKey();
-  if(g==='ok'){ c.box = Math.min((c.box||0)+1, SRS_STEPS.length-1); c.ok = (c.ok||0)+1; c.due = addDaysKey(SRS_STEPS[c.box]) }
-  else if(g==='hint'){ c.due = addDaysKey(2) }
+  const t = todayKey(), again = (c.grDate===t);   // 今日すでに判定済みか
+  c.n = (c.n||0)+1; c.last = t;
+  if(g==='ok'){
+    if(!again){ c.box = Math.min((c.box||0)+1, SRS_STEPS.length-1); c.due = addDaysKey(SRS_STEPS[c.box]) }
+    c.ok = (c.ok||0)+1;
+  }
+  else if(g==='hint'){ if(!again) c.due = addDaysKey(2) }
   else { c.box = 0; c.due = addDaysKey(1) }
+  c.grDate = t;
   bumpStreak(c.sid);
   saveState();
+  return again;
 }
 function dailyPick(sid){
   const t = todayKey(), cs = subjCards(sid,'prob'); if(!cs.length) return null;
@@ -2259,7 +2268,13 @@ function renderSess(){
         let cls = '';
         if(sess.picked!=null){ if(c.ok) cls='good'; else if(sess.picked===n) cls='bad' }
         return `<button class="q-choice ${cls}" ${sess.picked!=null?'disabled':''} onclick="pickChoice(${n})">${escapeHtml(c.text)}</button>` }).join('')}</div>
-      ${sess.picked!=null?`<button class="btn primary block" style="margin-top:14px" onclick="gradeSession(${L[sess.picked].ok?'\'ok\'':'\'no\''})">次へ</button>`:''}`;
+      ${sess.picked!=null?`<div class="card" style="margin-top:12px">
+          <h2>正解</h2><div class="ans">${escapeHtml((L.find(c=>c.ok)||{}).text||cur.b||'—')}</div>
+          ${cur.x?(sess.exp
+            ? `<div id="q-exp" class="q-exp">${escapeHtml(cur.x)}</div>`
+            : `<button class="btn block" style="margin-top:10px" onclick="showExp()">解説を見る</button>`):''}
+        </div>
+        <button class="btn primary block" style="margin-top:14px" onclick="gradeSession(${L[sess.picked].ok?'\'ok\'':'\'no\''})">次へ</button>`:''}`;
     return;
   }
   body.innerHTML = `<div class="deck-prob">${cur.tag?`<div class="hint">${escapeHtml(cur.tag)}</div>`:''}
@@ -2277,13 +2292,20 @@ function renderSess(){
 function flipCard(){ if(!sess) return; sess.flip = !sess.flip; renderSess() }
 function revealAnswer(){ if(!sess) return; sess.revealed = true; renderSess() }
 function pickChoice(n){ if(!sess || sess.picked!=null) return; sess.picked = n; renderSess() }
+function showExp(){ if(!sess) return; sess.exp = true; renderSess();
+  const el = document.getElementById('q-exp');
+  if(el && el.scrollIntoView){ try{ el.scrollIntoView({behavior:'smooth', block:'center'}) }catch(e){ el.scrollIntoView() } } }
 function gradeSession(g){
   if(!sess) return;
   const cur = (state.cards||[]).find(c=>c.id===sess.q[sess.i]); if(!cur) return;
   const ok = (g===true || g==='ok');
-  gradeCard(cur, ok ? 'ok' : (g==='hint' ? 'hint' : 'no'));
+  const again = gradeCard(cur, ok ? 'ok' : (g==='hint' ? 'hint' : 'no'));
   if(ok) sess.ok = (sess.ok||0)+1;
-  sess.i++; sess.flip = false; sess.picked = null; sess.choices = null; sess.revealed = false;
+  const d = dueInDays(cur.due);
+  toast(ok
+    ? (again ? ('今日はもう伸びません（次は '+mdShort(cur.due)+'）') : ('次は '+d+'日後（'+mdShort(cur.due)+'）'))
+    : ('次は '+(d<=0?'今日':(d+'日後'))+'（'+mdShort(cur.due)+'）'), 2600);
+  sess.i++; sess.flip = false; sess.picked = null; sess.choices = null; sess.revealed = false; sess.exp = false;
   renderSess();
 }
 
@@ -2542,12 +2564,12 @@ function switchView(name){
 /* ---------------- Utility ---------------- */
 function escapeHtml(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[c])}
 let toastTimer=null;
-function toast(msg){
+function toast(msg, ms){
   const el = document.getElementById('toast');
   el.textContent = msg;
   el.classList.add('show');
   clearTimeout(toastTimer);
-  toastTimer = setTimeout(()=>el.classList.remove('show'),1800);
+  toastTimer = setTimeout(()=>el.classList.remove('show'), ms||1800);
 }
 
 /* ---------------- Render all ---------------- */
