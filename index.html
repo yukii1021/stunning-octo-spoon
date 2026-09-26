@@ -162,6 +162,14 @@ a{color:var(--accent)}
 .act-btn .dot{width:16px;height:16px;border-radius:50%}
 .act-btn .n{font-size:12px;font-weight:600;text-align:center;line-height:1.15}
 .act-btn.current{border-color:var(--accent);background:var(--accent-soft)}
+.act-btn{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+.act-list.reordering{position:relative}
+@keyframes qcJiggle{0%{rotate:-1.6deg}50%{rotate:1.6deg}100%{rotate:-1.6deg}}
+.act-btn.jiggle{animation:qcJiggle .3s infinite ease-in-out}
+.act-btn.ghost{visibility:hidden;pointer-events:none}
+.act-btn.lifted{animation:none;rotate:0deg;box-shadow:0 14px 28px rgba(0,0,0,.35);border-color:var(--accent)}
+.quick-head{display:flex;align-items:center;gap:8px}
+.quick-head h2{flex:1;margin:0}
 
 /* History rows */
 .hist{display:flex;align-items:center;gap:10px;padding:10px 4px;border-bottom:1px solid var(--line)}
@@ -440,8 +448,12 @@ a{color:var(--accent)}
     </div>
 
     <div class="card">
-      <h2>クイック切替</h2>
+      <div class="quick-head">
+        <h2>クイック切替</h2>
+        <button class="btn sm primary" id="quick-done" onclick="exitReorder()" style="display:none">完了</button>
+      </div>
       <div class="group-tabs" id="quick-groups"></div>
+      <div class="hint" id="quick-hint">長押ししたまま動かすと並べ替えできます（iPhoneのホーム画面と同じ）。</div>
       <div class="act-list" id="quick-acts"></div>
     </div>
 
@@ -631,7 +643,7 @@ a{color:var(--accent)}
     </div>
 
 
-    <div class="hint" style="text-align:center;margin-top:16px">StudyTime v2.15 · ローカル保存＋GitHub自動バックアップ</div>
+    <div class="hint" style="text-align:center;margin-top:16px">StudyTime v2.16 · ローカル保存＋GitHub自動バックアップ</div>
   </div>
 
 </div>
@@ -738,7 +750,6 @@ a{color:var(--accent)}
   </div>
   <div class="row">
     <button class="btn danger" id="s-delete" onclick="deleteSubject()" style="display:none">削除</button>
-    <button class="btn ghost" id="s-strip" onclick="stripKatsuyo()" style="display:none">活用を消す</button>
     <div class="spacer"></div>
     <button class="btn ghost" onclick="closeModal('modal-subject')">キャンセル</button>
     <button class="btn primary" onclick="saveSubject()">保存</button>
@@ -1050,18 +1061,144 @@ function renderQuickSwitch(){
   const list = document.getElementById('quick-acts');
   const groups = ['すべて',...GROUPS];
   tabs.innerHTML = groups.map(g=>
-    `<button class="group-tab ${g===quickGroup?'active':''}" onclick="quickGroup='${g}';renderQuickSwitch()">${g}</button>`
+    `<button class="group-tab ${g===quickGroup?'active':''}" onclick="setQuickGroup('${g}')">${g}</button>`
   ).join('');
   const cur = currentSession();
   const acts = quickGroup==='すべて' ? state.activities : state.activities.filter(a=>a.group===quickGroup);
   list.innerHTML = acts.map(a=>{
     const isCur = cur && cur.activityId===a.id;
-    return `<button class="act-btn ${isCur?'current':''}" onclick="startActivity('${a.id}')">
+    return `<button class="act-btn ${isCur?'current':''}" data-id="${a.id}" onclick="quickTap(event,'${a.id}')">
       <span class="dot" style="background:${a.color}"></span>
       <span class="n">${escapeHtml(a.name)}</span>
     </button>`;
   }).join('') || '<div class="empty">この分類に活動がありません</div>';
+  if(reorderMode) applyJiggle();
 }
+
+/* ---- クイック切替: 長押しドラッグで並べ替え（iOS風） ---- */
+let reorderMode=false, qcDrag=null, qcTimer=null, qcStartPt=null, qcSuppress=false;
+const LP_MS=450;
+
+function setQuickGroup(g){ exitReorder(); quickGroup=g; renderQuickSwitch(); }
+function quickTap(e,id){
+  if(reorderMode || qcSuppress || qcDrag){ if(e&&e.preventDefault) e.preventDefault(); return }
+  startActivity(id);
+}
+function applyJiggle(){
+  const list=document.getElementById('quick-acts'); if(!list) return;
+  [...list.children].forEach((el,i)=>{
+    el.classList.add('jiggle');
+    el.style.animationDelay=(-(i%4)*70)+'ms';
+  });
+}
+function enterReorder(){
+  if(reorderMode) return;
+  reorderMode=true;
+  const list=document.getElementById('quick-acts');
+  if(list) list.classList.add('reordering');
+  applyJiggle();
+  const d=document.getElementById('quick-done'), h=document.getElementById('quick-hint');
+  if(d) d.style.display='inline-flex';
+  if(h) h.textContent='ドラッグで並べ替えています。終わったら「完了」。';
+  if(navigator.vibrate){ try{ navigator.vibrate(10) }catch(e){} }
+}
+function exitReorder(){
+  if(!reorderMode) return;
+  reorderMode=false;
+  if(qcDrag){ if(qcDrag.clone) qcDrag.clone.remove(); if(qcDrag.btn) qcDrag.btn.classList.remove('ghost'); qcDrag=null; }
+  const list=document.getElementById('quick-acts');
+  if(list){
+    list.classList.remove('reordering');
+    [...list.children].forEach(el=>{ el.classList.remove('jiggle'); el.style.animationDelay=''; });
+  }
+  const d=document.getElementById('quick-done'), h=document.getElementById('quick-hint');
+  if(d) d.style.display='none';
+  if(h) h.textContent='長押ししたまま動かすと並べ替えできます（iPhoneのホーム画面と同じ）。';
+  saveState();
+}
+function qcFlip(list,ghost,target,after){
+  const kids=[...list.children].filter(x=>x.classList.contains('act-btn') && x!==ghost);
+  const before=new Map(); kids.forEach(k=>before.set(k,k.getBoundingClientRect()));
+  if(after) target.after(ghost); else target.before(ghost);
+  kids.forEach(k=>{
+    const b=before.get(k), a=k.getBoundingClientRect();
+    const dx=b.left-a.left, dy=b.top-a.top;
+    if(dx||dy){
+      k.style.transition='none';
+      k.style.transform=`translate(${dx}px,${dy}px)`;
+      requestAnimationFrame(()=>{ k.style.transition='transform .16s ease'; k.style.transform=''; });
+    }
+  });
+}
+function qcBeginDrag(btn,x,y){
+  const list=document.getElementById('quick-acts'); if(!list||!btn||qcDrag) return;
+  const r=btn.getBoundingClientRect();
+  const clone=btn.cloneNode(true);
+  clone.classList.remove('jiggle'); clone.classList.add('lifted');
+  clone.style.position='fixed';
+  clone.style.left=r.left+'px'; clone.style.top=r.top+'px';
+  clone.style.width=r.width+'px'; clone.style.height=r.height+'px';
+  clone.style.margin='0'; clone.style.pointerEvents='none'; clone.style.zIndex='9999';
+  clone.style.transition='none'; clone.style.rotate='0deg';
+  document.body.appendChild(clone);
+  btn.classList.add('ghost');
+  qcDrag={btn:btn,clone:clone,sx:x,sy:y,list:list};
+  if(navigator.vibrate){ try{ navigator.vibrate(12) }catch(e){} }
+}
+function qcMoveTo(x,y){
+  const d=qcDrag; if(!d) return;
+  d.clone.style.transform=`translate(${x-d.sx}px,${y-d.sy}px) scale(1.06)`;
+  const el=document.elementFromPoint(x,y);
+  const t=el&&el.closest?el.closest('.act-btn'):null;
+  if(t && t!==d.btn && t.parentNode===d.list){
+    const r=t.getBoundingClientRect();
+    qcFlip(d.list,d.btn,t, y > r.top+r.height/2);
+  }
+}
+function qcEndDrag(){
+  const d=qcDrag; if(!d) return;
+  const list=d.list;
+  if(d.clone) d.clone.remove();
+  if(d.btn) d.btn.classList.remove('ghost');
+  qcDrag=null;
+  qcSuppress=true; setTimeout(()=>{ qcSuppress=false },350);
+  const ids=[...list.querySelectorAll('.act-btn')].map(b=>b.dataset.id);
+  const vis=new Set(ids), byId=new Map((state.activities||[]).map(a=>[a.id,a]));
+  let p=0;
+  state.activities=(state.activities||[]).map(a=> vis.has(a.id) ? byId.get(ids[p++]) : a).filter(Boolean);
+  saveState();
+}
+function initQuickReorder(){
+  const list=document.getElementById('quick-acts'); if(!list||list.dataset.rw) return;
+  list.dataset.rw='1';
+  list.addEventListener('contextmenu',e=>e.preventDefault());
+  list.addEventListener('pointerdown',e=>{
+    const btn=e.target.closest?e.target.closest('.act-btn'):null;
+    if(!btn) return;
+    if(e.pointerType==='mouse' && e.button!==0) return;
+    clearTimeout(qcTimer);
+    qcStartPt={x:e.clientX,y:e.clientY,btn:btn};
+    if(reorderMode){ qcBeginDrag(btn,e.clientX,e.clientY); return }
+    qcTimer=setTimeout(()=>{
+      qcTimer=null;
+      if(!qcStartPt) return;
+      enterReorder();
+      qcBeginDrag(qcStartPt.btn,qcStartPt.x,qcStartPt.y);
+    },LP_MS);
+  });
+  list.addEventListener('pointermove',e=>{
+    if(qcDrag){ e.preventDefault(); qcMoveTo(e.clientX,e.clientY); return }
+    if(qcStartPt && Math.hypot(e.clientX-qcStartPt.x,e.clientY-qcStartPt.y)>10){
+      clearTimeout(qcTimer); qcTimer=null; qcStartPt=null;
+    }
+  });
+  const end=()=>{ clearTimeout(qcTimer); qcTimer=null; qcStartPt=null; if(qcDrag) qcEndDrag(); };
+  list.addEventListener('pointerup',end);
+  list.addEventListener('pointercancel',end);
+  list.addEventListener('touchmove',e=>{ if(qcDrag) e.preventDefault() },{passive:false});
+}
+if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',initQuickReorder);
+else initQuickReorder();
 
 /* ---------------- Switch modal ---------------- */
 let switchGroup='すべて';
@@ -1595,7 +1732,6 @@ function openSubjectModal(id){
   renderColorPicker('s-colors', s.color, c=>{ document.getElementById('s-colors').dataset.color=c });
   document.getElementById('s-colors').dataset.color = s.color;
   document.getElementById('s-delete').style.display = id?'inline-flex':'none';
-  const _st=document.getElementById('s-strip'); if(_st) _st.style.display = id?'inline-flex':'none';
   document.getElementById('modal-subject').classList.add('show');
 }
 function saveSubject(){
@@ -1625,22 +1761,6 @@ function deleteSubject(){
   saveState();
   closeModal('modal-subject');
   renderAll();
-}
-
-/* 表の「【】」より後ろ（活用・品詞）をまとめて消す */
-function stripKatsuyo(){
-  if(!editingSubjectId) return;
-  const sid = editingSubjectId;
-  const cards = (state.cards||[]).filter(c=>c.sid===sid && cardKind(c)==='card');
-  const fix = f => String(f==null?'':f).replace(/^([\s\S]*?[】\]])([\s\S]*)$/,'$1').replace(/[\s\u3000]+$/,'');
-  const hit = cards.filter(c=>{ const f=c.f||''; return /[】\]]/.test(f) && fix(f) !== f; });
-  if(!hit.length){ toast('活用がついたカードはありません'); return; }
-  const ex = hit[0];
-  if(!confirm('「表」の「【】」より後ろ（活用・品詞）を消しますか？\n\n対象: '+hit.length+'枚\n例: '+ex.f+' → '+fix(ex.f))) return;
-  let n=0;
-  hit.forEach(c=>{ const nf=fix(c.f); if(nf){ c.f=nf; n++; } });
-  saveState(); renderAll();
-  toast(n+'枚の表から活用を消しました');
 }
 
 /* ---------------- Exams ---------------- */
