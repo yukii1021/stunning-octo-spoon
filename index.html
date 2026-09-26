@@ -631,7 +631,7 @@ a{color:var(--accent)}
     </div>
 
 
-    <div class="hint" style="text-align:center;margin-top:16px">StudyTime v2.14 · ローカル保存＋GitHub自動バックアップ</div>
+    <div class="hint" style="text-align:center;margin-top:16px">StudyTime v2.15 · ローカル保存＋GitHub自動バックアップ</div>
   </div>
 
 </div>
@@ -738,6 +738,7 @@ a{color:var(--accent)}
   </div>
   <div class="row">
     <button class="btn danger" id="s-delete" onclick="deleteSubject()" style="display:none">削除</button>
+    <button class="btn ghost" id="s-strip" onclick="stripKatsuyo()" style="display:none">活用を消す</button>
     <div class="spacer"></div>
     <button class="btn ghost" onclick="closeModal('modal-subject')">キャンセル</button>
     <button class="btn primary" onclick="saveSubject()">保存</button>
@@ -1594,6 +1595,7 @@ function openSubjectModal(id){
   renderColorPicker('s-colors', s.color, c=>{ document.getElementById('s-colors').dataset.color=c });
   document.getElementById('s-colors').dataset.color = s.color;
   document.getElementById('s-delete').style.display = id?'inline-flex':'none';
+  const _st=document.getElementById('s-strip'); if(_st) _st.style.display = id?'inline-flex':'none';
   document.getElementById('modal-subject').classList.add('show');
 }
 function saveSubject(){
@@ -1623,6 +1625,22 @@ function deleteSubject(){
   saveState();
   closeModal('modal-subject');
   renderAll();
+}
+
+/* 表の「【】」より後ろ（活用・品詞）をまとめて消す */
+function stripKatsuyo(){
+  if(!editingSubjectId) return;
+  const sid = editingSubjectId;
+  const cards = (state.cards||[]).filter(c=>c.sid===sid && cardKind(c)==='card');
+  const fix = f => String(f==null?'':f).replace(/^([\s\S]*?[】\]])([\s\S]*)$/,'$1').replace(/[\s\u3000]+$/,'');
+  const hit = cards.filter(c=>{ const f=c.f||''; return /[】\]]/.test(f) && fix(f) !== f; });
+  if(!hit.length){ toast('活用がついたカードはありません'); return; }
+  const ex = hit[0];
+  if(!confirm('「表」の「【】」より後ろ（活用・品詞）を消しますか？\n\n対象: '+hit.length+'枚\n例: '+ex.f+' → '+fix(ex.f))) return;
+  let n=0;
+  hit.forEach(c=>{ const nf=fix(c.f); if(nf){ c.f=nf; n++; } });
+  saveState(); renderAll();
+  toast(n+'枚の表から活用を消しました');
 }
 
 /* ---------------- Exams ---------------- */
