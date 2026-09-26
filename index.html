@@ -313,6 +313,21 @@ a{color:var(--accent)}
 .q-top{display:flex;align-items:flex-start;justify-content:space-between;gap:8px;margin-bottom:6px}
 .exp-btn{flex:none;border:1px solid var(--line);background:var(--bg-elev-2);color:var(--text);font-size:12.5px;font-weight:700;border-radius:999px;padding:6px 14px}
 .exp-text{font-size:15.5px;line-height:1.85;margin-top:10px;white-space:pre-wrap;word-break:break-word}
+.ord-slots{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px;min-height:56px;padding:12px;border-radius:16px;border:1px dashed var(--line-strong);background:var(--accent-soft)}
+.ord-slot{border:1px solid var(--line);background:var(--bg-elev);color:var(--text);font-size:16px;font-weight:700;border-radius:12px;padding:10px 14px;min-height:44px;animation:ordpop .16s ease-out}
+.ord-slot:active{transform:scale(.95)}
+.ord-slot.empty{min-width:58px;background:transparent;border-style:dashed;border-color:var(--line);pointer-events:none}
+.ord-slot.good{background:linear-gradient(135deg,#15803d,#22c55e);border-color:transparent;color:#fff}
+.ord-slot.bad{background:linear-gradient(135deg,#991b1b,#dc2626);border-color:transparent;color:#fff}
+.ord-pool{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px;padding-top:14px;border-top:1px solid var(--line)}
+.ord-tile{border:1px solid var(--line-strong);background:var(--bg-elev-2);color:var(--text);font-size:16px;font-weight:700;border-radius:12px;padding:10px 14px;min-height:44px;transition:transform .12s ease,opacity .18s ease}
+.ord-tile:active{transform:scale(.94)}
+.ord-tile.used{opacity:.18;border-style:dashed}
+.ord-bar{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:12px}
+.ord-bar .btn{padding:7px 12px;font-size:13px;border-radius:10px}
+@keyframes ordpop{from{transform:scale(.88);opacity:.35}to{transform:scale(1);opacity:1}}
+@keyframes ordshake{0%,100%{transform:translateX(0)}25%{transform:translateX(-4px)}75%{transform:translateX(4px)}}
+.ord-slots.bad-anim{animation:ordshake .3s}
 .crow{display:flex;align-items:center;gap:8px;padding:10px 0;border-bottom:1px solid var(--line)}
 .crow:last-child{border-bottom:none}
 .cf{font-size:15px;font-weight:600;line-height:1.35;word-break:break-word}
@@ -607,7 +622,7 @@ a{color:var(--accent)}
     </div>
 
 
-    <div class="hint" style="text-align:center;margin-top:16px">StudyTime v2.09 · ローカル保存＋GitHub自動バックアップ</div>
+    <div class="hint" style="text-align:center;margin-top:16px">StudyTime v2.10 · ローカル保存＋GitHub自動バックアップ</div>
   </div>
 
 </div>
@@ -2042,7 +2057,7 @@ function deckAdd(){
   const ks = deckKinds(s), two = ks.length>1, kind = addKind;
   const hint = kind==='card'
     ? '1行に1件、「表 | 裏」の形で貼り付けてください。<br>例：apple | りんご'
-    : '1行に1問「問題 | 答え | 解説 | 分野」で貼り付けます。解説と分野は省略できます。<br>長い問題は、空行で区切って「---」の行をはさむ形でも登録できます。<br>4択にしたいときは、うしろに「|」で区切って、まちがいの選択肢を3つまで足します。「/」で区切って書きます。';
+    : '1行に1問「問題 | 答え | 解説 | 分野」で貼り付けます。解説と分野は省略できます。<br>長い問題は、空行で区切って「---」の行をはさむ形でも登録できます。<br>4択にしたいときは、うしろに「|」で区切って、まちがいの選択肢を3つまで足します。「/」で区切って書きます。<br><b>整序（語句をならべかえる問題）</b>は、分野を「整序」で始め、答えを「/」で区切って語句ごとに書きます。下に出た語句をタップして並べる練習になります。';
   const ph = kind==='card' ? 'apple | りんご\nbook | 本' : '2x+3=11 | x=4 | 3を移項して 2x=8 | 一次方程式';
   return `${two?`<div class="card" style="margin-bottom:12px">
       <div class="hint">追加する種類</div>
@@ -2081,8 +2096,20 @@ function addCardManual(){
   addKind = kind;
   saveState(); renderDeck(); toast('追加しました');
 }
-function splitWrongs(s){
-  return String(s||'').split(/[\n\/、;]+/).map(x=>x.trim()).filter(x=>x).slice(0,3);
+function splitList(s){
+  return String(s||'').split(/[\n\/、;]+/).map(x=>x.trim()).filter(x=>x);
+}
+function splitWrongs(s){ return splitList(s).slice(0,3) }
+function isOrdField(s){ return /^整序/.test(String(s||'').trim()) }
+function probRec(p){
+  const tag = p[3]||'';
+  if(isOrdField(tag)){
+    let ord = splitList(p[1]), extra = [];
+    if(ord.length>1) extra = splitList(p[4]||'');
+    else ord = splitList(p[4]||'');
+    if(ord.length>1) return { f:p[0], b:ord.join(' '), x:p[2]||'', tag:tag, ord:ord, w:extra };
+  }
+  return { f:p[0], b:p[1]||'', x:p[2]||'', tag:tag, w:splitWrongs(p[4]||'') };
 }
 function splitFields(ln){
   if(ln.indexOf('|')>=0) return ln.split('|');
@@ -2096,7 +2123,7 @@ function parseBulk(text, kind){
     t.split(/\n\s*\n/).forEach(bl=>{
       bl = bl.trim(); if(!bl) return;
       const p = bl.split(/\n\s*-{3,}\s*\n/).map(x=>x.trim());
-      if(p[0]) out.push({ f:p[0], b:p[1]||'', x:p[2]||'', tag:p[3]||'', w:splitWrongs(p[4]||'') });
+      if(p[0]) out.push(probRec(p));
     });
     return out;
   }
@@ -2104,7 +2131,7 @@ function parseBulk(text, kind){
     ln = ln.trim(); if(!ln || ln.charAt(0)==='#') return;
     const p = splitFields(ln).map(x=>x.trim());
     if(!p[0]) return;
-    if(kind==='prob') out.push({ f:p[0], b:p[1]||'', x:p[2]||'', tag:p[3]||'', w:splitWrongs(p[4]||'') });
+    if(kind==='prob') out.push(probRec(p));
     else if(p.length===1){ const m = ln.match(/^(.+?)[\s　]+(.+)$/);
       if(m) out.push({ f:m[1], b:m[2] }); else out.push({ f:p[0], b:'' }) }
     else out.push({ f:p[0], b:p.slice(1).join(',').trim() });
@@ -2304,6 +2331,28 @@ function renderSess(){
         <button class="btn primary block" style="flex:1" onclick="gradeSession('ok')">覚えた</button></div>`:''}`;
     return;
   }
+  if(sess.mode==='prob' && cur.ord && cur.ord.length>1){
+    ordEnsure(cur);
+    const tagTxt = cur.tag ? escapeHtml(cur.tag) : '';
+    const expBtn = (sess.ordDone && cur.x) ? `<button class="exp-btn" onclick="showExp()">解説</button>` : '';
+    const slots = sess.ordSlots.map((k,n)=>{
+      if(k===null) return `<span class="ord-slot empty"></span>`;
+      let cls = '';
+      if(sess.ordDone) cls = (ordText(k)===(cur.ord||[])[n]) ? 'good' : 'bad';
+      return `<button class="ord-slot ${cls}" onclick="ordTap(${k})">${escapeHtml(ordText(k))}</button>` }).join('');
+    const pool = sess.ordTiles.map(t=>{
+      const used = sess.ordSlots.indexOf(t.k)>=0;
+      return `<button class="ord-tile${used?' used':''}" ${(used||sess.ordDone)?'disabled':''} onclick="ordTap(${t.k})">${escapeHtml(t.text)}</button>` }).join('');
+    body.innerHTML = `${(tagTxt||expBtn)?`<div class="q-top"><div class="hint" style="margin:0">${tagTxt}</div>${expBtn}</div>`:''}
+      <div class="flip" style="cursor:default"><div class="flip-in"><div class="ff">${escapeHtml(cur.f)}</div></div></div>
+      <div class="ord-slots${(sess.ordDone&&!sess.ordOk)?' bad-anim':''}">${slots}</div>
+      ${sess.ordDone?`<div class="hint" style="margin-top:10px">${sess.ordOk?'正解！':'せいかい： '+escapeHtml((cur.ord||[]).join(' '))}</div>`:''}
+      <div class="ord-pool">${pool}</div>
+      ${sess.ordDone?'':`<div class="ord-bar"><div class="hint" style="margin:0">あと ${sess.ordSlots.filter(x=>x===null).length} 語</div>
+        <div style="display:flex;gap:8px"><button class="btn" onclick="ordUndo()">1つ戻す</button><button class="btn" onclick="ordReset()">やり直す</button></div></div>`}
+      ${sess.ordDone?`<button class="btn primary block" style="margin-top:14px" onclick="gradeSession(${sess.ordOk?'\'ok\'':'\'no\''})">次へ</button>`:''}`;
+    return;
+  }
   if(sess.mode==='quiz' || (sess.mode==='prob' && cardChoices(cur))){
     if(!sess.choices || sess.choices.i!==sess.i) sess.choices = makeChoices(cur);
     const L = sess.choices.list;
@@ -2331,6 +2380,33 @@ function renderSess(){
 function flipCard(){ if(!sess) return; sess.flip = !sess.flip; renderSess() }
 function revealAnswer(){ if(!sess) return; sess.revealed = true; renderSess() }
 function pickChoice(n){ if(!sess || sess.picked!=null) return; sess.picked = n; renderSess() }
+function ordReset(){ if(!sess || sess.ordDone || !sess.ordSlots) return; sess.ordSlots = sess.ordSlots.map(()=>null); renderSess() }
+function ordUndo(){
+  if(!sess || sess.ordDone || !sess.ordSlots) return;
+  for(let i=sess.ordSlots.length-1;i>=0;i--){ if(sess.ordSlots[i]!==null){ sess.ordSlots[i]=null; renderSess(); return } }
+}
+function ordText(k){ const t = ((sess&&sess.ordTiles)||[]).find(x=>x.k===k); return t?t.text:'' }
+function ordEnsure(cur){
+  if(!sess.ordTiles){
+    const raw = (cur.ord||[]).map(t=>({text:t})).concat((cur.w||[]).map(t=>({text:t})));
+    sess.ordTiles = shuffle(raw).map((t,i)=>({ text:t.text, k:i }));
+  }
+  if(!sess.ordSlots) sess.ordSlots = new Array((cur.ord||[]).length).fill(null);
+  if(typeof sess.ordDone!=='boolean') sess.ordDone = false;
+}
+function ordTap(k){
+  if(!sess || sess.ordDone || !sess.ordSlots) return;
+  const i = sess.ordSlots.indexOf(k);
+  if(i>=0){ sess.ordSlots[i] = null; renderSess(); return }
+  const j = sess.ordSlots.indexOf(null); if(j<0) return;
+  sess.ordSlots[j] = k;
+  if(sess.ordSlots.indexOf(null)<0){
+    const cur = (state.cards||[]).find(c=>c.id===sess.q[sess.i]);
+    sess.ordDone = true;
+    sess.ordOk = sess.ordSlots.map(ordText).join(' ') === (((cur&&cur.ord)||[]).join(' '));
+  }
+  renderSess();
+}
 function showExp(){
   if(!sess) return;
   const cur = (state.cards||[]).find(c=>c.id===sess.q[sess.i]);
@@ -2345,6 +2421,7 @@ function gradeSession(g){
   gradeCard(cur, ok ? 'ok' : 'no');
   if(ok) sess.ok = (sess.ok||0)+1;
   sess.i++; sess.flip = false; sess.picked = null; sess.choices = null; sess.revealed = false; sess.exp = false;
+  sess.ordTiles = null; sess.ordSlots = null; sess.ordDone = false; sess.ordOk = false;
   renderSess();
 }
 
