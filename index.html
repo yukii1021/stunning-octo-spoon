@@ -622,7 +622,7 @@ a{color:var(--accent)}
     </div>
 
 
-    <div class="hint" style="text-align:center;margin-top:16px">StudyTime v2.10 · ローカル保存＋GitHub自動バックアップ</div>
+    <div class="hint" style="text-align:center;margin-top:16px">StudyTime v2.11 · ローカル保存＋GitHub自動バックアップ</div>
   </div>
 
 </div>
@@ -2346,7 +2346,7 @@ function renderSess(){
     body.innerHTML = `${(tagTxt||expBtn)?`<div class="q-top"><div class="hint" style="margin:0">${tagTxt}</div>${expBtn}</div>`:''}
       <div class="flip" style="cursor:default"><div class="flip-in"><div class="ff">${escapeHtml(cur.f)}</div></div></div>
       <div class="ord-slots${(sess.ordDone&&!sess.ordOk)?' bad-anim':''}">${slots}</div>
-      ${sess.ordDone?`<div class="hint" style="margin-top:10px">${sess.ordOk?'正解！':'せいかい： '+escapeHtml((cur.ord||[]).join(' '))}</div>`:''}
+      ${sess.ordDone?`<div class="hint" style="margin-top:10px">${sess.ordOk?'正解！':'正解： '+escapeHtml((cur.ord||[]).join(' '))}</div>`:''}
       <div class="ord-pool">${pool}</div>
       ${sess.ordDone?'':`<div class="ord-bar"><div class="hint" style="margin:0">あと ${sess.ordSlots.filter(x=>x===null).length} 語</div>
         <div style="display:flex;gap:8px"><button class="btn" onclick="ordUndo()">1つ戻す</button><button class="btn" onclick="ordReset()">やり直す</button></div></div>`}
