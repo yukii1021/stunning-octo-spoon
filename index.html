@@ -266,7 +266,7 @@ a{color:var(--accent)}
 .cp-tones .t .u{position:absolute;right:4px;top:4px;width:6px;height:6px;border-radius:50%;background:currentColor;opacity:.7}
 
 
-/* ================= 教科ノート（v2.04） ================= */
+/* ================= 教科ノート（v2.05） ================= */
 .modal-bg{z-index:120}
 #toast{z-index:200}
 .deck{position:fixed;inset:0;background:var(--bg);z-index:80;display:none;flex-direction:column}
@@ -608,7 +608,7 @@ a{color:var(--accent)}
       <button class="btn danger block" onclick="clearAll()">すべての記録を削除</button>
     </div>
 
-    <div class="hint" style="text-align:center;margin-top:16px">StudyTime v2.04 · ローカル保存＋GitHub自動バックアップ</div>
+    <div class="hint" style="text-align:center;margin-top:16px">StudyTime v2.05 · ローカル保存＋GitHub自動バックアップ</div>
   </div>
 
 </div>
@@ -741,8 +741,9 @@ a{color:var(--accent)}
   <h3 id="card-modal-title">カードを編集</h3>
   <div class="field"><label id="cf-label">表</label><textarea id="c-f" rows="2"></textarea></div>
   <div class="field"><label id="cb-label">裏</label><textarea id="c-b" rows="2"></textarea></div>
-  <div class="field" id="cx-wrap"><label>解説（任意）</label><textarea id="c-x" rows="2"></textarea></div>
-  <div class="field" id="ctag-wrap"><label>分野（任意）</label><input type="text" id="c-tag" /></div>
+  <div class="field" id="cx-wrap"><label>解説</label><textarea id="c-x" rows="2"></textarea></div>
+  <div class="field" id="ctag-wrap"><label>分野</label><input type="text" id="c-tag" /></div>
+  <div class="field" id="cw-wrap"><label>ほかの選択肢</label><textarea id="c-w" rows="2" placeholder="まちがいの選択肢を3つまで"></textarea><div class="hint">ここに入れると4択になります。1行に1つ、または「/」で区切って書きます</div></div>
   <div class="row">
     <button class="btn danger" id="c-delete" onclick="deleteCardFromModal()" style="display:none">削除</button>
     <div class="spacer"></div>
@@ -1839,7 +1840,7 @@ function clearAll(){
 }
 
 
-/* ================= 教科ノート（v2.04） ================= */
+/* ================= 教科ノート（v2.05） ================= */
 const SRS_STEPS = [0,3,7,14,30,60,120];
 let deckSid = null, deckTab = 'today', sess = null, cardEditId = null, addKind = 'card';
 const deckSorts = {}, deckShuffle = {};
@@ -1969,8 +1970,8 @@ function deckToday(){
       const n = st.due;
       out.push(`<div class="deck-box"><div class="deck-big">${n}</div>
         <div class="hint" style="text-align:center">今日の分（${mdShort(todayKey())}）</div></div>
-      <button class="btn primary block" ${n?'':'disabled'} onclick="startMemorize('${deckSid}')">暗記モード（めくる）</button>
-      <button class="btn block" style="margin-top:8px" ${st.total>=4?'':'disabled'} onclick="startQuiz('${deckSid}')">テストモード（4択・ランダム出題）</button>
+      <button class="btn primary block" ${n?'':'disabled'} onclick="startMemorize('${deckSid}')">暗記モード</button>
+      <button class="btn block" style="margin-top:8px" ${st.total>=4?'':'disabled'} onclick="startQuiz('${deckSid}')">テストモード</button>
       ${st.total>=4?'':'<div class="hint" style="text-align:center;margin-top:8px">テストモードはカードが4件以上で使えます</div>'}
       ${n?'':'<div class="hint" style="text-align:center;margin-top:8px">今日の分は終わりです</div>'}`);
     }
@@ -1991,8 +1992,8 @@ function deckToday(){
       <div class="mini"><b>${st.learned}</b><span>解けた</span></div>
       <div class="mini"><b>${st.weak}</b><span>要復習</span></div>
     </div>
-    <button class="btn primary block" style="margin-top:14px" onclick="startProbSession('${deckSid}')">ランダム演習（${Math.min(20,st.total)}問を順に出題）</button>
-    <button class="btn block" style="margin-top:8px" onclick="setDeckTab('prob')">自由演習（一覧から選ぶ）</button>`);
+    <button class="btn primary block" style="margin-top:14px" onclick="startProbSession('${deckSid}')">ランダム演習</button>
+    <button class="btn block" style="margin-top:8px" onclick="setDeckTab('prob')">自由演習</button>`);
     }
   }
   return out.join(two ? '<div style="height:16px"></div>' : '');
@@ -2032,7 +2033,7 @@ function listRows(q, kind){
     <div style="flex:1;min-width:0">
       <div class="cf">${escapeHtml(c.f)}</div>
       <div class="cb">${escapeHtml(c.b||'')}</div>
-      <div class="ct">${c.tag?escapeHtml(c.tag)+' · ':''}${(c.due||'0000')<=t?'<span style="color:var(--bad)">今日</span>':'次回 '+mdShort(c.due)}${(c.n||0)>0?' · '+(c.n||0)+'回':' · 未挑戦'}</div>
+      <div class="ct">${(c.w&&c.w.length)?'4択 · ':''}${c.tag?escapeHtml(c.tag)+' · ':''}${(c.due||'0000')<=t?'<span style="color:var(--bad)">今日</span>':'次回 '+mdShort(c.due)}${(c.n||0)>0?' · '+(c.n||0)+'回':' · 未挑戦'}</div>
     </div>
     <button class="icon-btn" onclick="startCard('${c.id}')">▶</button>
     <button class="icon-btn" onclick="editCard('${c.id}')">✎</button>
@@ -2044,7 +2045,7 @@ function deckAdd(){
   const ks = deckKinds(s), two = ks.length>1, kind = addKind;
   const hint = kind==='card'
     ? '1行に1件、「表 | 裏」の形で貼り付けてください。<br>例：apple | りんご'
-    : '1行に1問「問題 | 答え | 解説 | 分野」で貼り付けます（解説と分野は省略可）。<br>長い問題は、空行で区切って「---」の行をはさむ形でも登録できます。';
+    : '1行に1問「問題 | 答え | 解説 | 分野」で貼り付けます。解説と分野は省略できます。<br>長い問題は、空行で区切って「---」の行をはさむ形でも登録できます。<br>4択にしたいときは、うしろに「|」で区切って、まちがいの選択肢を3つまで足します。「/」で区切って書きます。';
   const ph = kind==='card' ? 'apple | りんご\nbook | 本' : '2x+3=11 | x=4 | 3を移項して 2x=8 | 一次方程式';
   return `${two?`<div class="card" style="margin-bottom:12px">
       <div class="hint">追加する種類</div>
@@ -2055,10 +2056,11 @@ function deckAdd(){
     </div>`:''}
     <div class="card" style="margin-bottom:12px">
       <h2>1件ずつ追加</h2>
-      <div class="field"><label>${kind==='card'?'表（単語・用語）':'問題'}</label><textarea id="nc-f" rows="2" placeholder="${kind==='card'?'例：apple':'例：2x+3=11 のとき x を求めよ'}"></textarea></div>
-      <div class="field"><label>${kind==='card'?'裏（意味）':'答え'}</label><textarea id="nc-b" rows="2" placeholder="${kind==='card'?'例：りんご':'例：x=4'}"></textarea></div>
-      ${kind==='prob'?`<div class="field"><label>解説（任意）</label><textarea id="nc-x" rows="2"></textarea></div>
-      <div class="field"><label>分野（任意）</label><input type="text" id="nc-tag" placeholder="例：無機 / 二次関数" /></div>`:''}
+      <div class="field"><label>${kind==='card'?'表':'問題'}</label><textarea id="nc-f" rows="2" placeholder="${kind==='card'?'例：apple':'例：2x+3=11 のとき x を求めよ'}"></textarea></div>
+      <div class="field"><label>${kind==='card'?'裏':'答え'}</label><textarea id="nc-b" rows="2" placeholder="${kind==='card'?'例：りんご':'例：x=4'}"></textarea></div>
+      ${kind==='prob'?`<div class="field"><label>解説</label><textarea id="nc-x" rows="2"></textarea></div>
+      <div class="field"><label>分野</label><input type="text" id="nc-tag" placeholder="例：無機 / 二次関数" /></div>
+      <div class="field"><label>ほかの選択肢</label><textarea id="nc-w" rows="2" placeholder="まちがいの選択肢を3つまで"></textarea><div class="hint">ここに入れると4択になります。1行に1つ、または「/」で区切って書きます</div></div>`:''}
       <button class="btn primary block" onclick="addCardManual()">追加する</button>
     </div>
     <div class="card">
@@ -2071,15 +2073,19 @@ function deckAdd(){
 function setDeckKind(k){ addKind = k; renderDeck() }
 function newCard(o){
   return Object.assign({ id:uid(), sid:deckSid, kind:addKind,
-    f:'', b:'', x:'', tag:'', box:0, n:0, due:todayKey(), u:Date.now() }, o) }
+    f:'', b:'', x:'', tag:'', w:[], box:0, n:0, due:todayKey(), u:Date.now() }, o) }
 function addCardManual(){
   const f = document.getElementById('nc-f').value.trim(); if(!f){ toast('内容を入力してください'); return }
   const kind = addKind;
   const c = newCard({ f, b:(document.getElementById('nc-b').value||'').trim() });
-  if(kind==='prob'){ c.x = (document.getElementById('nc-x').value||'').trim(); c.tag = (document.getElementById('nc-tag').value||'').trim() }
+  if(kind==='prob'){ c.x = (document.getElementById('nc-x').value||'').trim(); c.tag = (document.getElementById('nc-tag').value||'').trim();
+    const wEl = document.getElementById('nc-w'); c.w = wEl ? splitWrongs(wEl.value) : [] }
   state.cards = state.cards||[]; state.cards.push(c);
   addKind = kind;
   saveState(); renderDeck(); toast('追加しました');
+}
+function splitWrongs(s){
+  return String(s||'').split(/[\n\/、;]+/).map(x=>x.trim()).filter(x=>x).slice(0,3);
 }
 function splitFields(ln){
   if(ln.indexOf('|')>=0) return ln.split('|');
@@ -2093,7 +2099,7 @@ function parseBulk(text, kind){
     t.split(/\n\s*\n/).forEach(bl=>{
       bl = bl.trim(); if(!bl) return;
       const p = bl.split(/\n\s*-{3,}\s*\n/).map(x=>x.trim());
-      if(p[0]) out.push({ f:p[0], b:p[1]||'', x:p[2]||'', tag:p[3]||'' });
+      if(p[0]) out.push({ f:p[0], b:p[1]||'', x:p[2]||'', tag:p[3]||'', w:splitWrongs(p[4]||'') });
     });
     return out;
   }
@@ -2101,7 +2107,7 @@ function parseBulk(text, kind){
     ln = ln.trim(); if(!ln || ln.charAt(0)==='#') return;
     const p = splitFields(ln).map(x=>x.trim());
     if(!p[0]) return;
-    if(kind==='prob') out.push({ f:p[0], b:p[1]||'', x:p[2]||'', tag:p[3]||'' });
+    if(kind==='prob') out.push({ f:p[0], b:p[1]||'', x:p[2]||'', tag:p[3]||'', w:splitWrongs(p[4]||'') });
     else if(p.length===1){ const m = ln.match(/^(.+?)[\s　]+(.+)$/);
       if(m) out.push({ f:m[1], b:m[2] }); else out.push({ f:p[0], b:'' }) }
     else out.push({ f:p[0], b:p.slice(1).join(',').trim() });
@@ -2123,12 +2129,14 @@ function editCard(id){
   cardEditId = id;
   const kind = cardKind(c);
   document.getElementById('card-modal-title').textContent = (kind==='card'?'単語カードを編集':'問題を編集');
-  document.getElementById('cf-label').textContent = kind==='card'?'表（単語・用語）':'問題';
-  document.getElementById('cb-label').textContent = kind==='card'?'裏（意味）':'答え';
+  document.getElementById('cf-label').textContent = kind==='card'?'表':'問題';
+  document.getElementById('cb-label').textContent = kind==='card'?'裏':'答え';
   document.getElementById('c-f').value = c.f||'';
   document.getElementById('c-b').value = c.b||'';
   document.getElementById('c-x').value = c.x||'';
   document.getElementById('c-tag').value = c.tag||'';
+  document.getElementById('c-w').value = (c.w||[]).join('\n');
+  document.getElementById('cw-wrap').style.display = kind==='prob'?'block':'none';
   document.getElementById('cx-wrap').style.display = kind==='prob'?'block':'none';
   document.getElementById('ctag-wrap').style.display = kind==='prob'?'block':'none';
   document.getElementById('c-delete').style.display = 'inline-flex';
@@ -2140,6 +2148,7 @@ function saveCard(){
   c.f = f; c.b = document.getElementById('c-b').value.trim();
   c.x = document.getElementById('c-x').value.trim();
   c.tag = document.getElementById('c-tag').value.trim();
+  if(cardKind(c)==='prob'){ const wEl = document.getElementById('c-w'); if(wEl) c.w = splitWrongs(wEl.value) }
   u_mark(c);
   saveState(); closeModal('modal-card'); renderDeck(); toast('保存しました');
 }
@@ -2196,7 +2205,18 @@ function closeSess(){
   document.getElementById('sess-view').classList.remove('show');
   if(deckSid){ document.getElementById('deck-view').classList.add('show'); renderDeck() }
 }
+function cardChoices(cur){
+  if(!cur || !cur.w || !cur.w.length) return null;
+  const seen = {}, list = [{ text:cur.b||'—', ok:true }];
+  seen[(cur.b||'—')] = 1;
+  cur.w.forEach(t=>{ t=(t||'').trim(); if(!t || seen[t] || list.length>=4) return; seen[t]=1; list.push({ text:t, ok:false }) });
+  if(list.length<2) return null;
+  shuffle(list);
+  return list;
+}
 function makeChoices(cur){
+  const spec = cardChoices(cur);
+  if(spec) return { i:sess.i, list:spec };
   const seen = {}, list = [{ text:cur.b||'—', ok:true }];
   seen[(cur.b||'—')] = 1;
   shuffle(subjCards(cur.sid, cardKind(cur)).filter(c=>c.id!==cur.id)).forEach(c=>{
@@ -2231,10 +2251,10 @@ function renderSess(){
         <button class="btn primary block" style="flex:2" onclick="gradeSession('ok')">覚えた</button></div>`:''}`;
     return;
   }
-  if(sess.mode==='quiz'){
+  if(sess.mode==='quiz' || (sess.mode==='prob' && cardChoices(cur))){
     if(!sess.choices || sess.choices.i!==sess.i) sess.choices = makeChoices(cur);
     const L = sess.choices.list;
-    body.innerHTML = `<div class="flip" style="cursor:default"><div class="flip-in"><div class="ff">${escapeHtml(cur.f)}</div></div></div>
+    body.innerHTML = `${(sess.mode==='prob'&&cur.tag)?`<div class="hint" style="margin-bottom:8px">${escapeHtml(cur.tag)}</div>`:''}<div class="flip" style="cursor:default"><div class="flip-in"><div class="ff">${escapeHtml(cur.f)}</div></div></div>
       <div class="q-choices">${L.map((c,n)=>{
         let cls = '';
         if(sess.picked!=null){ if(c.ok) cls='good'; else if(sess.picked===n) cls='bad' }
