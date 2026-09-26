@@ -266,7 +266,7 @@ a{color:var(--accent)}
 .cp-tones .t .u{position:absolute;right:4px;top:4px;width:6px;height:6px;border-radius:50%;background:currentColor;opacity:.7}
 
 
-/* ================= 教科ノート（v2.01） ================= */
+/* ================= 教科ノート（v2.02） ================= */
 .modal-bg{z-index:120}
 #toast{z-index:200}
 .deck{position:fixed;inset:0;background:var(--bg);z-index:80;display:none;flex-direction:column}
@@ -277,9 +277,17 @@ a{color:var(--accent)}
 .deck-tabs{display:flex;gap:4px;background:var(--bg-elev-2);border:1px solid var(--line);border-radius:12px;padding:4px;margin:12px 0}
 .deck-tabs button{flex:1;min-height:36px;border-radius:9px;font-size:13px;font-weight:600;color:var(--text-dim)}
 .deck-tabs button.on{background:var(--bg-elev);color:var(--text);font-weight:700;box-shadow:var(--shadow)}
-.deck-sorts{display:flex;gap:6px;margin:0 0 10px}
-.deck-sorts button{flex:1;min-height:32px;border-radius:9px;border:1px solid var(--line);background:var(--bg-elev);font-size:12px;font-weight:600;color:var(--text-dim)}
-.deck-sorts button.on{background:var(--bg-elev-2);color:var(--text);font-weight:700;border-color:var(--text-mute)}
+.deck-bar{display:flex;gap:8px;align-items:center;margin:0 0 10px}
+.deck-bar input{flex:1;min-width:0;width:auto;margin:0}
+.sort-btn{flex:none;display:flex;align-items:center;gap:7px;min-height:44px;padding:0 12px 0 14px;border-radius:12px;border:1px solid var(--line);background:var(--bg-elev);font-size:13px;font-weight:600;color:var(--text-dim);white-space:nowrap}
+.sort-btn.on{color:var(--text);border-color:var(--text-mute)}
+.sort-btn .cv{font-size:9px;opacity:.7}
+.sort-row{display:flex;align-items:center;gap:10px;min-height:56px;padding:0 2px;border-bottom:1px solid var(--line);cursor:pointer}
+.sort-row:last-child{border-bottom:none}
+.sort-row .nm{font-size:15px;font-weight:600}
+.sort-row .ds{font-size:11.5px;color:var(--text-mute);margin-top:2px}
+.sort-row .ck{color:var(--accent);font-weight:800;font-size:16px;opacity:0}
+.sort-row.on .ck{opacity:1}
 .sect{display:flex;align-items:center;gap:8px;margin:16px 0 10px;font-size:13px;font-weight:700;color:var(--text-dim)}
 .sect:first-child{margin-top:2px}
 .sect i{flex:1;height:1px;background:var(--line);display:block}
@@ -600,7 +608,7 @@ a{color:var(--accent)}
       <button class="btn danger block" onclick="clearAll()">すべての記録を削除</button>
     </div>
 
-    <div class="hint" style="text-align:center;margin-top:16px">StudyTime v2.01 · ローカル保存＋GitHub自動バックアップ</div>
+    <div class="hint" style="text-align:center;margin-top:16px">StudyTime v2.02 · ローカル保存＋GitHub自動バックアップ</div>
   </div>
 
 </div>
@@ -740,6 +748,13 @@ a{color:var(--accent)}
     <div class="spacer"></div>
     <button class="btn ghost" onclick="closeModal('modal-card')">キャンセル</button>
     <button class="btn primary" onclick="saveCard()">保存</button>
+  </div>
+</div></div>
+<div class="modal-bg" id="modal-sort"><div class="modal">
+  <h3 id="sort-title">並び替え</h3>
+  <div id="sort-list"></div>
+  <div class="row" style="margin-top:16px">
+    <button class="btn ghost block" onclick="closeModal('modal-sort')">閉じる</button>
   </div>
 </div></div>
 
@@ -1824,7 +1839,7 @@ function clearAll(){
 }
 
 
-/* ================= 教科ノート（v2.01） ================= */
+/* ================= 教科ノート（v2.02） ================= */
 const SRS_STEPS = [0,3,7,14,30,60,120];
 let deckSid = null, deckTab = 'today', sess = null, cardEditId = null, addKind = 'card';
 const deckSorts = {};
@@ -1974,12 +1989,28 @@ function deckToday(){
   }
   return out.join(two ? '<div style="height:16px"></div>' : '');
 }
+function sortOpts(kind){
+  return kind==='prob'
+    ? [['add','追加順','登録した順'],['kana','五十音順','名前の順'],['tag','分野順','分野ごとにまとめる']]
+    : [['add','追加順','登録した順'],['kana','五十音順','名前の順']];
+}
 function deckList(kind){
-  const opts = kind==='prob' ? [['add','追加順'],['kana','五十音順'],['tag','分野順']] : [['add','追加順'],['kana','五十音順']];
+  const os = sortOpts(kind);
+  const cur = os.filter(o=>o[0]===deckSortOf(kind))[0] || os[0];
+  return `<div class="deck-bar">
+    <input id="deck-search" placeholder="検索" />
+    <button class="sort-btn${cur[0]==='add'?'':' on'}" onclick="openSortSheet('${kind}')"><span>${cur[1]}</span><span class="cv">▼</span></button>
+  </div>
+  <div id="deck-list">${listRows('', kind)}</div>`;
+}
+function openSortSheet(kind){
   const cur = deckSortOf(kind);
-  return `<input id="deck-search" placeholder="検索" style="width:100%;margin-bottom:8px" />
-    <div class="deck-sorts">${opts.map(o=>`<button class="${cur===o[0]?'on':''}" onclick="setDeckSort('${kind}','${o[0]}')">${o[1]}</button>`).join('')}</div>
-    <div id="deck-list">${listRows('', kind)}</div>`;
+  document.getElementById('sort-title').textContent = (kind==='prob'?'問題':'単語カード')+'の並び替え';
+  document.getElementById('sort-list').innerHTML = sortOpts(kind).map(o=>
+    `<div class="sort-row${cur===o[0]?' on':''}" onclick="setDeckSort('${kind}','${o[0]}');closeModal('modal-sort')">
+      <div style="flex:1"><div class="nm">${o[1]}</div><div class="ds">${o[2]}</div></div>
+      <span class="ck">✓</span></div>`).join('');
+  document.getElementById('modal-sort').classList.add('show');
 }
 function listRows(q, kind){
   const s = findSubject(deckSid); if(!s) return '';
