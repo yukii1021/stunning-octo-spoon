@@ -266,7 +266,7 @@ a{color:var(--accent)}
 .cp-tones .t .u{position:absolute;right:4px;top:4px;width:6px;height:6px;border-radius:50%;background:currentColor;opacity:.7}
 
 
-/* ================= 教科ノート（v2.06） ================= */
+/* ================= 教科ノート（v2.07） ================= */
 .modal-bg{z-index:120}
 #toast{z-index:200}
 .deck{position:fixed;inset:0;background:var(--bg);z-index:80;display:none;flex-direction:column}
@@ -310,7 +310,9 @@ a{color:var(--accent)}
 .q-choice{min-height:52px;border-radius:12px;border:1px solid var(--line);background:var(--bg-elev);color:var(--text);font-size:15px;font-weight:600;padding:10px 12px;text-align:left}
 .q-choice.good{background:#16a34a;border-color:#16a34a;color:#fff}
 .q-choice.bad{background:#dc2626;border-color:#dc2626;color:#fff}
-.q-exp{font-size:13.5px;line-height:1.75;color:var(--text);white-space:pre-wrap;word-break:break-word;margin-top:10px}
+.q-top{display:flex;align-items:flex-start;justify-content:space-between;gap:8px;margin-bottom:6px}
+.exp-btn{flex:none;border:1px solid var(--line);background:var(--bg-elev);color:var(--text-mute);font-size:11px;font-weight:700;border-radius:999px;padding:3px 10px}
+.q-exp{flex:1;font-size:11.5px;line-height:1.6;color:var(--text-mute);text-align:right;max-width:64%;margin-left:auto;white-space:pre-wrap;word-break:break-word}
 .crow{display:flex;align-items:center;gap:8px;padding:10px 0;border-bottom:1px solid var(--line)}
 .crow:last-child{border-bottom:none}
 .cf{font-size:15px;font-weight:600;line-height:1.35;word-break:break-word}
@@ -606,10 +608,12 @@ a{color:var(--accent)}
 
     <div class="card">
       <h2>危険な操作</h2>
+      <button class="btn danger block" style="margin-bottom:8px" onclick="resetAllStats()">学習の記録をリセット（全教科）</button>
+      <div class="hint" style="margin-bottom:10px">カードや問題は残したまま、覚えた／解けた・回数・次回の日をゼロに戻します。</div>
       <button class="btn danger block" onclick="clearAll()">すべての記録を削除</button>
     </div>
 
-    <div class="hint" style="text-align:center;margin-top:16px">StudyTime v2.06 · ローカル保存＋GitHub自動バックアップ</div>
+    <div class="hint" style="text-align:center;margin-top:16px">StudyTime v2.07 · ローカル保存＋GitHub自動バックアップ</div>
   </div>
 
 </div>
@@ -1831,6 +1835,24 @@ function importJSON(ev){
   reader.readAsText(file);
   ev.target.value='';
 }
+function resetCardStats(c){
+  const t = todayKey();
+  c.box = 0; c.n = 0; c.ok = 0; c.last = ''; c.grDate = ''; c.due = t; c.u = Date.now();
+}
+function resetSubjectStats(sid){
+  const cs = (state.cards||[]).filter(c=>c.sid===sid);
+  if(!cs.length){ toast('カードがありません'); return }
+  if(!confirm('この教科の記録（覚えた／回数／次回の日）を全部ゼロに戻します。\nカード自体は消えません。よろしいですか？')) return;
+  cs.forEach(resetCardStats);
+  saveState(); renderDeck(); toast(cs.length+'件の記録をゼロに戻しました', 2400);
+}
+function resetAllStats(){
+  const cs = state.cards||[];
+  if(!cs.length){ toast('カードがありません'); return }
+  if(!confirm('すべての教科の記録（覚えた／回数／次回の日）をゼロに戻します。\nカード自体は消えません。よろしいですか？')) return;
+  cs.forEach(resetCardStats);
+  saveState(); renderAll(); toast(cs.length+'件の記録をゼロに戻しました', 2400);
+}
 function clearAll(){
   if(!confirm('本当にすべての記録を削除しますか?（活動カテゴリー・教科・目標は残ります）')) return;
   if(!confirm('最終確認: すべてのセッション記録が消えます。')) return;
@@ -1841,7 +1863,7 @@ function clearAll(){
 }
 
 
-/* ================= 教科ノート（v2.06） ================= */
+/* ================= 教科ノート（v2.07） ================= */
 const SRS_STEPS = [0,1,2,4,7,14,30,60];
 let deckSid = null, deckTab = 'today', sess = null, cardEditId = null, addKind = 'card';
 const deckSorts = {}, deckShuffle = {};
@@ -1878,7 +1900,6 @@ function gradeCard(c, g){
     if(!again){ c.box = Math.min((c.box||0)+1, SRS_STEPS.length-1); c.due = addDaysKey(SRS_STEPS[c.box]) }
     c.ok = (c.ok||0)+1;
   }
-  else if(g==='hint'){ if(!again) c.due = addDaysKey(2) }
   else { c.box = 0; c.due = addDaysKey(1) }
   c.grDate = t;
   bumpStreak(c.sid);
@@ -1953,7 +1974,8 @@ function renderDeck(){
       <div class="deck-streak">${streakDays(deckSid)}日連続</div>
     </div>
     <div class="bar"><i style="width:${prog}%;background:${s.color}"></i></div>
-    <div class="hint" style="margin-top:6px">${pline}</div>`;
+    <div class="hint" style="margin-top:6px">${pline}</div>
+    <div class="row" style="margin-top:8px"><button class="btn sm" onclick="resetSubjectStats('${deckSid}')">この教科の記録をリセット</button></div>`;
   document.getElementById('deck-tabs').innerHTML = deckTabsHTML(s);
   const pane = document.getElementById('deck-pane');
   pane.innerHTML = deckTab==='add' ? deckAdd()
@@ -1979,10 +2001,10 @@ function deckToday(){
       const n = st.due;
       out.push(`<div class="deck-box"><div class="deck-big">${n}</div>
         <div class="hint" style="text-align:center">今日の分（${mdShort(todayKey())}）</div></div>
-      <button class="btn primary block" ${n?'':'disabled'} onclick="startMemorize('${deckSid}')">暗記モード</button>
+      <button class="btn primary block" onclick="startMemorize('${deckSid}')">暗記モード</button>
       <button class="btn block" style="margin-top:8px" ${st.total>=4?'':'disabled'} onclick="startQuiz('${deckSid}')">テストモード</button>
       ${st.total>=4?'':'<div class="hint" style="text-align:center;margin-top:8px">テストモードはカードが4件以上で使えます</div>'}
-      ${n?'':'<div class="hint" style="text-align:center;margin-top:8px">今日の分は終わりです</div>'}`);
+      ${n?'':'<div class="hint" style="text-align:center;margin-top:8px">今日の分は終わりです（暗記モードは何回でも使えます）</div>'}`);
     }
   }
   if(ks.indexOf('prob')>=0){
@@ -2177,10 +2199,17 @@ function deleteCard(id){
 }
 /* ---- 学習セッション ---- */
 function startMemorize(sid){
-  const q = dueCards(sid,'card').map(c=>c.id);
-  if(!q.length){ toast('今日の分は終わりです'); return }
+  const q = subjCards(sid,'card').map(c=>c.id);
+  if(!q.length){ toast('カードがありません'); return }
   sess = { mode:'memorize', sid, q:shuffle(q).slice(0,30), i:0, flip:false, ok:0 };
   openSess();
+}
+function againSess(){
+  if(!sess) return;
+  const md = sess.mode, sid = sess.sid;
+  if(md==='memorize') startMemorize(sid);
+  else if(md==='quiz') startQuiz(sid);
+  else startProbSession(sid, null);
 }
 function startQuiz(sid){
   const cs = subjCards(sid,'card');
@@ -2242,10 +2271,12 @@ function renderSess(){
   const cur = (state.cards||[]).find(c=>c.id===sess.q[sess.i]);
   if(!cur){
     cnt.textContent = '';
+    const md = sess.mode;
     body.innerHTML = `<div class="deck-prob" style="text-align:center">
         <div class="deck-big">${sess.ok} / ${sess.q.length}</div>
-        <div class="hint">正解</div></div>
-      <button class="btn primary block" style="margin-top:16px" onclick="closeSess()">終わる</button>`;
+        <div class="hint">${md==='memorize'?'おぼえた':'正解'}</div></div>
+      <button class="btn primary block" style="margin-top:16px" onclick="againSess()">もう一度</button>
+      <button class="btn block" style="margin-top:8px" onclick="closeSess()">終わる</button>`;
     return;
   }
   cnt.textContent = (sess.i+1)+' / '+sess.q.length;
@@ -2263,18 +2294,16 @@ function renderSess(){
   if(sess.mode==='quiz' || (sess.mode==='prob' && cardChoices(cur))){
     if(!sess.choices || sess.choices.i!==sess.i) sess.choices = makeChoices(cur);
     const L = sess.choices.list;
-    body.innerHTML = `${(sess.mode==='prob'&&cur.tag)?`<div class="hint" style="margin-bottom:8px">${escapeHtml(cur.tag)}</div>`:''}<div class="flip" style="cursor:default"><div class="flip-in"><div class="ff">${escapeHtml(cur.f)}</div></div></div>
+    const tagTxt = (sess.mode==='prob' && cur.tag) ? escapeHtml(cur.tag) : '';
+    const expBtn = (sess.picked!=null && cur.x) ? (sess.exp
+      ? `<div class="q-exp">${escapeHtml(cur.x)}</div>`
+      : `<button class="exp-btn" onclick="showExp()">解説</button>`) : '';
+    body.innerHTML = `${(tagTxt||expBtn)?`<div class="q-top"><div class="hint" style="margin:0">${tagTxt}</div>${expBtn}</div>`:''}<div class="flip" style="cursor:default"><div class="flip-in"><div class="ff">${escapeHtml(cur.f)}</div></div></div>
       <div class="q-choices">${L.map((c,n)=>{
         let cls = '';
         if(sess.picked!=null){ if(c.ok) cls='good'; else if(sess.picked===n) cls='bad' }
         return `<button class="q-choice ${cls}" ${sess.picked!=null?'disabled':''} onclick="pickChoice(${n})">${escapeHtml(c.text)}</button>` }).join('')}</div>
-      ${sess.picked!=null?`<div class="card" style="margin-top:12px">
-          <h2>正解</h2><div class="ans">${escapeHtml((L.find(c=>c.ok)||{}).text||cur.b||'—')}</div>
-          ${cur.x?(sess.exp
-            ? `<div id="q-exp" class="q-exp">${escapeHtml(cur.x)}</div>`
-            : `<button class="btn block" style="margin-top:10px" onclick="showExp()">解説を見る</button>`):''}
-        </div>
-        <button class="btn primary block" style="margin-top:14px" onclick="gradeSession(${L[sess.picked].ok?'\'ok\'':'\'no\''})">次へ</button>`:''}`;
+      ${sess.picked!=null?`<button class="btn primary block" style="margin-top:14px" onclick="gradeSession(${L[sess.picked].ok?'\'ok\'':'\'no\''})">次へ</button>`:''}`;
     return;
   }
   body.innerHTML = `<div class="deck-prob">${cur.tag?`<div class="hint">${escapeHtml(cur.tag)}</div>`:''}
@@ -2283,28 +2312,21 @@ function renderSess(){
         <h2>答え</h2><div class="ans">${escapeHtml(cur.b||'—')}</div>
         ${cur.x?`<div class="hint" style="margin-top:10px">${escapeHtml(cur.x)}</div>`:''}</div>
       <div class="row" style="gap:8px;margin-top:14px;flex-wrap:wrap">
-        <button class="btn block" style="flex:1;min-width:96px" onclick="gradeSession('no')">解けなかった</button>
-        <button class="btn block" style="flex:1;min-width:96px" onclick="gradeSession('hint')">ヒントを見た</button>
-        <button class="btn primary block" style="flex:1;min-width:96px" onclick="gradeSession('ok')">解けた</button>
+        <button class="btn block" style="flex:1;min-width:120px" onclick="gradeSession('no')">解けなかった</button>
+        <button class="btn primary block" style="flex:1;min-width:120px" onclick="gradeSession('ok')">解けた</button>
       </div>`
     :`<button class="btn primary block" style="margin-top:14px" onclick="revealAnswer()">答えを見る</button>`}`;
 }
 function flipCard(){ if(!sess) return; sess.flip = !sess.flip; renderSess() }
 function revealAnswer(){ if(!sess) return; sess.revealed = true; renderSess() }
 function pickChoice(n){ if(!sess || sess.picked!=null) return; sess.picked = n; renderSess() }
-function showExp(){ if(!sess) return; sess.exp = true; renderSess();
-  const el = document.getElementById('q-exp');
-  if(el && el.scrollIntoView){ try{ el.scrollIntoView({behavior:'smooth', block:'center'}) }catch(e){ el.scrollIntoView() } } }
+function showExp(){ if(!sess) return; sess.exp = true; renderSess(); }
 function gradeSession(g){
   if(!sess) return;
   const cur = (state.cards||[]).find(c=>c.id===sess.q[sess.i]); if(!cur) return;
   const ok = (g===true || g==='ok');
-  const again = gradeCard(cur, ok ? 'ok' : (g==='hint' ? 'hint' : 'no'));
+  gradeCard(cur, ok ? 'ok' : 'no');
   if(ok) sess.ok = (sess.ok||0)+1;
-  const d = dueInDays(cur.due);
-  toast(ok
-    ? (again ? ('今日はもう伸びません（次は '+mdShort(cur.due)+'）') : ('次は '+d+'日後（'+mdShort(cur.due)+'）'))
-    : ('次は '+(d<=0?'今日':(d+'日後'))+'（'+mdShort(cur.due)+'）'), 2600);
   sess.i++; sess.flip = false; sess.picked = null; sess.choices = null; sess.revealed = false; sess.exp = false;
   renderSess();
 }
