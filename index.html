@@ -458,6 +458,17 @@ html.fo-locked,html.fo-locked body{overscroll-behavior:none}
       </div>
     </div>
 
+    <div class="now-card" style="margin-top:14px;padding:16px 18px">
+      <div class="now-label">ホーム画面ウィジェット</div>
+      <div class="now-sub" id="wshare-sub" style="margin-top:6px">下のボタンを押すと、ウィジェットが読むデータをクリップボードにコピーします</div>
+      <div class="actions" style="margin-top:12px">
+        <button class="btn primary" onclick="widgetExport()">コピー</button>
+        <button class="btn" onclick="widgetExportFile()">ファイルに保存</button>
+        <button class="btn" onclick="widgetExportShow()">内容を確認</button>
+      </div>
+      <pre id="wshare-json" style="display:none;margin-top:12px;padding:10px;border:1px solid var(--line);border-radius:10px;background:var(--bg-elev-2);color:var(--text-dim);font-size:11px;line-height:1.45;max-height:220px;overflow:auto;white-space:pre-wrap;word-break:break-all"></pre>
+    </div>
+
     <div class="grid-3">
       <div class="stat">
         <div class="label">勉強</div>
@@ -678,7 +689,7 @@ html.fo-locked,html.fo-locked body{overscroll-behavior:none}
     </div>
 
 
-    <div class="hint" style="text-align:center;margin-top:16px">StudyTime v2.17 · ローカル保存＋GitHub自動バックアップ</div>
+    <div class="hint" style="text-align:center;margin-top:16px">StudyTime v2.18 · ローカル保存＋GitHub自動バックアップ</div>
   </div>
 
 </div>
@@ -982,7 +993,7 @@ function normalizeState(){
   return state;
 }
 function saveState(){
-  try{ stampChanges(); localStorage.setItem(STORE_KEY, JSON.stringify(state)); syncBadge('saved'); abSchedule() }
+  try{ stampChanges(); localStorage.setItem(STORE_KEY, JSON.stringify(state)); syncBadge('saved'); abSchedule(); updateBadge() }
   catch(e){ syncBadge('error'); toast('保存できませんでした'); }
 }
 function syncBadge(kind){
@@ -2020,6 +2031,127 @@ function renderRecent(){
     btn.style.display = 'none';
     if(btn2) btn2.style.display = 'none';
   }
+}
+
+/* ---------------- ホーム画面ウィジェット連携（案A/C/F） ---------------- */
+function wgtTomorrowKey(){ return addDaysKey(1) }
+function reviewCounts(){
+  const t = todayKey(), tm = addDaysKey(1);
+  let soon=0, todayN=0, tom=0;
+  (state.subjects||[]).forEach(function(sj){
+    ['card','prob'].forEach(function(k){
+      subjCards(sj.id,k).forEach(function(c){
+        if((c.n||0)>0 && (c.box||0)===0) soon++;
+        const due = c.due||'0000-01-01';
+        if(due<=t) todayN++; else if(due===tm) tom++;
+      });
+    });
+  });
+  return {soon:soon, today:todayN, tomorrow:tom, total:soon+todayN+tom};
+}
+function reviewTotal(){ return reviewCounts().total }
+function wgtDayMinutes(d){
+  const ds = dayStart(d), de = dayEnd(d); let m = 0;
+  sessionsInRange(ds,de).forEach(function(s){
+    const a = findActivity(s.activityId); if(!a || !a.isStudy) return;
+    m += sessionMinutesInRange(s,ds,de);
+  });
+  return m;
+}
+function widgetPayload(){
+  const now = Date.now();
+  const from = dayStart(new Date()), to = dayEnd(new Date());
+  let study=0, total=0, sleep=0;
+  sessionsInRange(from,to).forEach(function(s){
+    const a = findActivity(s.activityId); if(!a) return;
+    const m = sessionMinutesInRange(s,from,to); total += m;
+    if(a.isStudy) study += m;
+  });
+  const sFrom = new Date(); sFrom.setDate(sFrom.getDate()-1); sFrom.setHours(20,0,0,0);
+  sessionsInRange(sFrom,new Date()).forEach(function(s){
+    const a = findActivity(s.activityId); if(!isSleepAct(a)) return;
+    sleep += sessionMinutesInRange(s,sFrom,new Date());
+  });
+  const WD = ['日','月','火','水','木','金','土'], days = [];
+  for(let i=6;i>=0;i--){ const d = new Date(); d.setDate(d.getDate()-i);
+    days.push({k:todayKey(d), w:WD[d.getDay()], min:Math.round(wgtDayMinutes(d))}) }
+  const wk   = days.reduce(function(a,b){ return a+b.min },0);
+  const best = days.reduce(function(a,b){ return Math.max(a,b.min) },0);
+  let streak = 0;
+  (state.subjects||[]).forEach(function(sj){ streak = Math.max(streak, streakDays(sj.id)) });
+  const cur = currentSession(), ca = cur ? findActivity(cur.activityId) : null;
+  const cs  = (ca && ca.subjectId) ? findSubject(ca.subjectId) : null;
+  const nowObj = cur ? {
+      on:true, name:(ca?ca.name:'不明'), color:(ca?ca.color:'#999'),
+      study:!!(ca&&ca.isStudy), subject:(cs?cs.name:''),
+      start:new Date(cur.start).getTime(),
+      elapsedMin:Math.floor((now-new Date(cur.start).getTime())/60000)
+    } : {on:false};
+  const fOn = !!(focusCfg.on && focusCfg.endAt>now);
+  return {
+    app:'StudyTime', kind:'widget', v:1, at:now, date:todayKey(),
+    today:{study:Math.round(study), goal:+(state.goals.daily||0),
+           total:Math.round(total), sleep:Math.round(sleep)},
+    week:{days:days, study:Math.round(wk), goal:+(state.goals.weekly||0),
+          avg:Math.round(wk/7), best:Math.round(best), streak:streak},
+    now:nowObj,
+    review:reviewCounts(),
+    focus:{on:fOn, dur:(focusCfg.dur||45),
+           leftMin:(fOn?Math.max(0,Math.ceil((focusCfg.endAt-now)/60000)):0),
+           esc:(focusCfg.esc||0)}
+  };
+}
+function widgetJSON(){ try{ return JSON.stringify(widgetPayload()) }catch(e){ return '' } }
+function copyFallback(t){
+  try{
+    const ta = document.createElement('textarea'); ta.value = t;
+    ta.setAttribute('readonly',''); ta.style.position='fixed'; ta.style.top='-1000px';
+    document.body.appendChild(ta); ta.focus(); ta.select();
+    const ok = document.execCommand('copy'); ta.remove(); return ok;
+  }catch(e){ return false }
+}
+function copyText(t){
+  return new Promise(function(res){
+    try{
+      if(navigator.clipboard && navigator.clipboard.writeText){
+        navigator.clipboard.writeText(t).then(function(){ res(true) }).catch(function(){ res(copyFallback(t)) });
+        return;
+      }
+    }catch(e){}
+    res(copyFallback(t));
+  });
+}
+async function widgetExport(){
+  const s = widgetJSON();
+  if(!s){ toast('書き出しに失敗しました'); return }
+  const ok = await copyText(s);
+  const el = document.getElementById('wshare-sub');
+  if(ok){
+    if(el) el.textContent = 'コピー済み ' + fmtTime(new Date()) + ' · ウィジェットが次回の更新で読み取ります';
+    toast('コピーしました');
+  }else{
+    if(el) el.textContent = 'コピーできませんでした。「ファイルに保存」をお使いください';
+    toast('コピーできませんでした');
+  }
+  updateBadge();
+}
+function widgetExportFile(){
+  const s = widgetJSON();
+  if(!s){ toast('書き出しに失敗しました'); return }
+  downloadFile('studytime-widget.json', s, 'application/json');
+}
+function widgetExportShow(){
+  const p = document.getElementById('wshare-json'); if(!p) return;
+  if(p.style.display === 'none'){ p.style.display='block'; p.textContent = widgetJSON() }
+  else p.style.display = 'none';
+}
+function updateBadge(){
+  try{
+    if(!navigator.setAppBadge) return;
+    const n = reviewTotal();
+    if(n>0) navigator.setAppBadge(n);
+    else if(navigator.clearAppBadge) navigator.clearAppBadge();
+  }catch(e){}
 }
 
 /* ---------------- Backup ---------------- */
@@ -3269,6 +3401,27 @@ function initFocusUI(){
   renderFocusStatus();
 }
 
+function applyLaunchQuery(){
+  let q = null;
+  try{ q = new URLSearchParams((location.search||'').replace(/^\?/,'')) }catch(e){ return }
+  if(!q) return;
+  const f = q.get('focus');
+  if(!f) return;
+  const n = parseInt(f,10);
+  const min = (n>=1) ? Math.min(720,n) : 45;
+  if(focusCfg.on && focusCfg.endAt>Date.now()){
+    toast('超集中モードは実行中です');
+  }else{
+    focDurSel = min; focIvSel = focusCfg.iv||15;
+    const c = document.getElementById('foc-custom'); if(c) c.value='';
+    const m = document.getElementById('foc-msg'); if(m) m.value = focusCfg.msg||'';
+    const act = q.get('act'), a = act ? findActivity(act) : null;
+    if(a && !currentSession()){ startActivity(a.id); startFocus(); toast(min+'分の超集中モードを開始しました') }
+    else { openFocusSetup(); toast(min+'分コースを選びました。「開始」を押してください') }
+  }
+  try{ history.replaceState({}, '', location.pathname) }catch(e){}
+}
+
 function renderAll(){
   applyTheme();
   document.getElementById('home-date').textContent = fmtDateJP(new Date());
@@ -3284,6 +3437,7 @@ function renderAll(){
   if(deckSid) renderDeck();
   renderActConfig();
   renderAutoBackup();
+  updateBadge();
 }
 
 /* ---------------- Init ---------------- */
@@ -3291,6 +3445,7 @@ window.addEventListener('DOMContentLoaded', ()=>{
   loadState();
   renderAll();
   startTick();
+  applyLaunchQuery();
   // Close modal on background tap
   document.querySelectorAll('.modal-bg').forEach(bg=>{
     bg.addEventListener('click', e=>{ if(e.target===bg) bg.classList.remove('show') });
