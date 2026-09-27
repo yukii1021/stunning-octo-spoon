@@ -103,6 +103,7 @@ a{color:var(--accent)}
 .spacer{flex:1}
 .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
 .grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+#view-home>.grid-3{margin-bottom:26px}
 .grid-4{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
 @media (min-width:820px){
   .view{padding:16px 24px 32px}
@@ -404,6 +405,32 @@ a{color:var(--accent)}
 .sync-badge{display:inline-flex;align-items:center;gap:6px;font-size:11px;color:var(--text-mute);
   background:var(--bg-elev-2);padding:4px 10px;border-radius:999px;border:1px solid var(--line)}
 .sync-badge .dot{width:8px;height:8px;border-radius:50%;background:var(--ok)}
+
+/* ---- 超集中モード ---- */
+.foc-lbl{font-size:12px;font-weight:700;color:var(--text-dim);margin:14px 0 6px}
+.foc-thumbs{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:4px}
+.foc-th{position:relative;aspect-ratio:16/10;border-radius:10px;overflow:hidden;border:1px solid var(--line);background:var(--bg-elev-2)}
+.foc-th img{width:100%;height:100%;object-fit:cover;display:block}
+.foc-th .x{position:absolute;top:2px;right:2px;width:22px;height:22px;border-radius:999px;background:rgba(0,0,0,.62);color:#fff;font-size:13px;line-height:22px;padding:0}
+.foc-none{grid-column:1/-1;font-size:11px;color:var(--text-mute);border:1px dashed var(--line);border-radius:10px;padding:10px;text-align:center}
+.foc-paste{min-height:46px;border:1px dashed var(--line);border-radius:12px;padding:10px;font-size:12px;color:var(--text-mute);margin-top:10px;background:var(--bg-elev-2)}
+.foc-paste:empty:before{content:attr(data-ph)}
+.focus-lock{position:fixed;inset:0;z-index:9999;display:none;background:#05070d;color:#fff;overflow:hidden;touch-action:none;overscroll-behavior:none;-webkit-user-select:none;user-select:none}
+.focus-lock.on{display:block}
+.fo-layer{position:absolute;inset:0;background-size:cover;background-position:center;opacity:0;transition:opacity 1.4s ease;z-index:0}
+.fo-layer.on{opacity:1}
+.fo-layer:after{content:'';position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,.5),rgba(0,0,0,.22) 42%,rgba(0,0,0,.62))}
+.fo-block{position:absolute;inset:0;z-index:2;touch-action:none;overscroll-behavior:none}
+.fo-center{position:absolute;inset:0;z-index:3;pointer-events:none;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:24px;gap:12px}
+.fo-kicker{font-size:13px;font-weight:700;letter-spacing:.24em;opacity:.9;text-shadow:0 2px 14px rgba(0,0,0,.7)}
+.fo-time{font-size:76px;font-weight:800;line-height:1;font-variant-numeric:tabular-nums;letter-spacing:.01em;text-shadow:0 8px 34px rgba(0,0,0,.6)}
+.fo-bar{width:min(70vw,400px);height:6px;border-radius:999px;background:rgba(255,255,255,.24);overflow:hidden}
+.fo-bar i{display:block;height:100%;width:0;background:#fff;border-radius:999px;transition:width .3s linear}
+.fo-msg{max-width:min(82vw,520px);font-size:15px;line-height:1.65;opacity:.94;white-space:pre-wrap;text-shadow:0 2px 16px rgba(0,0,0,.7)}
+.fo-panel{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);z-index:5;display:none;flex-direction:column;gap:12px;width:min(84vw,340px);padding:22px 20px;border-radius:18px;background:rgba(14,18,28,.92);border:1px solid rgba(255,255,255,.16);text-align:center}
+.fo-panel.on{display:flex}
+.fo-pt{font-size:20px;font-weight:800}
+.fo-ps{font-size:13px;opacity:.85;line-height:1.6}
 </style>
 </head>
 <body>
@@ -453,8 +480,14 @@ a{color:var(--accent)}
         <button class="btn sm primary" id="quick-done" onclick="exitReorder()" style="display:none">完了</button>
       </div>
       <div class="group-tabs" id="quick-groups"></div>
-      <div class="hint" id="quick-hint">長押ししたまま動かすと並べ替えできます（iPhoneのホーム画面と同じ）。</div>
       <div class="act-list" id="quick-acts"></div>
+    </div>
+
+    <div class="card">
+      <h2>超集中モード</h2>
+      <div class="hint">決めた時間が終わるまで画面がロックされ、タップしても反応しません。</div>
+      <button class="btn primary block" id="focus-go" style="margin-top:12px" onclick="focusGoTap()">超集中モードを開始</button>
+      <div class="hint" id="focus-status" style="text-align:center;margin-top:8px"></div>
     </div>
 
     <div class="card">
@@ -643,7 +676,7 @@ a{color:var(--accent)}
     </div>
 
 
-    <div class="hint" style="text-align:center;margin-top:16px">StudyTime v2.16 · ローカル保存＋GitHub自動バックアップ</div>
+    <div class="hint" style="text-align:center;margin-top:16px">StudyTime v2.17 · ローカル保存＋GitHub自動バックアップ</div>
   </div>
 
 </div>
@@ -807,6 +840,46 @@ a{color:var(--accent)}
     <button class="btn ghost block" onclick="closeModal('modal-sort')">閉じる</button>
   </div>
 </div></div>
+
+<div class="modal-bg" id="modal-focus"><div class="modal">
+  <h3>超集中モード</h3>
+  <div class="hint">決めた時間が終わるまで画面がロックされ、タップしても反応しません。</div>
+  <div class="foc-lbl">集中する時間</div>
+  <div class="seg" id="foc-durs" style="grid-template-columns:repeat(5,1fr)"></div>
+  <input id="foc-custom" type="number" inputmode="numeric" min="1" max="720" placeholder="分（自分で決める）" style="margin-top:8px" />
+  <div class="foc-lbl">スライドショーの間隔</div>
+  <div class="seg" id="foc-ivs" style="grid-template-columns:repeat(4,1fr)"></div>
+  <div class="foc-lbl">集中中に出す画像</div>
+  <div class="foc-thumbs" id="foc-thumbs"></div>
+  <div class="row" style="gap:8px;margin-top:10px">
+    <label class="btn block" style="margin:0;display:flex;align-items:center;justify-content:center;cursor:pointer">端末から選ぶ<input id="foc-file" type="file" accept="image/*" multiple style="display:none" /></label>
+    <button class="btn block" style="margin:0" onclick="focPickPaste()">貼り付け</button>
+  </div>
+  <div class="foc-paste" id="foc-paste" contenteditable="true" data-ph="ここに画像を貼り付け（Ctrl+V／長押し→貼り付け）"></div>
+  <div class="foc-lbl">表示するメッセージ（任意）</div>
+  <input id="foc-msg" type="text" maxlength="120" placeholder="例：絶対に間に合わせる" />
+  <div class="row" style="margin-top:16px;gap:8px">
+    <button class="btn ghost block" style="margin:0" onclick="closeModal('modal-focus')">閉じる</button>
+    <button class="btn primary block" style="margin:0" onclick="startFocus()">開始する</button>
+  </div>
+</div></div>
+
+<div class="focus-lock" id="focus-lock">
+  <div class="fo-layer" id="fo-l1"></div>
+  <div class="fo-layer" id="fo-l2"></div>
+  <div class="fo-block" id="fo-block"></div>
+  <div class="fo-center">
+    <div class="fo-kicker">超集中モード</div>
+    <div class="fo-time" id="fo-time">00:00</div>
+    <div class="fo-bar"><i id="fo-bar"></i></div>
+    <div class="fo-msg" id="fo-msg"></div>
+  </div>
+  <div class="fo-panel fo-done" id="fo-done">
+    <div class="fo-pt">おつかれさま</div>
+    <div class="fo-ps" id="fo-done-s"></div>
+    <button class="btn primary block" style="margin:0" onclick="closeFocusLock()">終了する</button>
+  </div>
+</div>
 
 <div id="toast" class="toast"></div>
 
@@ -1097,9 +1170,8 @@ function enterReorder(){
   const list=document.getElementById('quick-acts');
   if(list) list.classList.add('reordering');
   applyJiggle();
-  const d=document.getElementById('quick-done'), h=document.getElementById('quick-hint');
+  const d=document.getElementById('quick-done');
   if(d) d.style.display='inline-flex';
-  if(h) h.textContent='ドラッグで並べ替えています。終わったら「完了」。';
   if(navigator.vibrate){ try{ navigator.vibrate(10) }catch(e){} }
 }
 function exitReorder(){
@@ -1111,9 +1183,8 @@ function exitReorder(){
     list.classList.remove('reordering');
     [...list.children].forEach(el=>{ el.classList.remove('jiggle'); el.style.animationDelay=''; });
   }
-  const d=document.getElementById('quick-done'), h=document.getElementById('quick-hint');
+  const d=document.getElementById('quick-done');
   if(d) d.style.display='none';
-  if(h) h.textContent='長押ししたまま動かすと並べ替えできます（iPhoneのホーム画面と同じ）。';
   saveState();
 }
 function qcFlip(list,ghost,target,after){
@@ -2159,9 +2230,6 @@ function deckToday(){
         <button class="${memOrderOf(deckSid)==='add'?'on':''}" onclick="setMemOrder('${deckSid}','add')">追加順</button>
         <button class="${memOrderOf(deckSid)==='rand'?'on':''}" onclick="setMemOrder('${deckSid}','rand')">ランダム</button>
       </div>
-      <div class="hint" style="margin-top:6px">${memOrderOf(deckSid)==='add'
-        ? '登録した順に出ます。今日の分（未習得・復習）から順に進みます'
-        : '出る順番が毎回変わります（覚えたカードと新規を混ぜます）'}</div>
       <button class="btn primary block" style="margin-top:10px" onclick="startMemorize('${deckSid}')">暗記モード</button>
       <button class="btn block" style="margin-top:8px" ${st.total>=4?'':'disabled'} onclick="startQuiz('${deckSid}')">テストモード</button>
       ${st.total>=4?'':'<div class="hint" style="text-align:center;margin-top:8px">テストモードはカードが4件以上で使えます</div>'}
@@ -2217,8 +2285,8 @@ function startWeakSession(sid){
 }
 function sortOpts(kind){
   return kind==='prob'
-    ? [['add','追加順','登録した順'],['kana','五十音順','名前の順'],['tag','分野順','分野ごとにまとめる'],['rand','ランダム','出る順番が毎回変わります']]
-    : [['add','追加順','登録した順'],['kana','五十音順','名前の順'],['rand','ランダム','出る順番が毎回変わります']];
+    ? [['add','追加順'],['kana','五十音順'],['tag','分野順'],['rand','ランダム']]
+    : [['add','追加順'],['kana','五十音順'],['rand','ランダム']];
 }
 function deckList(kind){
   const os = sortOpts(kind);
@@ -2234,7 +2302,7 @@ function openSortSheet(kind){
   document.getElementById('sort-title').textContent = (kind==='prob'?'問題':'単語カード')+'の並び替え';
   document.getElementById('sort-list').innerHTML = sortOpts(kind).map(o=>
     `<div class="sort-row${cur===o[0]?' on':''}" onclick="setDeckSort('${kind}','${o[0]}');closeModal('modal-sort')">
-      <div style="flex:1"><div class="nm">${o[1]}</div><div class="ds">${o[2]}</div></div>
+      <div style="flex:1"><div class="nm">${o[1]}</div></div>
       <span class="ck">✓</span></div>`).join('');
   document.getElementById('modal-sort').classList.add('show');
 }
@@ -2972,12 +3040,200 @@ function setTheme(t){
   saveState(); applyTheme(); renderAll();
 }
 try{ matchMedia('(prefers-color-scheme: light)').addEventListener('change', ()=>{ if((state.settings||{}).theme==='auto'){ applyTheme(); renderAll(); } }); }catch(e){}
+
+/* ---------------- 超集中モード ---------------- */
+const FOCUS_KEY='studytime.focus';
+let focusCfg=(function(){
+  try{ const o=JSON.parse(localStorage.getItem(FOCUS_KEY)||'{}')||{};
+    return {dur:o.dur||45, iv:o.iv||15, msg:o.msg||'', on:!!o.on, endAt:o.endAt||0, startedAt:o.startedAt||0};
+  }catch(e){ return {dur:45,iv:15,msg:'',on:false,endAt:0,startedAt:0} }
+})();
+function saveFocusCfg(){ try{ localStorage.setItem(FOCUS_KEY, JSON.stringify(focusCfg)) }catch(e){} }
+function foc2(n){ return String(n).padStart(2,'0') }
+function focMins(ms){ const m=Math.max(1,Math.round(ms/60000)); return m>=60 ? (Math.floor(m/60)+'時間'+(m%60?m%60+'分':'')) : (m+'分') }
+
+function focDB(){ return new Promise((res,rej)=>{
+  let rq; try{ rq=indexedDB.open('studytime.focus',1) }catch(e){ rej(e); return }
+  rq.onupgradeneeded=function(){ const db=rq.result; if(!db.objectStoreNames.contains('imgs')) db.createObjectStore('imgs',{keyPath:'id'}) };
+  rq.onsuccess=function(){ res(rq.result) }; rq.onerror=function(){ rej(rq.error) };
+}) }
+async function focList(){ try{ const db=await focDB();
+  return await new Promise(function(res,rej){ const q=db.transaction('imgs','readonly').objectStore('imgs').getAll(); q.onsuccess=function(){ res(q.result||[]) }; q.onerror=function(){ rej(q.error) } }) }catch(e){ return [] } }
+async function focPut(o){ const db=await focDB();
+  return new Promise(function(res,rej){ const tx=db.transaction('imgs','readwrite'); tx.objectStore('imgs').put(o); tx.oncomplete=function(){ res() }; tx.onerror=function(){ rej(tx.error) } }) }
+async function focDel(id){ const db=await focDB();
+  return new Promise(function(res,rej){ const tx=db.transaction('imgs','readwrite'); tx.objectStore('imgs').delete(id); tx.oncomplete=function(){ res() }; tx.onerror=function(){ rej(tx.error) } }) }
+function focShrink(blob){ return new Promise(function(res,rej){
+  const fr=new FileReader();
+  fr.onload=function(){ const im=new Image();
+    im.onload=function(){ try{
+      const M=1500; let w=im.width,h=im.height; const k=Math.min(1,M/Math.max(w,h));
+      w=Math.max(1,Math.round(w*k)); h=Math.max(1,Math.round(h*k));
+      const cv=document.createElement('canvas'); cv.width=w; cv.height=h;
+      const g=cv.getContext('2d'); g.fillStyle='#0b0e14'; g.fillRect(0,0,w,h); g.drawImage(im,0,0,w,h);
+      res(cv.toDataURL('image/jpeg',.74));
+    }catch(e){ rej(e) } };
+    im.onerror=rej; im.src=fr.result };
+  fr.onerror=rej; fr.readAsDataURL(blob);
+}) }
+async function focAddBlob(b){ const d=await focShrink(b); await focPut({id:uid(),d:d,at:Date.now()}) }
+
+let focDurSel=45, focIvSel=15;
+function openFocusSetup(){
+  focDurSel=focusCfg.dur||45; focIvSel=focusCfg.iv||15;
+  const m=document.getElementById('foc-msg'); if(m) m.value=focusCfg.msg||'';
+  const c=document.getElementById('foc-custom'); if(c) c.value='';
+  const p=document.getElementById('foc-paste'); if(p) p.innerHTML='';
+  drawFocusChips(); renderFocusThumbs();
+  document.getElementById('modal-focus').classList.add('show');
+}
+function drawFocusChips(){
+  const d=document.getElementById('foc-durs');
+  if(d) d.innerHTML=[15,25,45,60,90].map(function(n){ return '<button class="'+(n===focDurSel?'on':'')+'" onclick="focSetDur('+n+')">'+n+'分</button>' }).join('');
+  const i=document.getElementById('foc-ivs');
+  if(i) i.innerHTML=[10,20,30,60].map(function(n){ return '<button class="'+(n===focIvSel?'on':'')+'" onclick="focSetIv('+n+')">'+n+'秒</button>' }).join('');
+}
+function focSetDur(n){ focDurSel=n; const c=document.getElementById('foc-custom'); if(c) c.value=''; drawFocusChips() }
+function focSetIv(n){ focIvSel=n; drawFocusChips() }
+async function renderFocusThumbs(){
+  const el=document.getElementById('foc-thumbs'); if(!el) return;
+  const list=(await focList()).sort(function(a,b){ return a.at-b.at });
+  el.innerHTML = list.length
+    ? list.map(function(o){ return '<div class="foc-th"><img src="'+o.d+'" alt="" /><button class="x" onclick="focRemove(\''+o.id+'\')">×</button></div>' }).join('')
+    : '<div class="foc-none">まだ画像がありません（未設定のときは暗い背景だけになります）</div>';
+}
+async function focRemove(id){ await focDel(id); renderFocusThumbs() }
+function focPickPaste(){ const p=document.getElementById('foc-paste'); if(p){ p.focus(); toast('コピーした画像をここに貼り付けてください') } }
+
+let focTick=null, focSlides=[], focSlideIdx=0, focSlideTimer=null, focWakelock=null;
+function focWake(){ try{ if(navigator.wakeLock && !focWakelock) navigator.wakeLock.request('screen').then(function(w){ focWakelock=w }).catch(function(){}) }catch(e){} }
+function focWakeOff(){ try{ if(focWakelock && focWakelock.release) focWakelock.release() }catch(e){} focWakelock=null }
+
+async function openFocusLock(){
+  const ov=document.getElementById('focus-lock'); if(!ov) return;
+  ov.classList.add('on');
+  document.body.style.overflow='hidden';
+  try{ focSlides=(await focList()).sort(function(a,b){ return a.at-b.at }) }catch(e){ focSlides=[] }
+  focSlideIdx=0; drawFocusSlide(true);
+  if(focSlideTimer) clearInterval(focSlideTimer);
+  if(focSlides.length>1){
+    const iv=Math.max(5,focusCfg.iv||15)*1000;
+    focSlideTimer=setInterval(function(){ focSlideIdx=(focSlideIdx+1)%focSlides.length; drawFocusSlide(false) }, iv);
+  }
+  if(focTick) clearInterval(focTick);
+  focTick=setInterval(focUpdate,250);
+  focUpdate();
+  try{ history.pushState({focus:1},'','') }catch(e){}
+}
+function drawFocusSlide(first){
+  const a=document.getElementById('fo-l1'), b=document.getElementById('fo-l2'); if(!a||!b) return;
+  if(!focSlides.length){
+    a.style.backgroundImage='linear-gradient(160deg,#0b1020,#16203a 45%,#080b12)';
+    a.classList.add('on'); b.classList.remove('on'); return;
+  }
+  const img=focSlides[focSlideIdx];
+  const cur=a.classList.contains('on') ? a : b;
+  const nxt=(cur===a) ? b : a;
+  if(first){ cur.style.backgroundImage='url("'+img.d+'")'; cur.classList.add('on'); nxt.classList.remove('on'); return }
+  nxt.style.backgroundImage='url("'+img.d+'")';
+  void nxt.offsetWidth;
+  nxt.classList.add('on');
+  setTimeout(function(){ cur.classList.remove('on') },1600);
+}
+function focUpdate(){
+  if(!focusCfg.on) return;
+  const el=document.getElementById('fo-time'); if(!el) return;
+  const total=Math.max(1000,focusCfg.dur*60000), left=focusCfg.endAt-Date.now();
+  if(left<=0){ finishFocus(); return }
+  const se=Math.ceil(left/1000);
+  el.textContent = se>=3600
+    ? (Math.floor(se/3600)+':'+foc2(Math.floor((se%3600)/60))+':'+foc2(se%60))
+    : (foc2(Math.floor(se/60))+':'+foc2(se%60));
+  const bar=document.getElementById('fo-bar'); if(bar) bar.style.width=Math.max(0,Math.min(100,(1-left/total)*100))+'%';
+  const mg=document.getElementById('fo-msg'); if(mg) mg.textContent=focusCfg.msg||'';
+}
+function finishFocus(){
+  const spent=Math.max(0,Date.now()-focusCfg.startedAt);
+  focusCfg.on=false; saveFocusCfg();
+  if(focTick){ clearInterval(focTick); focTick=null }
+  if(focSlideTimer){ clearInterval(focSlideTimer); focSlideTimer=null }
+  focWakeOff();
+  const d=document.getElementById('fo-done'); if(d) d.classList.add('on');
+  const sub=document.getElementById('fo-done-s'); if(sub) sub.textContent=focMins(spent)+'、集中できました。';
+  try{ if(navigator.vibrate) navigator.vibrate([130,90,130]) }catch(e){}
+  try{ if(document.fullscreenElement && document.exitFullscreen) document.exitFullscreen().catch(function(){}) }catch(e){}
+  renderFocusStatus();
+}
+function closeFocusLock(){
+  const ov=document.getElementById('focus-lock'); if(ov) ov.classList.remove('on');
+  const d=document.getElementById('fo-done'); if(d) d.classList.remove('on');
+  document.body.style.overflow='';
+  if(focTick){ clearInterval(focTick); focTick=null }
+  if(focSlideTimer){ clearInterval(focSlideTimer); focSlideTimer=null }
+  focWakeOff();
+  try{ if(document.fullscreenElement && document.exitFullscreen) document.exitFullscreen().catch(function(){}) }catch(e){}
+  focusCfg.on=false; saveFocusCfg();
+  const mg=document.getElementById('fo-msg'); if(mg) mg.textContent='';
+  const bar=document.getElementById('fo-bar'); if(bar) bar.style.width='0%';
+  renderFocusStatus();
+}
+
+async function startFocus(){
+  let min=focDurSel;
+  const c=document.getElementById('foc-custom'); const cv=c?parseInt(c.value,10):0;
+  if(cv>=1) min=Math.min(720,cv);
+  const m=document.getElementById('foc-msg');
+  focusCfg.msg=m?String(m.value||'').trim().slice(0,120):'';
+  focusCfg.dur=min; focusCfg.iv=focIvSel; focusCfg.startedAt=Date.now();
+  focusCfg.endAt=Date.now()+min*60000; focusCfg.on=true; saveFocusCfg();
+  closeModal('modal-focus'); renderFocusStatus();
+  await openFocusLock();
+  try{ const el=document.documentElement; if(el.requestFullscreen && !document.fullscreenElement){ const pr=el.requestFullscreen(); if(pr&&pr.catch) pr.catch(function(){}) } }catch(e){}
+  focWake();
+}
+function focusGoTap(){ if(focusCfg.on && focusCfg.endAt>Date.now()) openFocusLock(); else openFocusSetup() }
+function renderFocusStatus(){
+  const b=document.getElementById('focus-go'), s=document.getElementById('focus-status'); if(!b||!s) return;
+  if(focusCfg.on && focusCfg.endAt>Date.now()){
+    b.textContent='超集中モードに戻る';
+    s.textContent='実行中 · 残り約'+Math.max(1,Math.ceil((focusCfg.endAt-Date.now())/60000))+'分';
+  } else { b.textContent='超集中モードを開始'; s.textContent='' }
+}
+function initFocusUI(){
+  const f=document.getElementById('foc-file');
+  if(f) f.addEventListener('change', async function(e){
+    const fs=[].slice.call(e.target.files||[]); f.value='';
+    for(const file of fs){ try{ await focAddBlob(file) }catch(err){ toast('画像を読み込めませんでした') } }
+    renderFocusThumbs();
+  });
+  const p=document.getElementById('foc-paste');
+  if(p) p.addEventListener('paste', async function(e){
+    const items=[].slice.call((e.clipboardData&&e.clipboardData.items)||[]); let n=0;
+    for(const it of items){ if(it.type && it.type.indexOf('image')===0){ const b=it.getAsFile(); if(b){ try{ await focAddBlob(b); n++ }catch(err){} } } }
+    if(n){ e.preventDefault(); p.innerHTML=''; renderFocusThumbs(); toast(n+'枚を追加しました') }
+  });
+  document.addEventListener('keydown', function(e){
+    if(focusCfg.on && (e.key==='Escape' || e.key==='F5')){ e.preventDefault() }
+  }, true);
+  window.addEventListener('popstate', function(){ if(focusCfg.on){ try{ history.pushState({focus:1},'','') }catch(e){} } });
+  document.addEventListener('visibilitychange', function(){
+    if(!document.hidden && focusCfg.on){
+      const ov=document.getElementById('focus-lock'); if(ov) ov.classList.add('on');
+      focWake();
+    }
+  });
+  if(focusCfg.on && focusCfg.endAt>Date.now()){ openFocusLock() }
+  else if(focusCfg.on){ focusCfg.on=false; saveFocusCfg() }
+  renderFocusStatus();
+}
+
 function renderAll(){
   applyTheme();
   document.getElementById('home-date').textContent = fmtDateJP(new Date());
   renderTodayStats();
   renderQuickSwitch();
   renderRecent();
+  renderFocusStatus();
   renderHomePie();
   renderHomeAdvice();
   renderTimeline();
@@ -3006,6 +3262,7 @@ window.addEventListener('DOMContentLoaded', ()=>{
   if(navigator.storage && navigator.storage.persist) navigator.storage.persist().catch(()=>{});
   abSync(false);
   setInterval(()=>{ if(!document.hidden && abCfg()) abSync(false) }, 30000);
+  initFocusUI();
 });
 
 // Service Worker 登録（オフライン動作用）
