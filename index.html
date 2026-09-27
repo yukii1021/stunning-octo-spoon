@@ -427,6 +427,8 @@ a{color:var(--accent)}
 .fo-bar{width:min(70vw,400px);height:6px;border-radius:999px;background:rgba(255,255,255,.24);overflow:hidden}
 .fo-bar i{display:block;height:100%;width:0;background:#fff;border-radius:999px;transition:width .3s linear}
 .fo-msg{max-width:min(82vw,520px);font-size:15px;line-height:1.65;opacity:.94;white-space:pre-wrap;text-shadow:0 2px 16px rgba(0,0,0,.7)}
+.fo-esc{margin-top:16px;font-size:12.5px;opacity:.62;letter-spacing:.02em;text-shadow:0 2px 16px rgba(0,0,0,.7)}
+html.fo-locked,html.fo-locked body{overscroll-behavior:none}
 .fo-panel{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);z-index:5;display:none;flex-direction:column;gap:12px;width:min(84vw,340px);padding:22px 20px;border-radius:18px;background:rgba(14,18,28,.92);border:1px solid rgba(255,255,255,.16);text-align:center}
 .fo-panel.on{display:flex}
 .fo-pt{font-size:20px;font-weight:800}
@@ -873,6 +875,7 @@ a{color:var(--accent)}
     <div class="fo-time" id="fo-time">00:00</div>
     <div class="fo-bar"><i id="fo-bar"></i></div>
     <div class="fo-msg" id="fo-msg"></div>
+    <div class="fo-esc" id="fo-esc"></div>
   </div>
   <div class="fo-panel fo-done" id="fo-done">
     <div class="fo-pt">おつかれさま</div>
@@ -3112,6 +3115,8 @@ function focWakeOff(){ try{ if(focWakelock && focWakelock.release) focWakelock.r
 async function openFocusLock(){
   const ov=document.getElementById('focus-lock'); if(!ov) return;
   ov.classList.add('on');
+  document.documentElement.classList.add('fo-locked');
+  document.body.classList.add('fo-locked');
   document.body.style.overflow='hidden';
   try{ focSlides=(await focList()).sort(function(a,b){ return a.at-b.at }) }catch(e){ focSlides=[] }
   focSlideIdx=0; drawFocusSlide(true);
@@ -3122,7 +3127,7 @@ async function openFocusLock(){
   }
   if(focTick) clearInterval(focTick);
   focTick=setInterval(focUpdate,250);
-  focUpdate();
+  focUpdate(); focEscLabel();
   try{ history.pushState({focus:1},'','') }catch(e){}
 }
 function drawFocusSlide(first){
@@ -3159,7 +3164,8 @@ function finishFocus(){
   if(focSlideTimer){ clearInterval(focSlideTimer); focSlideTimer=null }
   focWakeOff();
   const d=document.getElementById('fo-done'); if(d) d.classList.add('on');
-  const sub=document.getElementById('fo-done-s'); if(sub) sub.textContent=focMins(spent)+'、集中できました。';
+  const sub=document.getElementById('fo-done-s');
+  if(sub){ let tx=focMins(spent)+'、集中できました。'; if(focusCfg.esc>0) tx+='（画面を離れた回数：'+focusCfg.esc+'回）'; sub.textContent=tx }
   try{ if(navigator.vibrate) navigator.vibrate([130,90,130]) }catch(e){}
   try{ if(document.fullscreenElement && document.exitFullscreen) document.exitFullscreen().catch(function(){}) }catch(e){}
   renderFocusStatus();
@@ -3167,6 +3173,7 @@ function finishFocus(){
 function closeFocusLock(){
   const ov=document.getElementById('focus-lock'); if(ov) ov.classList.remove('on');
   const d=document.getElementById('fo-done'); if(d) d.classList.remove('on');
+  document.documentElement.classList.remove('fo-locked'); document.body.classList.remove('fo-locked'); focHidden=false;
   document.body.style.overflow='';
   if(focTick){ clearInterval(focTick); focTick=null }
   if(focSlideTimer){ clearInterval(focSlideTimer); focSlideTimer=null }
@@ -3175,6 +3182,7 @@ function closeFocusLock(){
   focusCfg.on=false; saveFocusCfg();
   const mg=document.getElementById('fo-msg'); if(mg) mg.textContent='';
   const bar=document.getElementById('fo-bar'); if(bar) bar.style.width='0%';
+  const ee=document.getElementById('fo-esc'); if(ee) ee.textContent='';
   renderFocusStatus();
 }
 
@@ -3185,7 +3193,7 @@ async function startFocus(){
   const m=document.getElementById('foc-msg');
   focusCfg.msg=m?String(m.value||'').trim().slice(0,120):'';
   focusCfg.dur=min; focusCfg.iv=focIvSel; focusCfg.startedAt=Date.now();
-  focusCfg.endAt=Date.now()+min*60000; focusCfg.on=true; saveFocusCfg();
+  focusCfg.endAt=Date.now()+min*60000; focusCfg.on=true; focusCfg.esc=0; focHidden=false; saveFocusCfg();
   closeModal('modal-focus'); renderFocusStatus();
   await openFocusLock();
   try{ const el=document.documentElement; if(el.requestFullscreen && !document.fullscreenElement){ const pr=el.requestFullscreen(); if(pr&&pr.catch) pr.catch(function(){}) } }catch(e){}
@@ -3198,6 +3206,36 @@ function renderFocusStatus(){
     b.textContent='超集中モードに戻る';
     s.textContent='実行中 · 残り約'+Math.max(1,Math.ceil((focusCfg.endAt-Date.now())/60000))+'分';
   } else { b.textContent='超集中モードを開始'; s.textContent='' }
+}
+var focHidden=false;
+function focFull(){
+  try{ const el=document.documentElement; if(el.requestFullscreen && !document.fullscreenElement){ const pr=el.requestFullscreen(); if(pr&&pr.catch) pr.catch(function(){}) } }catch(e){}
+}
+function focAway(){
+  if(focHidden) return;
+  focHidden=true;
+  if(!focusCfg.on || focusCfg.endAt<=Date.now()) return;
+  focusCfg.esc=(focusCfg.esc||0)+1; saveFocusCfg();
+  focEscLabel();
+  try{ if(navigator.vibrate) navigator.vibrate(30) }catch(e){}
+}
+function focBack(){
+  focHidden=false;
+  if(!focusCfg.on || focusCfg.endAt<=Date.now()) return;
+  const ov=document.getElementById('focus-lock'); if(ov) ov.classList.add('on');
+  document.documentElement.classList.add('fo-locked'); document.body.classList.add('fo-locked');
+  document.body.style.overflow='hidden';
+  const dd=document.getElementById('fo-done'); if(dd) dd.classList.remove('on');
+  focFull(); focWake();
+  if(focTick) clearInterval(focTick);
+  focTick=setInterval(focUpdate,250);
+  focUpdate(); focEscLabel();
+  try{ history.pushState({focus:1},'','') }catch(e){}
+}
+function focEscLabel(){
+  const e=document.getElementById('fo-esc'); if(!e) return;
+  const n=focusCfg.esc||0;
+  e.textContent=(focusCfg.on && focusCfg.endAt>Date.now() && n>0) ? ('この集中中に画面を離れた回数：'+n+'回') : '';
 }
 function initFocusUI(){
   const f=document.getElementById('foc-file');
@@ -3216,12 +3254,16 @@ function initFocusUI(){
     if(focusCfg.on && (e.key==='Escape' || e.key==='F5')){ e.preventDefault() }
   }, true);
   window.addEventListener('popstate', function(){ if(focusCfg.on){ try{ history.pushState({focus:1},'','') }catch(e){} } });
-  document.addEventListener('visibilitychange', function(){
-    if(!document.hidden && focusCfg.on){
-      const ov=document.getElementById('focus-lock'); if(ov) ov.classList.add('on');
-      focWake();
-    }
-  });
+  document.addEventListener('visibilitychange', function(){ if(document.hidden) focAway(); else focBack() });
+  window.addEventListener('blur', function(){ if(document.hidden) focAway() });
+  window.addEventListener('pagehide', function(){ focAway() });
+  window.addEventListener('freeze', function(){ focAway() });
+  window.addEventListener('pageshow', function(e){ if(e&&e.persisted) focBack() });
+  document.addEventListener('resume', function(){ focBack() });
+  document.addEventListener('touchmove', function(e){ if(focusCfg.on && focusCfg.endAt>Date.now()){ if(e.cancelable) e.preventDefault() } }, {passive:false});
+  document.addEventListener('contextmenu', function(e){ if(focusCfg.on && focusCfg.endAt>Date.now()) e.preventDefault() }, true);
+  const flEl=document.getElementById('focus-lock');
+  if(flEl) flEl.addEventListener('click', function(){ focFull() });
   if(focusCfg.on && focusCfg.endAt>Date.now()){ openFocusLock() }
   else if(focusCfg.on){ focusCfg.on=false; saveFocusCfg() }
   renderFocusStatus();
