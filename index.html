@@ -689,7 +689,7 @@ html.fo-locked,html.fo-locked body{overscroll-behavior:none}
     </div>
 
 
-    <div class="hint" style="text-align:center;margin-top:16px">StudyTime v2.18 · ローカル保存＋GitHub自動バックアップ</div>
+    <div class="hint" style="text-align:center;margin-top:16px">StudyTime v2.19 · ローカル保存＋GitHub自動バックアップ</div>
   </div>
 
 </div>
@@ -871,6 +871,9 @@ html.fo-locked,html.fo-locked body{overscroll-behavior:none}
   <div class="foc-paste" id="foc-paste" contenteditable="true" data-ph="ここに画像を貼り付け（Ctrl+V／長押し→貼り付け）"></div>
   <div class="foc-lbl">表示するメッセージ（任意）</div>
   <input id="foc-msg" type="text" maxlength="120" placeholder="例：絶対に間に合わせる" />
+  <div class="foc-lbl">離脱の数え方</div>
+  <div class="seg" id="foc-escs" style="grid-template-columns:repeat(3,1fr)"></div>
+  <div class="hint" style="margin-top:6px">「消灯を除外」は、電源ボタンで画面を消しただけでは回数に入れません。</div>
   <div class="row" style="margin-top:16px;gap:8px">
     <button class="btn ghost block" style="margin:0" onclick="closeModal('modal-focus')">閉じる</button>
     <button class="btn primary block" style="margin:0" onclick="startFocus()">開始する</button>
@@ -3227,9 +3230,12 @@ function drawFocusChips(){
   if(d) d.innerHTML=[15,25,45,60,90].map(function(n){ return '<button class="'+(n===focDurSel?'on':'')+'" onclick="focSetDur('+n+')">'+n+'分</button>' }).join('');
   const i=document.getElementById('foc-ivs');
   if(i) i.innerHTML=[10,20,30,60].map(function(n){ return '<button class="'+(n===focIvSel?'on':'')+'" onclick="focSetIv('+n+')">'+n+'秒</button>' }).join('');
+  const e2=document.getElementById('foc-escs');
+  if(e2) e2.innerHTML=[['power','消灯を除外'],['all','全部数える'],['off','数えない']].map(function(q){ return '<button class="'+(q[0]===focEscMode()?'on':'')+'" onclick="focSetEsc(\''+q[0]+'\')">'+q[1]+'</button>' }).join('');
 }
 function focSetDur(n){ focDurSel=n; const c=document.getElementById('foc-custom'); if(c) c.value=''; drawFocusChips() }
 function focSetIv(n){ focIvSel=n; drawFocusChips() }
+function focSetEsc(m){ focusCfg.escMode=m; saveFocusCfg(); drawFocusChips() }
 async function renderFocusThumbs(){
   const el=document.getElementById('foc-thumbs'); if(!el) return;
   const list=(await focList()).sort(function(a,b){ return a.at-b.at });
@@ -3297,7 +3303,7 @@ function finishFocus(){
   focWakeOff();
   const d=document.getElementById('fo-done'); if(d) d.classList.add('on');
   const sub=document.getElementById('fo-done-s');
-  if(sub){ let tx=focMins(spent)+'、集中できました。'; if(focusCfg.esc>0) tx+='（画面を離れた回数：'+focusCfg.esc+'回）'; sub.textContent=tx }
+  if(sub){ let tx=focMins(spent)+'、集中できました。'; if(focusCfg.esc>0) tx+='（集中中にアプリを離れた回数：'+focusCfg.esc+'回）'; sub.textContent=tx }
   try{ if(navigator.vibrate) navigator.vibrate([130,90,130]) }catch(e){}
   try{ if(document.fullscreenElement && document.exitFullscreen) document.exitFullscreen().catch(function(){}) }catch(e){}
   renderFocusStatus();
@@ -3305,7 +3311,7 @@ function finishFocus(){
 function closeFocusLock(){
   const ov=document.getElementById('focus-lock'); if(ov) ov.classList.remove('on');
   const d=document.getElementById('fo-done'); if(d) d.classList.remove('on');
-  document.documentElement.classList.remove('fo-locked'); document.body.classList.remove('fo-locked'); focHidden=false;
+  document.documentElement.classList.remove('fo-locked'); document.body.classList.remove('fo-locked'); focHidden=false; focAwayAt=0;
   document.body.style.overflow='';
   if(focTick){ clearInterval(focTick); focTick=null }
   if(focSlideTimer){ clearInterval(focSlideTimer); focSlideTimer=null }
@@ -3325,7 +3331,7 @@ async function startFocus(){
   const m=document.getElementById('foc-msg');
   focusCfg.msg=m?String(m.value||'').trim().slice(0,120):'';
   focusCfg.dur=min; focusCfg.iv=focIvSel; focusCfg.startedAt=Date.now();
-  focusCfg.endAt=Date.now()+min*60000; focusCfg.on=true; focusCfg.esc=0; focHidden=false; saveFocusCfg();
+  focusCfg.endAt=Date.now()+min*60000; focusCfg.on=true; focusCfg.esc=0; focHidden=false; focAwayAt=0; saveFocusCfg();
   closeModal('modal-focus'); renderFocusStatus();
   await openFocusLock();
   try{ const el=document.documentElement; if(el.requestFullscreen && !document.fullscreenElement){ const pr=el.requestFullscreen(); if(pr&&pr.catch) pr.catch(function(){}) } }catch(e){}
@@ -3343,16 +3349,28 @@ var focHidden=false;
 function focFull(){
   try{ const el=document.documentElement; if(el.requestFullscreen && !document.fullscreenElement){ const pr=el.requestFullscreen(); if(pr&&pr.catch) pr.catch(function(){}) } }catch(e){}
 }
+var focAwayAt=0, focAwaySwitch=false, focBlurAt=0;
+var FOC_GRACE_MS=120000;
+function focEscMode(){ return focusCfg.escMode||'power' }
+function focBlurMark(){ focBlurAt=Date.now() }
 function focAway(){
   if(focHidden) return;
   focHidden=true;
-  if(!focusCfg.on || focusCfg.endAt<=Date.now()) return;
-  focusCfg.esc=(focusCfg.esc||0)+1; saveFocusCfg();
-  focEscLabel();
-  try{ if(navigator.vibrate) navigator.vibrate(30) }catch(e){}
+  focAwayAt=Date.now();
+  focAwaySwitch=(Date.now()-focBlurAt)<1500;
+}
+function focAwayJudge(){
+  if(!focAwayAt) return false;
+  var away=Date.now()-focAwayAt; focAwayAt=0;
+  if(!focusCfg.on || focusCfg.endAt<=Date.now()) return false;
+  var m=focEscMode();
+  if(m==='off') return false;
+  if(m==='all') return away>=3000;
+  return focAwaySwitch && away>=FOC_GRACE_MS;
 }
 function focBack(){
   focHidden=false;
+  if(focAwayJudge()){ focusCfg.esc=(focusCfg.esc||0)+1; saveFocusCfg(); try{ if(navigator.vibrate) navigator.vibrate(30) }catch(e){} }
   if(!focusCfg.on || focusCfg.endAt<=Date.now()) return;
   const ov=document.getElementById('focus-lock'); if(ov) ov.classList.add('on');
   document.documentElement.classList.add('fo-locked'); document.body.classList.add('fo-locked');
@@ -3367,7 +3385,7 @@ function focBack(){
 function focEscLabel(){
   const e=document.getElementById('fo-esc'); if(!e) return;
   const n=focusCfg.esc||0;
-  e.textContent=(focusCfg.on && focusCfg.endAt>Date.now() && n>0) ? ('この集中中に画面を離れた回数：'+n+'回') : '';
+  e.textContent=(focusCfg.on && focusCfg.endAt>Date.now() && n>0) ? ('この集中中にアプリを離れた回数：'+n+'回') : '';
 }
 function initFocusUI(){
   const f=document.getElementById('foc-file');
@@ -3387,7 +3405,7 @@ function initFocusUI(){
   }, true);
   window.addEventListener('popstate', function(){ if(focusCfg.on){ try{ history.pushState({focus:1},'','') }catch(e){} } });
   document.addEventListener('visibilitychange', function(){ if(document.hidden) focAway(); else focBack() });
-  window.addEventListener('blur', function(){ if(document.hidden) focAway() });
+  window.addEventListener('blur', function(){ focBlurMark(); if(document.hidden){ focAway(); if(Date.now()-focAwayAt<1500) focAwaySwitch=true } });
   window.addEventListener('pagehide', function(){ focAway() });
   window.addEventListener('freeze', function(){ focAway() });
   window.addEventListener('pageshow', function(e){ if(e&&e.persisted) focBack() });
