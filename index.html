@@ -458,16 +458,6 @@ html.fo-locked,html.fo-locked body{overscroll-behavior:none}
       </div>
     </div>
 
-    <div class="now-card" style="margin-top:14px;padding:16px 18px">
-      <div class="now-label">ホーム画面ウィジェット</div>
-      <div class="now-sub" id="wshare-sub" style="margin-top:6px">下のボタンを押すと、ウィジェットが読むデータをクリップボードにコピーします</div>
-      <div class="actions" style="margin-top:12px">
-        <button class="btn primary" onclick="widgetExport()">コピー</button>
-        <button class="btn" onclick="widgetExportFile()">ファイルに保存</button>
-        <button class="btn" onclick="widgetExportShow()">内容を確認</button>
-      </div>
-      <pre id="wshare-json" style="display:none;margin-top:12px;padding:10px;border:1px solid var(--line);border-radius:10px;background:var(--bg-elev-2);color:var(--text-dim);font-size:11px;line-height:1.45;max-height:220px;overflow:auto;white-space:pre-wrap;word-break:break-all"></pre>
-    </div>
 
     <div class="grid-3">
       <div class="stat">
@@ -685,11 +675,11 @@ html.fo-locked,html.fo-locked body{overscroll-behavior:none}
         <button class="btn primary" onclick="abSync(true)">今すぐ同期</button>
         <button class="btn danger" onclick="abDisconnect()">接続を解除</button>
       </div>
-      <div class="hint">iPhoneとiPadに同じ3項目を設定すると、記録が自動で揃います。アプリを開いたとき・記録を変えた約3秒後・開いている間は30秒ごとに同期します。画面の色は端末ごとの設定です。</div>
+      <div class="hint">iPhoneとiPadに同じ3項目を設定すると、記録が自動で揃います。アプリを開いたとき・記録を変えた約3秒後・開いている間は15秒ごとに同期します。片方で活動を切り替えると、もう片方にも数秒〜十数秒で反映されます。<br>「進行中」は常に1つだけ。重なった記録は自動で切り詰めるので、二重に記録されません。画面の色は端末ごとの設定です。</div>
     </div>
 
 
-    <div class="hint" style="text-align:center;margin-top:16px">StudyTime v2.20 · ローカル保存＋GitHub自動バックアップ</div>
+    <div class="hint" style="text-align:center;margin-top:16px">StudyTime v2.21 · ローカル保存＋GitHub自動バックアップ</div>
   </div>
 
 </div>
@@ -986,6 +976,21 @@ function loadState(){
   });
   saveState();
 }
+/* 進行中は1つだけ／重なった記録は後ろの記録の開始で切る（端末間のズレ対策） */
+function normalizeSessionsIn(st){
+  st.sessions = st.sessions||[];
+  const arr = st.sessions.slice().sort((a,b)=> new Date(a.start).getTime()-new Date(b.start).getTime());
+  for(let i=0;i<arr.length;i++){
+    const s = arr[i]; if(!s || !s.start) continue;
+    const isLast = (i === arr.length-1);
+    const nxt = isLast ? null : arr[i+1];
+    if(!s.end && nxt) s.end = nxt.start;                       // 遅れて届いた「進行中」は次の記録の開始で閉じる
+    if(s.end && nxt && new Date(s.end).getTime() > new Date(nxt.start).getTime()) s.end = nxt.start;  // 重なりは切る
+    if(s.end && new Date(s.end).getTime() < new Date(s.start).getTime()) s.end = isLast ? s.start : nxt.start;
+  }
+  st.sessions = arr;
+  return st;
+}
 function normalizeState(){
   state.cards = (state.cards||[]).filter(c=>c.sid && (state.subjects||[]).some(x=>x.id===c.sid));
   state.cards = state.cards||[];
@@ -995,10 +1000,11 @@ function normalizeState(){
   state.activities = state.activities||[];
   state.sessions = state.sessions||[];
   state.exams = state.exams||[];
+  normalizeSessionsIn(state);
   return state;
 }
 function saveState(){
-  try{ stampChanges(); localStorage.setItem(STORE_KEY, JSON.stringify(state)); syncBadge('saved'); abSchedule(); updateBadge() }
+  try{ normalizeSessionsIn(state); stampChanges(); localStorage.setItem(STORE_KEY, JSON.stringify(state)); syncBadge('saved'); abSchedule(); updateBadge() }
   catch(e){ syncBadge('error'); toast('保存できませんでした'); }
 }
 function syncBadge(kind){
@@ -1986,21 +1992,44 @@ ${label}`)) return;
 }
 function saveSession(){
   const s = state.sessions.find(x=>x.id===editingSessionId); if(!s) return;
+  const oldEnd = s.end ? new Date(s.end).getTime() : null;
   const start = parseDateTimeLocal(document.getElementById('e-start').value);
   const endRaw = document.getElementById('e-end').value;
   const end = endRaw ? parseDateTimeLocal(endRaw) : null;
   const actId = document.getElementById('e-activity').value;
   if(!start){ toast('開始時刻が必要'); return; }
   if(end && new Date(end)<=new Date(start)){ toast('終了は開始より後に'); return; }
+  const ns = new Date(start).getTime(), ne = end ? new Date(end).getTime() : null;
   s.start=start; s.end=end; s.activityId=actId;
-  // If we just cleared end, close any other "current" sessions
-  if(!end){
-    state.sessions.forEach(x=>{ if(x.id!==s.id && !x.end) x.end = start });
+  // 終了を空にしたら、他の「進行中」はこの開始時刻で閉じる
+  if(!end){ state.sessions.forEach(x=>{ if(x.id!==s.id && !x.end) x.end = start }); }
+  // 前後の記録を自動で揃える（つながっていた記録はつないだまま）
+  const others = state.sessions.filter(x=>x.id!==s.id);
+  let prev=null, next=null;
+  others.forEach(x=>{
+    const xs = new Date(x.start).getTime();
+    if(xs <= ns && (!prev || xs > new Date(prev.start).getTime())) prev = x;
+    if(xs >= ns && (!next || xs < new Date(next.start).getTime())) next = x;
+  });
+  let aligned = 0;
+  if(prev && prev.end){
+    const ps = new Date(prev.start).getTime(), pe = new Date(prev.end).getTime();
+    if(pe >= ns && ps < ns){ prev.end = start; aligned++ }        // 直前の記録の終了を開始に合わせる
   }
+  if(next && end){
+    const nxs = new Date(next.start).getTime();
+    const wasContiguous = (oldEnd !== null && nxs === oldEnd);
+    if(wasContiguous || nxs <= ne){                                // 直後の記録の開始を終了に合わせる
+      const neE = next.end ? new Date(next.end).getTime() : null;
+      if(neE === null || neE > ne){ next.start = end; aligned++ }
+      else { next.start = end; next.end = end }
+    }
+  }
+  normalizeSessionsIn(state);
   saveState();
   closeModal('modal-session');
   renderAll();
-  toast('保存しました');
+  toast(aligned ? '保存しました（前後の記録も揃えました）' : '保存しました');
 }
 let recentOpen = false;
 function recentMore(){ recentLimit = Math.min(recentLimit + RECENT_STEP, RECENT_MAX); renderRecent(); }
@@ -2059,8 +2088,6 @@ function renderRecent(){
   }
 }
 
-/* ---------------- ホーム画面ウィジェット連携（案A/C/F） ---------------- */
-function wgtTomorrowKey(){ return addDaysKey(1) }
 function reviewCounts(){
   const t = todayKey(), tm = addDaysKey(1);
   let soon=0, todayN=0, tom=0;
@@ -2076,101 +2103,6 @@ function reviewCounts(){
   return {soon:soon, today:todayN, tomorrow:tom, total:soon+todayN+tom};
 }
 function reviewTotal(){ return reviewCounts().total }
-function wgtDayMinutes(d){
-  const ds = dayStart(d), de = dayEnd(d); let m = 0;
-  sessionsInRange(ds,de).forEach(function(s){
-    const a = findActivity(s.activityId); if(!a || !a.isStudy) return;
-    m += sessionMinutesInRange(s,ds,de);
-  });
-  return m;
-}
-function widgetPayload(){
-  const now = Date.now();
-  const from = dayStart(new Date()), to = dayEnd(new Date());
-  let study=0, total=0, sleep=0;
-  sessionsInRange(from,to).forEach(function(s){
-    const a = findActivity(s.activityId); if(!a) return;
-    const m = sessionMinutesInRange(s,from,to); total += m;
-    if(a.isStudy) study += m;
-  });
-  const sFrom = new Date(); sFrom.setDate(sFrom.getDate()-1); sFrom.setHours(20,0,0,0);
-  sessionsInRange(sFrom,new Date()).forEach(function(s){
-    const a = findActivity(s.activityId); if(!isSleepAct(a)) return;
-    sleep += sessionMinutesInRange(s,sFrom,new Date());
-  });
-  const WD = ['日','月','火','水','木','金','土'], days = [];
-  for(let i=6;i>=0;i--){ const d = new Date(); d.setDate(d.getDate()-i);
-    days.push({k:todayKey(d), w:WD[d.getDay()], min:Math.round(wgtDayMinutes(d))}) }
-  const wk   = days.reduce(function(a,b){ return a+b.min },0);
-  const best = days.reduce(function(a,b){ return Math.max(a,b.min) },0);
-  let streak = 0;
-  (state.subjects||[]).forEach(function(sj){ streak = Math.max(streak, streakDays(sj.id)) });
-  const cur = currentSession(), ca = cur ? findActivity(cur.activityId) : null;
-  const cs  = (ca && ca.subjectId) ? findSubject(ca.subjectId) : null;
-  const nowObj = cur ? {
-      on:true, name:(ca?ca.name:'不明'), color:(ca?ca.color:'#999'),
-      study:!!(ca&&ca.isStudy), subject:(cs?cs.name:''),
-      start:new Date(cur.start).getTime(),
-      elapsedMin:Math.floor((now-new Date(cur.start).getTime())/60000)
-    } : {on:false};
-  const fOn = !!(focusCfg.on && focusCfg.endAt>now);
-  return {
-    app:'StudyTime', kind:'widget', v:1, at:now, date:todayKey(),
-    today:{study:Math.round(study), goal:+(state.goals.daily||0),
-           total:Math.round(total), sleep:Math.round(sleep)},
-    week:{days:days, study:Math.round(wk), goal:+(state.goals.weekly||0),
-          avg:Math.round(wk/7), best:Math.round(best), streak:streak},
-    now:nowObj,
-    review:reviewCounts(),
-    focus:{on:fOn, dur:(focusCfg.dur||45),
-           leftMin:(fOn?Math.max(0,Math.ceil((focusCfg.endAt-now)/60000)):0),
-           esc:(focusCfg.esc||0)}
-  };
-}
-function widgetJSON(){ try{ return JSON.stringify(widgetPayload()) }catch(e){ return '' } }
-function copyFallback(t){
-  try{
-    const ta = document.createElement('textarea'); ta.value = t;
-    ta.setAttribute('readonly',''); ta.style.position='fixed'; ta.style.top='-1000px';
-    document.body.appendChild(ta); ta.focus(); ta.select();
-    const ok = document.execCommand('copy'); ta.remove(); return ok;
-  }catch(e){ return false }
-}
-function copyText(t){
-  return new Promise(function(res){
-    try{
-      if(navigator.clipboard && navigator.clipboard.writeText){
-        navigator.clipboard.writeText(t).then(function(){ res(true) }).catch(function(){ res(copyFallback(t)) });
-        return;
-      }
-    }catch(e){}
-    res(copyFallback(t));
-  });
-}
-async function widgetExport(){
-  const s = widgetJSON();
-  if(!s){ toast('書き出しに失敗しました'); return }
-  const ok = await copyText(s);
-  const el = document.getElementById('wshare-sub');
-  if(ok){
-    if(el) el.textContent = 'コピー済み ' + fmtTime(new Date()) + ' · ウィジェットが次回の更新で読み取ります';
-    toast('コピーしました');
-  }else{
-    if(el) el.textContent = 'コピーできませんでした。「ファイルに保存」をお使いください';
-    toast('コピーできませんでした');
-  }
-  updateBadge();
-}
-function widgetExportFile(){
-  const s = widgetJSON();
-  if(!s){ toast('書き出しに失敗しました'); return }
-  downloadFile('studytime-widget.json', s, 'application/json');
-}
-function widgetExportShow(){
-  const p = document.getElementById('wshare-json'); if(!p) return;
-  if(p.style.display === 'none'){ p.style.display='block'; p.textContent = widgetJSON() }
-  else p.style.display = 'none';
-}
 function updateBadge(){
   try{
     if(!navigator.setAppBadge) return;
@@ -3003,14 +2935,18 @@ function mergeStates(L, R){
   SYNC_COLS.forEach(k=>{
     const map = new Map(), order = [];
     const add = o=>{ const ex = map.get(o.id);
-      if(!ex){ map.set(o.id,o); order.push(o.id) } else if((o.u||0)>(ex.u||0) || ((o.u||0)===(ex.u||0) && JSON.stringify(o)>JSON.stringify(ex))) map.set(o.id,o) };
+      if(!ex){ map.set(o.id,o); order.push(o.id); return }
+      const ou=(o.u||0), eu=(ex.u||0);
+      if(ou>eu){ map.set(o.id,o); return }
+      if(ou<eu) return;
+      const oC=!!o.end, eC=!!ex.end;
+      if(oC!==eC){ if(oC) map.set(o.id,o); return }   // 同時刻なら「終了済み」を優先（進行中のまま残さない）
+      if(JSON.stringify(o)>JSON.stringify(ex)) map.set(o.id,o) };
     (L[k]||[]).forEach(add); (R[k]||[]).forEach(add);
     out[k] = order.map(id=>map.get(id)).filter(o=>!(del[k+':'+o.id] >= (o.u||0)));
   });
   out.sessions.sort((a,b)=>a.start<b.start?-1:a.start>b.start?1:0);
-  // 計測中は1つだけ：古い「計測中」は次の記録の開始で終わらせる
-  const open = out.sessions.filter(x=>!x.end);
-  for(let i=0;i<open.length-1;i++){ open[i].end = open[i+1].start; open[i].u = Date.now() }
+  normalizeSessionsIn(out);
   if((R.goalsU||0) > (L.goalsU||0)){ out.goals = R.goals; out.goalsU = R.goalsU }
   if((R.streakU||0) > (L.streakU||0)){ out.streak = R.streak; out.streakU = R.streakU }
   out.settings = L.settings; // 画面の色などは端末ごと
@@ -3499,7 +3435,7 @@ window.addEventListener('DOMContentLoaded', ()=>{
   // ブラウザにデータ保持をお願いする（消されにくくする）
   if(navigator.storage && navigator.storage.persist) navigator.storage.persist().catch(()=>{});
   abSync(false);
-  setInterval(()=>{ if(!document.hidden && abCfg()) abSync(false) }, 30000);
+  setInterval(()=>{ if(!document.hidden && abCfg()) abSync(false) }, 15000);
   initFocusUI();
 });
 
