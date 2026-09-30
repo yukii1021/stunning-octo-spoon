@@ -679,7 +679,7 @@ html.fo-locked,html.fo-locked body{overscroll-behavior:none}
     </div>
 
 
-    <div class="hint" style="text-align:center;margin-top:16px">StudyTime v2.21 · ローカル保存＋GitHub自動バックアップ</div>
+    <div class="hint" style="text-align:center;margin-top:16px">StudyTime v2.22 · ローカル保存＋GitHub自動バックアップ</div>
   </div>
 
 </div>
@@ -2029,7 +2029,7 @@ function saveSession(){
   saveState();
   closeModal('modal-session');
   renderAll();
-  toast(aligned ? '保存しました（前後の記録も揃えました）' : '保存しました');
+  toast('保存しました');
 }
 let recentOpen = false;
 function recentMore(){ recentLimit = Math.min(recentLimit + RECENT_STEP, RECENT_MAX); renderRecent(); }
