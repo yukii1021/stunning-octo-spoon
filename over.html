@@ -2,11 +2,11 @@
 <html lang="ja">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
 <title>Study Over</title>
 <style>
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-html,body{margin:0;height:100%;background:var(--bg)}
+html,body{margin:0;height:100%;background:var(--bg,#0c1420);overscroll-behavior:none;-webkit-text-size-adjust:100%}
 body{font-family:var(--ui);overflow:hidden;color:var(--text)}
   :root{
   --danger:#ff385c; --dangerLine:#6b2b36; --dangerSoft:#2a1218; --dangerSoft2:#3a1820;
@@ -22,7 +22,7 @@ body{font-family:var(--ui);overflow:hidden;color:var(--text)}
   --acc:#7cc4ff; --acc2:#9d8bff; --ok:#4ade80; --warn:#fbbf24; --bad:#ff6b6b;
 }
 /* ---------- Study Over テーマ（切替可） ---------- */
-#app.th-light{
+.th-light{
   --bg:#f2f6fb; --bg2:#e9f0f8; --card:#ffffff; --card2:#f6fafe; --card3:#eef4fa;
   --line:#d3dde9; --line2:#b6c8db; --accLine:#8ab8e2;
   --text:#16202c; --dim:#46586e; --mute:#5f7086;
@@ -32,7 +32,7 @@ body{font-family:var(--ui);overflow:hidden;color:var(--text)}
   --fx:repeating-linear-gradient(180deg,rgba(20,40,70,.03) 0 1px,transparent 1px 3px);
   --bgGrad:radial-gradient(120% 100% at 50% 0%,#ffffff 0%,#eff5fb 55%,#e5eef8 100%);
 }
-#app.th-navy{
+.th-navy{
   --bg:#0c1420; --bg2:#0a111b; --card:#132030; --card2:#18293c; --card3:#0f1a26;
   --line:#24384f; --line2:#2f4a66; --accLine:#2f6f9e;
   --text:#eaf4fd; --dim:#9db6cd; --mute:#6d8aa4;
@@ -42,7 +42,7 @@ body{font-family:var(--ui);overflow:hidden;color:var(--text)}
   --fx:repeating-linear-gradient(180deg,rgba(120,200,255,.05) 0 1px,transparent 1px 3px);
   --bgGrad:radial-gradient(125% 105% at 50% 0%,#16273c 0%,#0c1420 58%,#080e16 100%);
 }
-#app.th-dark{
+.th-dark{
   --bg:#0a0709; --bg2:#070405; --card:#150e10; --card2:#1f1416; --card3:#120a0c;
   --line:#4a2028; --line2:#5c2a34; --accLine:#6b2b36;
   --text:#f7e9e6; --dim:#c49a9a; --mute:#a57575;
@@ -52,7 +52,7 @@ body{font-family:var(--ui);overflow:hidden;color:var(--text)}
   --fx:repeating-linear-gradient(180deg,rgba(255,255,255,.035) 0 1px,transparent 1px 3px);
   --bgGrad:radial-gradient(130% 105% at 50% 118%,#3d1a12 0%,#1a0e0e 42%,#0a0709 100%);
 }
-#app.th-cyber{
+.th-cyber{
   --bg:#06090f; --bg2:#04070b; --card:#0b141d; --card2:#0f1c27; --card3:#08111a;
   --line:#1b3a4a; --line2:#245063; --accLine:#1ec8ff;
   --text:#e8fbff; --dim:#8fc0cf; --mute:#5f8b9b;
@@ -64,21 +64,21 @@ body{font-family:var(--ui);overflow:hidden;color:var(--text)}
 }
 /* 入り口の2画面は常に危険な赤で固定 */
 #scPw,#scBoot{
-  --bg:#0a0709; --bg2:#070405; --card:#1a1012; --card2:#241619; --card3:#120a0c;
+  --bg:#050204; --bg2:#040203; --card:#1a1012; --card2:#241619; --card3:#120a0c;
   --line:#5c2a34; --line2:#7a3540; --accLine:#8a3f4c;
   --text:#fbeceb; --dim:#d0abab; --mute:#bd9393;
   --acc:#ff385c; --accSoft:#2a1218; --accSoft2:#3a1820; --accTint:#ff8098;
   --acc2:#c8a24a; --cy:#1ec8ff; --ok:#7ee0a0; --okLine:#3f8f68; --warn:#e8b44a; --bad:#ff5566;
-  --track:#2a1a1d; --hud:rgba(12,7,8,.72); --hud2:rgba(10,7,8,.9); --scrim:rgba(6,3,4,.94);
-  --fx:repeating-linear-gradient(180deg,rgba(255,255,255,.035) 0 1px,transparent 1px 3px);
-  --bgGrad:radial-gradient(130% 105% at 50% 118%,#3d1a12 0%,#1a0e0e 42%,#0a0709 100%);
+  --track:#2a1a1d; --hud:rgba(4,2,3,.82); --hud2:rgba(3,2,2,.95); --scrim:rgba(3,1,2,.97);
+  --fx:repeating-linear-gradient(180deg,rgba(255,56,92,.075) 0 1px,transparent 1px 4px);
+  --bgGrad:radial-gradient(130% 105% at 50% 118%,#2a0f0c 0%,#0c0404 38%,#000 100%);
 }
-#app.th-light{--mark:#14181f;--markTx:#ffffff;--markRing:rgba(20,30,45,.22)}
-#app.th-navy{--mark:#04090f;--markTx:#eaf4fd;--markRing:rgba(150,205,255,.55)}
-#app.th-dark{--mark:#0a0507;--markTx:#ffd9df;--markRing:rgba(255,128,152,.5)}
-#app.th-cyber{--mark:#02060a;--markTx:#7fe3ff;--markRing:rgba(30,200,255,.55)}
+.th-light{--mark:#14181f;--markTx:#ffffff;--markRing:rgba(20,30,45,.22)}
+.th-navy{--mark:#04090f;--markTx:#eaf4fd;--markRing:rgba(150,205,255,.55)}
+.th-dark{--mark:#0a0507;--markTx:#ffd9df;--markRing:rgba(255,128,152,.5)}
+.th-cyber{--mark:#02060a;--markTx:#7fe3ff;--markRing:rgba(30,200,255,.55)}
 #scPw,#scBoot{--mark:#0a0507;--markTx:#ffd9df;--markRing:rgba(255,128,152,.5)}
-#app{position:relative;height:100dvh;--dww:600px;overflow:hidden;background:var(--bg)}
+#app{position:relative;height:100vh;height:100dvh;padding-top:calc(env(safe-area-inset-top,0px) + 8px);padding-bottom:env(safe-area-inset-bottom,0px);--dww:600px;overflow:hidden;background:var(--bg,#0c1420)}
 .scr{position:absolute;inset:0;display:none;flex-direction:column;overflow:hidden;color:var(--text)}
 .scr.on{display:flex}
 .so{background:var(--bgGrad);color:var(--text)}
@@ -141,22 +141,24 @@ body{font-family:var(--ui);overflow:hidden;color:var(--text)}
 .pwwrap.shake{animation:shk .38s}
 @keyframes shk{0%,100%{transform:translateX(0)}20%{transform:translateX(-9px)}40%{transform:translateX(8px)}60%{transform:translateX(-5px)}80%{transform:translateX(3px)}}
 .pad{display:grid;grid-template-columns:repeat(3,1fr);gap:11px}
-.pad button{height:60px;border-radius:13px;border:1px solid var(--line2);background:var(--card2);color:var(--text);font-family:var(--mono);font-size:21px;cursor:pointer}
+.pad button{height:60px;touch-action:manipulation;-webkit-user-select:none;user-select:none;border-radius:13px;border:1px solid var(--line2);background:var(--card2);color:var(--text);font-family:var(--mono);font-size:21px;cursor:pointer}
 .pad button:active{background:var(--accSoft)}
 .pad button.fn{font-size:12.5px;letter-spacing:.1em;color:var(--mute)}
 
 /* ============ 3. 起動演出 ============ */
-#scBoot{background:#070405;font-family:var(--mono);padding:52px 60px;justify-content:flex-start}
-#scBoot .term{font-size:14.5px;line-height:2.05;color:#8fe6bd;letter-spacing:.04em;white-space:pre-wrap}
-#scBoot .term .r{color:var(--bad)}
-#scBoot .term .d{color:var(--mute)}
-#scBoot .cur{display:inline-block;width:9px;height:16px;background:#8fe6bd;vertical-align:-2px;animation:bl .55s steps(1) infinite}
+#scBoot{background:#000;font-family:var(--mono);padding:52px 60px;justify-content:flex-start}
+#scBoot:before{content:"";position:absolute;inset:0;z-index:1;pointer-events:none;background:radial-gradient(115% 85% at 50% 52%,rgba(255,56,92,.16) 0%,rgba(20,0,3,.6) 38%,rgba(0,0,0,.93) 72%,#000 100%)}
+#scBoot:after{content:"";position:absolute;left:0;right:0;top:0;height:40%;z-index:1;pointer-events:none;background:linear-gradient(180deg,rgba(255,56,92,.10),transparent)}
+#scBoot .term{position:relative;z-index:2;font-size:14.5px;line-height:2.05;color:#e8c9ce;letter-spacing:.04em;white-space:pre-wrap;text-shadow:0 0 14px rgba(255,56,92,.28)}
+#scBoot .term .r{color:#ff385c;text-shadow:0 0 16px rgba(255,56,92,.9)}
+#scBoot .term .d{color:#8d6a70}
+#scBoot .cur{display:inline-block;width:9px;height:16px;background:#ff385c;box-shadow:0 0 14px #ff385c;vertical-align:-2px;animation:bl .55s steps(1) infinite}
 @keyframes bl{50%{opacity:0}}
 .fx{position:absolute;inset:0;pointer-events:none;z-index:6;
   background:var(--fx)}
-#scBoot.glitch{animation:gl .34s steps(2) 2}
+#scBoot.glitch{animation:gl .46s steps(2) 3}
 @keyframes gl{0%{transform:translate(0);filter:none}25%{transform:translate(-7px,2px);filter:hue-rotate(35deg)}50%{transform:translate(6px,-3px);filter:invert(.14)}75%{transform:translate(-3px,1px)}100%{transform:none}}
-.bootskip{position:absolute;bottom:22px;left:0;right:0;text-align:center;color:var(--mute);font-size:11px;letter-spacing:.24em}
+.bootskip{position:absolute;bottom:22px;left:0;right:0;text-align:center;color:#8d6a70;font-size:11px;letter-spacing:.24em;z-index:3}
 
 /* ============ 共通 HUD（Study Over） ============ */
 .ovhud{flex:0 0 auto;display:flex;align-items:center;gap:18px;padding:12px 22px;border-bottom:1px solid var(--line);background:var(--hud);backdrop-filter:blur(6px)}
@@ -413,6 +415,39 @@ body.dw .drawer{transform:none}
   </div>
 </section>
 
+<!-- ================= 4b. 設定 ================= -->
+<section class="scr so" id="scCfg">
+  <div class="fx"></div>
+  <div class="ovhud">
+    <button onclick="go('scHome')">‹ BACK</button>
+    <div class="lg" style="margin-left:6px">SETTINGS <em>OVER</em></div>
+    <div class="sp"></div>
+    <div class="stat"><span class="k">THEME</span><span class="v" id="thNow"></span></div>
+  </div>
+  <div class="body" style="flex:1;min-height:0;overflow:auto;padding:20px 22px 34px">
+    <div class="card c12">
+      <div class="ch"><span class="tt">THEME</span><div class="sp"></div><span class="mini">画面の色</span></div>
+      <div class="thpick" id="thpick"></div>
+    </div>
+    <div class="card c12" style="margin-top:16px">
+      <div class="ch"><span class="tt">BOOT</span></div>
+      <div class="rowset" style="border:0;padding:0">
+        <div><div class="t">起動演出</div><div class="d">開いたときの演出</div></div>
+        <div class="sp"></div>
+        <div class="segs" id="segBoot"><button data-v="full" class="on">標準</button><button data-v="skip">スキップ</button></div>
+      </div>
+    </div>
+    <div class="card c12" style="margin-top:16px">
+      <div class="ch"><span class="tt">SHEET</span></div>
+      <div class="rowset" style="border:0;padding:0">
+        <div><div class="t">解答用紙の幅</div><div class="d">右の解答用紙の広さ</div></div>
+        <div class="sp"></div>
+        <div class="segs" id="segW"><button data-v="600" class="on">標準</button><button data-v="520">せまい</button></div>
+      </div>
+    </div>
+  </div>
+</section>
+
 <!-- ================= 5. 過去問一覧 ================= -->
 <section class="scr so" id="scList">
   <div class="fx"></div>
@@ -465,6 +500,7 @@ body.dw .drawer{transform:none}
 </div>
 
 <script>
+function _on(id,ev,fn){ var el=document.getElementById(id); if(el) el.addEventListener(ev,fn); }
 /* ================= 画面遷移 ================= */
 function soExit(){ try{ if(document.referrer && document.referrer.indexOf('index.html')>=0){ history.back(); return; } }catch(e){} location.href='index.html'; }
 function go(id){
@@ -503,7 +539,6 @@ var LINES=[
   ['> AUTH 0 0 0 0 ................ OK',''],
   ['> MOUNT OVERCLOCK CORE ........ OK',''],
   ['OVERCLOCK MODE ACTIVE','r'],
-  ['理解できるまで、終わらない。','d']
 ];
 var bootTimer=null, bootDone=false;
 function bootGo(){ if(bootCfg==='skip'){ go('scHome'); renderHome(); return; }
@@ -889,19 +924,19 @@ function renderThemes(){
 }
 function setTheme(id){
   curTheme=id;
-  document.getElementById('app').className='th-'+id;
+  document.getElementById('app').className='th-'+id; document.documentElement.className='th-'+id;
   renderThemes();
   try{ localStorage.setItem('so_theme',id); }catch(e){}
 }
-document.getElementById('thpick').addEventListener('click',function(e){
+_on('thpick','click',function(e){
   var b=e.target.closest('button'); if(b) setTheme(b.dataset.th);
 });
-document.getElementById('segBoot').addEventListener('click',function(e){
+_on('segBoot','click',function(e){
   var b=e.target.closest('button'); if(!b) return;
   bootCfg=b.dataset.v;
   this.querySelectorAll('button').forEach(function(x){ x.classList.toggle('on',x===b); });
 });
-document.getElementById('segW').addEventListener('click',function(e){
+_on('segW','click',function(e){
   var b=e.target.closest('button'); if(!b) return;
   document.getElementById('app').style.setProperty('--dww',b.dataset.v+'px');
   this.querySelectorAll('button').forEach(function(x){ x.classList.toggle('on',x===b); });
@@ -917,7 +952,7 @@ function loadJSON(paths,cb){ var i=0; (function t(){ if(i>=paths.length){ cb(nul
 /* ================= 初期化 ================= */
 loadJSON(['data/manifest.json','manifest.json'],function(m){ if(!m) return; MAN=m; renderList(); });
 renderList();
-document.getElementById('app').className='th-'+curTheme;
+document.getElementById('app').className='th-'+curTheme; document.documentElement.className='th-'+curTheme;
 renderThemes();
 var yb=document.getElementById('yrbar');
 yb.addEventListener('click', function(e){
