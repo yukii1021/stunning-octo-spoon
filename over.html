@@ -78,7 +78,7 @@ body{font-family:var(--ui);overflow:hidden;color:var(--text)}
 .th-dark{--mark:#0a0507;--markTx:#ffd9df;--markRing:rgba(255,128,152,.5)}
 .th-cyber{--mark:#02060a;--markTx:#7fe3ff;--markRing:rgba(30,200,255,.55)}
 #scPw,#scBoot{--mark:#0a0507;--markTx:#ffd9df;--markRing:rgba(255,128,152,.5)}
-#app{position:relative;height:100vh;height:100dvh;padding-top:calc(env(safe-area-inset-top,0px) + 8px);padding-bottom:env(safe-area-inset-bottom,0px);--dww:600px;overflow:hidden;background:var(--bg,#0c1420)}
+#app{position:relative;height:100vh;height:100dvh;padding-top:max(calc(env(safe-area-inset-top,0px) + 8px),40px);padding-bottom:env(safe-area-inset-bottom,0px);--dww:600px;overflow:hidden;background:var(--bg,#0c1420)}
 .scr{position:absolute;inset:0;display:none;flex-direction:column;overflow:hidden;color:var(--text)}
 .scr.on{display:flex}
 .so{background:var(--bgGrad);color:var(--text)}
@@ -352,8 +352,8 @@ body.dw .drawer{transform:none}
     <div class="sp"></div>
     <button onclick="go('scCfg')">設定</button>
     <div class="stat"><span class="k">共テまで</span><span class="v hot" id="cd">107</span><span class="k">日</span></div>
-    <div class="stat"><span class="k">推定</span><span class="v">671</span><span class="k">/1000</span></div>
-    <div class="stat"><span class="k">目標</span><span class="v">780</span></div>
+    <div class="stat"><span class="k">推定</span><span class="v" id="est">—</span><span class="k">/1000</span></div>
+    <div class="stat"><span class="k">目標</span><span class="v" id="goalv">780</span></div>
     <button onclick="soExit()">EXIT</button>
   </div>
   <div class="body">
@@ -363,9 +363,9 @@ body.dw .drawer{transform:none}
       <div class="card hotcard c4">
         <div class="ch"><span class="tt">PAST EXAMS</span></div>
         <div class="lbl">過去問を解く</div>
-        <div class="big">2026<small>年度 本試験</small></div>
+        <div class="big" id="peBig">—</div>
         <div class="desc">本物の解答用紙と同じマーク欄で解きます。採点すると単元ごとの穴が記録されます。</div>
-        <div class="exrow"><span>数学ⅠＡ</span><span>88欄 / 100点</span><span>70分</span></div>
+        <div class="exrow" id="peChips"></div>
         <button class="btnr" onclick="go('scList')">
           科目を選ぶ
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h13M13 6l6 6-6 6"/></svg>
@@ -378,7 +378,7 @@ body.dw .drawer{transform:none}
         <svg class="chart" viewBox="0 0 660 200" preserveAspectRatio="none" id="chart"></svg>
         <div class="lgd">
           <span><i style="background:var(--acc)"></i>数学ⅠＡ</span>
-          <span><i style="background:var(--cy)"></i>8科目 平均得点率</span>
+          <span><i style="background:var(--cy)"></i>全科目 平均得点率</span>
           <span><i style="background:var(--acc2)"></i>目標 80%</span>
         </div>
       </div>
@@ -399,18 +399,21 @@ body.dw .drawer{transform:none}
       <div class="card c3">
         <div class="ch"><span class="tt">TARGET</span></div>
         <div class="lbl">広島大学 情報科学部</div>
-        <div class="big">−109<small>点</small></div>
+        <div class="big" id="tgtGap">—<small>点</small></div>
         <div class="desc">B型 6教科8科目 1000点満点</div>
-        <div class="bar"><i style="width:86%"></i></div>
-        <div class="lgd" style="margin-top:7px"><span>到達 86%</span></div>
+        <div class="bar"><i id="tgtBar" style="width:0%"></i></div>
+        <div class="lgd" style="margin-top:7px"><span id="tgtPct">記録待ち</span></div>
         <div class="ch" style="margin:18px 0 7px"><span class="tt">STREAK</span></div>
-        <div style="font-size:26px;font-family:var(--num);color:var(--text);line-height:1">12<small style="font-size:12px;color:var(--dim);margin-left:6px;letter-spacing:.1em">日連続</small></div>
+        <div style="font-size:26px;font-family:var(--num);color:var(--text);line-height:1"><span id="streakN">0</span><small style="font-size:12px;color:var(--dim);margin-left:6px;letter-spacing:.1em">日連続</small></div>
         <div class="streak" id="streak"></div>
       </div>
 
     </div>
-    <div style="margin-top:16px;font-family:var(--mono);font-size:10.5px;letter-spacing:.1em;color:var(--mute)">
-      数値はすべて試作のサンプルです / 単元タグは仮置き / 過去問の正解・配点は個人利用の試作
+    <div id="recInfo" style="margin-top:16px;font-family:var(--mono);font-size:10.5px;letter-spacing:.1em;color:var(--mute)">
+      記録はまだありません
+    </div>
+    <div style="margin-top:5px;font-family:var(--mono);font-size:10.5px;letter-spacing:.1em;color:var(--mute)">
+      単元タグは仮置き / 過去問の正解・配点は個人利用の試作
     </div>
   </div>
 </section>
@@ -445,6 +448,22 @@ body.dw .drawer{transform:none}
         <div class="segs" id="segW"><button data-v="600" class="on">標準</button><button data-v="520">せまい</button></div>
       </div>
     </div>
+    <div class="card c12" style="margin-top:16px">
+      <div class="ch"><span class="tt">GOAL</span><div class="sp"></div><span class="mini">1000点満点</span></div>
+      <div class="rowset" style="border:0;padding:0">
+        <div><div class="t">目標点</div><div class="d">到達度の基準</div></div>
+        <div class="sp"></div>
+        <div class="segs" id="segGoal"><button data-v="700">700</button><button data-v="750">750</button><button data-v="780" class="on">780</button><button data-v="800">800</button></div>
+      </div>
+    </div>
+    <div class="card c12" style="margin-top:16px">
+      <div class="ch"><span class="tt">RECORD</span></div>
+      <div class="rowset" style="border:0;padding:0">
+        <div><div class="t">採点の記録</div><div class="d" id="recCnt">0 件</div></div>
+        <div class="sp"></div>
+        <button class="exBtn gh" id="soClear" style="padding:8px 14px">記録を消す</button>
+      </div>
+    </div>
   </div>
 </section>
 
@@ -468,7 +487,7 @@ body.dw .drawer{transform:none}
 <section class="scr so" id="scExam">
   <div class="exTop">
     <button class="exBtn gh" style="padding:8px 14px" onclick="quitExam()">‹ 中断</button>
-    <div class="nm">数学Ⅰ，数学Ａ<small>2026 年度 本試験 ／ 100点 ／ 88欄</small></div>
+    <div class="nm" id="exNm">—</div>
     <div class="sp"></div>
     <div class="clock" id="clock">70:00</div>
   </div>
@@ -576,77 +595,165 @@ document.getElementById('scBoot').addEventListener('click', function(){
 });
 
 /* ================= ホーム描画 ================= */
-var SUBJ=[['国語',62],['数学ⅠＡ',74],['数学ⅡＢＣ',66],['英語',71],['情報Ⅰ',80],['物理',55],['化学',61],['地歴公民',68]];
-var UNITS=[
-  ['データの分析','数学ⅠＡ',42,12],
-  ['図形の性質','数学ⅠＡ',51,9],
-  ['場合の数と確率','数学ⅠＡ',58,8],
-  ['統計的な推測','数学ⅡＢＣ',63,6],
-  ['図形と計量','数学ⅠＡ',71,4],
-  ['2次関数','数学ⅠＡ',78,2],
-  ['数と式','数学ⅠＡ',84,0]
-];
-var SER1=[54,61,58,66,72,74], SER2=[57,62,61,67,71,78], YEARS=['2021','2022','2023','2024','2025','2026'];
+var SO_KEY='so_runs_v1', YRS=['2021','2022','2023','2024','2025','2026'];
+var SUBJM={
+  Japanese:{n:'国語'}, Math_IA:{n:'数学ⅠＡ'}, Math_IIBC:{n:'数学ⅡＢＣ'},
+  English_Reading:{n:'英語Ｒ'}, Information_I:{n:'情報Ⅰ'},
+  Physics:{n:'物理'}, Chemistry:{n:'化学'}, GeographyIntegrated_Geography:{n:'地理総合，地理探究'}
+};
+function soRuns(){ try{ var a=JSON.parse(localStorage.getItem(SO_KEY)||'[]'); return (a&&a.length)?a:[]; }catch(e){ return []; } }
+function soPush(r){ var a=soRuns(); a.push(r); if(a.length>500) a=a.slice(-500); try{ localStorage.setItem(SO_KEY,JSON.stringify(a)); }catch(e){} }
+function soClear(){ try{ localStorage.removeItem(SO_KEY); }catch(e){} renderHome(); renderGoal(); }
+function soGoal(){ var g=0; try{ g=parseInt(localStorage.getItem('so_goal')||'780',10); }catch(e){} return (g>0?g:780); }
+function soSetGoal(v){ try{ localStorage.setItem('so_goal',String(v)); }catch(e){} renderGoal(); renderHome(); }
+function soName(s,fallback){ return (SUBJM[s]&&SUBJM[s].n)||fallback||s||'—'; }
+function soRate(r){ return (r&&r.total)?(r.got/r.total):0; }
+function soDayKey(d){ return d.getFullYear()+'-'+('0'+(d.getMonth()+1)).slice(-2)+'-'+('0'+d.getDate()).slice(-2); }
+function soEsc(s){ return String(s==null?'':s).split('&').join('&amp;').split('<').join('&lt;').split('>').join('&gt;').split('"').join('&quot;'); }
+function soAgg(){
+  var runs=soRuns(), latest={}, units={}, byYear={}, iaYear={}, days={}, nOk=0;
+  runs.forEach(function(r){
+    if(!r||!r.t) return;
+    if(!latest[r.subj]||r.t>=latest[r.subj].t) latest[r.subj]=r;
+    byYear[r.y]=byYear[r.y]||{g:0,t:0,n:0};
+    byYear[r.y].g+=r.got; byYear[r.y].t+=r.total; byYear[r.y].n++;
+    if(r.subj==='Math_IA') iaYear[r.y]=r;
+    if(r.ok!==0) nOk++;
+    var u=r.units||{};
+    Object.keys(u).forEach(function(k){ units[k]=units[k]||{g:0,t:0}; units[k].g+=u[k].g; units[k].t+=u[k].t; });
+    days[soDayKey(new Date(r.t))]=1;
+  });
+  return {runs:runs,latest:latest,units:units,byYear:byYear,iaYear:iaYear,days:days,nOk:nOk};
+}
+function soEstimate(A){
+  var ks=Object.keys(A.latest);
+  if(!ks.length) return null;
+  var s=0; ks.forEach(function(k){ s+=soRate(A.latest[k]); });
+  return {est:Math.round(s/ks.length*1000), cov:ks.length};
+}
+function soStreak(A){
+  var d=new Date(), n=0;
+  if(!A.days[soDayKey(d)]){ d.setDate(d.getDate()-1); if(!A.days[soDayKey(d)]) return 0; }
+  while(A.days[soDayKey(d)]){ n++; d.setDate(d.getDate()-1); }
+  return n;
+}
+function renderGoal(){
+  var el=document.getElementById('segGoal'); if(!el) return;
+  var g=soGoal(), bs=el.querySelectorAll('button');
+  for(var i=0;i<bs.length;i++) bs[i].classList.toggle('on', parseInt(bs[i].dataset.v,10)===g);
+  var rc=document.getElementById('recCnt'); if(rc) rc.textContent=soRuns().length+' 件';
+}
+_on('segGoal','click',function(e){ var b=e.target.closest('button'); if(b){ soSetGoal(parseInt(b.dataset.v,10)); if(b.parentNode) renderGoal(); } });
+_on('soClear','click',function(){ if(window.confirm('採点の記録をすべて消します。よろしいですか')) soClear(); });
 
 function renderHome(){
+  var A=soAgg(), E=soEstimate(A), GOAL=soGoal();
+  var gv=document.getElementById('goalv'); if(gv) gv.textContent=GOAL;
+  var ev=document.getElementById('est'); if(ev) ev.textContent=(E?E.est:'—');
+
+  /* 過去問カード */
+  var py=2026, pe='main', cnt=0;
+  if(MAN&&MAN.length){
+    var best=null;
+    MAN.forEach(function(p){ if(!best||p.y>best.y) best=p; });
+    if(best){ py=best.y; pe=best.exam; }
+    cnt=MAN.filter(function(p){ return p.y===py; }).length;
+  }
+  var pb=document.getElementById('peBig'); if(pb) pb.innerHTML=py+'<small>年度 '+examLabel(pe)+'</small>';
+  var pc=document.getElementById('peChips');
+  if(pc){
+    var mine=A.runs.filter(function(r){ return r.y===py; });
+    var c=cnt?('<span>収録 '+cnt+' 科目</span>'):'';
+    if(mine.length){ var last=mine[mine.length-1]; c+='<span>前回 '+soEsc(last.name)+' '+last.got+' / '+last.total+'点</span>'; }
+    pc.innerHTML=c;
+  }
+
   /* 推移グラフ */
-  var W=660,H=200,pl=44,pr=14,pt=14,pb=26;
-  var max=100,min=30;
-  function X(i){ return pl+(W-pl-pr)*i/(SER1.length-1); }
-  function Y(v){ return pt+(H-pt-pb)*(1-(v-min)/(max-min)); }
+  var W=660,H=200,pl=44,pr=14,pt=14,pb2=26,max=100,min=30;
+  function X(i){ return pl+(W-pl-pr)*i/(YRS.length-1); }
+  function Y(v){ return pt+(H-pt-pb2)*(1-(v-min)/(max-min)); }
   var s='';
   for(var g=30;g<=100;g+=10){
     s+='<line x1="'+pl+'" y1="'+Y(g)+'" x2="'+(W-pr)+'" y2="'+Y(g)+'" stroke="var(--line2)" stroke-width="1"/>';
     s+='<text x="'+(pl-9)+'" y="'+(Y(g)+4)+'" fill="var(--mute)" font-size="10" font-family="monospace" text-anchor="end">'+g+'</text>';
   }
-  for(var i=0;i<YEARS.length;i++){
-    s+='<text x="'+X(i)+'" y="'+(H-7)+'" fill="var(--mute)" font-size="10" font-family="monospace" text-anchor="middle">'+YEARS[i]+'</text>';
-  }
+  for(var i=0;i<YRS.length;i++) s+='<text x="'+X(i)+'" y="'+(H-7)+'" fill="var(--mute)" font-size="10" font-family="monospace" text-anchor="middle">'+YRS[i]+'</text>';
   s+='<line x1="'+pl+'" y1="'+Y(80)+'" x2="'+(W-pr)+'" y2="'+Y(80)+'" stroke="var(--acc2)" stroke-width="1.4" stroke-dasharray="6 5"/>';
-  function line(arr,color){
-    var d='';
-    for(var i=0;i<arr.length;i++) d+=(i?' L':'M')+X(i)+' '+Y(arr[i]);
+  function poly(arr,color){
+    var d='', pts=[];
+    for(var k=0;k<arr.length;k++){ if(arr[k]==null) continue; d+=(pts.length?' L':'M')+X(k)+' '+Y(arr[k]); pts.push([X(k),Y(arr[k])]); }
+    if(!pts.length) return '';
     var o='<path d="'+d+'" fill="none" stroke="'+color+'" stroke-width="2.6" stroke-linejoin="round"/>';
-    for(var j=0;j<arr.length;j++) o+='<circle cx="'+X(j)+'" cy="'+Y(arr[j])+'" r="3.4" fill="var(--card3)" stroke="'+color+'" stroke-width="2.2"/>';
+    for(var m=0;m<pts.length;m++) o+='<circle cx="'+pts[m][0]+'" cy="'+pts[m][1]+'" r="3.4" fill="var(--card3)" stroke="'+color+'" stroke-width="2.2"/>';
     return o;
   }
-  s+=line(SER2,'var(--cy)')+line(SER1,'var(--acc)');
-  s+='<text x="'+(X(5)+6)+'" y="'+(Y(74)+17)+'" fill="var(--accTint)" font-size="11.5" font-family="monospace" text-anchor="end">74</text>';
+  var allAvg=[], iaArr=[], has=false;
+  for(var k2=0;k2<YRS.length;k2++){
+    var b2=A.byYear[YRS[k2]], ia=A.iaYear[YRS[k2]];
+    allAvg.push(b2?Math.round(b2.g/b2.t*100):null);
+    iaArr.push(ia?Math.round(soRate(ia)*100):null);
+    if(b2) has=true;
+  }
+  s+=poly(allAvg,'var(--cy)')+poly(iaArr,'var(--acc)');
+  if(!has) s+='<text x="'+(W/2)+'" y="'+(H/2)+'" fill="var(--mute)" font-size="13" text-anchor="middle">採点するとここに推移が出ます</text>';
   document.getElementById('chart').innerHTML=s;
 
-  /* 推奨問題 */
+  /* 単元ごとの推奨問題 */
   var r='';
-  UNITS.slice(0,5).forEach(function(u){
-    var cls=u[2]<60?'lo':(u[2]<75?'mid':'hi');
-    r+='<div class="rec"><div class="nm">'+u[0]+'<small>'+u[1]+' ／ 正答率 '+u[2]+'%</small></div>'+
-       '<div class="rt '+cls+'">'+u[2]+'%</div>'+
-       (u[3]>0?'<button class="go">推奨 '+u[3]+'問</button>':'<button class="go" style="opacity:.45">習得済</button>')+'</div>';
+  var UK=Object.keys(A.units).map(function(k){ return [k,A.units[k].g,A.units[k].t,A.units[k].t?A.units[k].g/A.units[k].t:0]; })
+        .filter(function(u){ return u[2]>0; }).sort(function(a,b){ return a[3]-b[3]; }).slice(0,5);
+  if(!UK.length){ r='<div style="color:var(--mute);font-size:12.5px;line-height:1.8">採点すると、単元ごとの穴がここに出ます</div>'; }
+  else UK.forEach(function(u){
+    var pc2=Math.round(u[3]*100), cls=pc2<60?'lo':(pc2<75?'mid':'hi'), n=Math.max(3,Math.round((1-u[3])*20));
+    r+='<div class="rec"><div class="nm">'+soEsc(u[0])+'<small>'+u[1]+' / '+u[2]+'点 ／ 正答率 '+pc2+'%</small></div>'+
+       '<div class="rt '+cls+'">'+pc2+'%</div>'+
+       (pc2<90?'<button class="go">推奨 '+n+'問</button>':'<button class="go" style="opacity:.45">習得済</button>')+'</div>';
   });
   document.getElementById('reclist').innerHTML=r;
 
-  /* 科目 */
-  var sj='';
-  SUBJ.forEach(function(x){
-    var lo=x[1]<65;
-    sj+='<div class="it"><div class="tp">'+x[0]+'<b>'+x[1]+'%</b></div><div class="bar'+(lo?'':' g')+'"><i style="width:'+x[1]+'%"></i></div></div>';
-  });
+  /* 科目別（最後に解いた記録） */
+  var sj='', ks=Object.keys(A.latest);
+  if(!ks.length){ sj='<div style="color:var(--mute);font-size:12.5px;line-height:1.8">まだ記録がありません</div>'; }
+  else{
+    ks.sort(function(a,b){ return soRate(A.latest[a])-soRate(A.latest[b]); });
+    ks.forEach(function(k){
+      var p2=Math.round(soRate(A.latest[k])*100);
+      sj+='<div class="it"><div class="tp">'+soName(k,A.latest[k].name)+'<b>'+p2+'%</b></div><div class="bar'+(p2<65?'':' g')+'"><i style="width:'+p2+'%"></i></div></div>';
+    });
+  }
   document.getElementById('subjlist').innerHTML=sj;
 
-  /* 苦手TOP5 */
-  var w='';
-  UNITS.slice(0,5).forEach(function(u,i){
-    w+='<div class="weak"><span class="rk">0'+(i+1)+'</span><span class="sp">'+u[0]+'</span><span class="pc">'+u[2]+'%</span></div>';
-  });
-  var wl=document.getElementById('weaklist'); if(wl) wl.innerHTML=w;
+  /* 目標との差・到達度 */
+  var gap=document.getElementById('tgtGap'), tb=document.getElementById('tgtBar'), tp=document.getElementById('tgtPct');
+  if(E){
+    var diff=GOAL-E.est, over=diff<=0, pcv=Math.min(100,Math.round(E.est/GOAL*100));
+    if(gap) gap.innerHTML=(over?'+':'−')+Math.abs(diff)+'<small>点</small>';
+    if(tb) tb.style.width=pcv+'%';
+    if(tp) tp.textContent='到達 '+pcv+'% ／ '+E.cov+' 科目の記録から';
+  }else{
+    if(gap) gap.innerHTML='—<small>点</small>';
+    if(tb) tb.style.width='0%';
+    if(tp) tp.textContent='記録待ち';
+  }
 
-  /* 連続 */
-  var st='',pat=[1,1,1,1,1,0,1,1,1,1,1,1,1,1];
-  pat.forEach(function(p){ st+='<i class="'+(p?'on':'')+'" style="height:'+(p?(38+Math.round(Math.random()*14)):14)+'%"></i>'; });
+  /* 連続日数（直近14日） */
+  var st='', now=new Date(), sn=soStreak(A);
+  for(var q=13;q>=0;q--){
+    var dd=new Date(now.getFullYear(),now.getMonth(),now.getDate()-q);
+    var on=!!A.days[soDayKey(dd)];
+    st+='<i class="'+(on?'on':'')+'" style="height:'+(on?'100%':'14%')+'"></i>';
+  }
   document.getElementById('streak').innerHTML=st;
+  var snEl=document.getElementById('streakN'); if(snEl) snEl.textContent=sn;
+
+  /* 記録の状況 */
+  var ri=document.getElementById('recInfo');
+  if(ri) ri.textContent = A.runs.length? ('採点 '+A.runs.length+' 件 ／ '+Object.keys(A.latest).length+' 科目を記録') : '記録はまだありません';
 
   /* カウントダウン */
   var d=Math.ceil((new Date('2027-01-16T00:00:00+09:00')-new Date())/86400000);
   document.getElementById('cd').textContent=(d>0?d:0);
+  renderGoal();
 }
 
 /* ================= 過去問一覧 ================= */
@@ -753,7 +860,9 @@ function renderPages(){
   }
 }
 function runExam(){
-  buildFlat(); marks={}; curSec=0; left=70*60;
+  buildFlat(); marks={}; curSec=0; left=(PAPER.min||70)*60;
+  var _nm=document.getElementById('exNm');
+  if(_nm) _nm.innerHTML=PAPER.name+'<small>'+PAPER.y+' 年度 '+examLabel(PAPER.exam)+' ／ '+PAPER.score+'点 ／ '+FLAT.length+'欄</small>';
   renderPages();
   renderDwHead(); renderDw(); paintClock(); paintCnt();
   document.getElementById('res').classList.remove('on');
@@ -855,12 +964,12 @@ function gradeExam(){
     need.slice(3).forEach(function(r){ r.drop=1; });
   }
   secRes.forEach(function(r){ if(!r.drop){ got+=r.got; } });
-  var pct=Math.round(got);
-  var h='<div class="hd"><div class="k">RESULT ／ 数学Ⅰ，数学Ａ ／ 2026 本試験</div>'+
-        '<div class="sc">'+pct+'<small> / '+(PAPER.score||100)+'</small></div>'+
+  var tot0=PAPER.score||100, pctR=tot0?Math.round(got/tot0*100):0;
+  var h='<div class="hd"><div class="k">RESULT ／ '+soEsc(PAPER.name)+' ／ '+PAPER.y+' '+examLabel(PAPER.exam)+'</div>'+
+        '<div class="sc">'+Math.round(got)+'<small> / '+tot0+'</small></div>'+
         '<div class="ds">マーク '+Object.keys(marks).length+' / '+FLAT.length+' 欄 ／ 使用時間 '+fmtUse()+'</div></div>';
-  h+='<div class="ubar"><i style="width:'+pct+'%;background:linear-gradient(90deg,var(--acc),var(--acc2))"></i><i style="width:'+(100-pct)+'%;background:var(--track)"></i></div>';
-  h+='<div class="ublgd"><span><i style="background:var(--acc)"></i>得点 '+pct+'点</span><span><i style="background:var(--track)"></i>失点 '+(100-pct)+'点</span></div>';
+  h+='<div class="ubar"><i style="width:'+pctR+'%;background:linear-gradient(90deg,var(--acc),var(--acc2))"></i><i style="width:'+(100-pctR)+'%;background:var(--track)"></i></div>';
+  h+='<div class="ublgd"><span><i style="background:var(--acc)"></i>得点 '+Math.round(got)+'点</span><span><i style="background:var(--track)"></i>失点 '+Math.round(tot0-got)+'点</span></div>';
 
   h+='<div class="resh2">UNIT ANALYSIS ／ 単元別</div>';
   Object.keys(totByTag).forEach(function(t){
@@ -884,9 +993,12 @@ function gradeExam(){
      '<button class="exBtn" onclick="startExam()">もう一度解く</button></div>';
   document.getElementById('resin').innerHTML=h;
   document.getElementById('res').classList.add('on');
+  var _u={}; Object.keys(totByTag).forEach(function(k){ _u[k]={g:gotByTag[k]||0,t:totByTag[k]}; });
+  soPush({t:Date.now(), key:PAPER.key, y:PAPER.y, exam:PAPER.exam, subj:PAPER.subj, name:PAPER.name,
+          got:Math.round(got), total:tot0, ok:(PAPER.ptsOK===0?0:1), secs:secRes, units:_u});
 }
 function fmtUse(){
-  var u=70*60-left, m=Math.floor(u/60), s=u%60;
+  var u=(PAPER.min||70)*60-left, m=Math.floor(u/60), s=u%60;
   return m+'分'+(s<10?'0':'')+s+'秒';
 }
 function closeRes(){ document.getElementById('res').classList.remove('on'); }
