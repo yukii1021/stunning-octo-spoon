@@ -679,9 +679,13 @@ html.fo-locked,html.fo-locked body{overscroll-behavior:none}
     </div>
 
 
-    <button class="btn" style="width:100%;margin-top:20px;padding:16px 0;font-size:15px;letter-spacing:.18em;background:linear-gradient(135deg,#ff385c,#c81f3f);border:none;color:#fff;border-radius:12px;font-weight:600" onclick="location.href='over.html'">Study Over</button>
+    <style>
+@keyframes neonPulse{0%,100%{box-shadow:0 0 0 1px rgba(255,47,107,.35),0 0 14px rgba(255,47,107,.35),inset 0 0 18px rgba(255,47,107,.12)}50%{box-shadow:0 0 0 1px rgba(255,47,107,.8),0 0 32px rgba(255,47,107,.65),inset 0 0 26px rgba(255,47,107,.22)}}
+@keyframes neonScan{0%{transform:translateY(-120%)}100%{transform:translateY(320%)}}
+</style>
+<button class="btn" style="position:relative;width:100%;margin-top:20px;padding:18px 0 16px;border-radius:13px;border:1px solid #ff2f6b;background:radial-gradient(130% 180% at 50% 0%,#2a0713 0%,#12030a 58%,#080104 100%);color:#ffdbe4;font-size:15px;letter-spacing:.24em;font-weight:700;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;cursor:pointer;overflow:hidden;text-shadow:0 0 10px rgba(255,47,107,.85);box-shadow:0 0 0 1px rgba(255,47,107,.25);animation:neonPulse 2.4s ease-in-out infinite" onclick="location.href='over.html'"><span style="position:absolute;left:0;right:0;top:0;height:26%;pointer-events:none;background:repeating-linear-gradient(112deg,rgba(255,47,107,.10) 0 9px,transparent 9px 18px);animation:neonScan 3.6s linear infinite"></span><span style="display:block;font-size:9.5px;letter-spacing:.34em;color:#ff5c86;margin-bottom:6px;text-shadow:0 0 12px rgba(255,47,107,.9)">RESTRICTED MODE</span>STUDY OVER</button>
 
-    <div class="hint" style="text-align:center;margin-top:16px">StudyTime v2.23 · ローカル保存＋GitHub自動バックアップ</div>
+    <div class="hint" style="text-align:center;margin-top:16px">StudyTime v2.24 · ローカル保存＋GitHub自動バックアップ</div>
   </div>
 
 </div>
