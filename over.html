@@ -78,8 +78,8 @@ body{font-family:var(--ui);overflow:hidden;color:var(--text)}
 .th-dark{--mark:#0a0507;--markTx:#ffd9df;--markRing:rgba(255,128,152,.5)}
 .th-cyber{--mark:#02060a;--markTx:#7fe3ff;--markRing:rgba(30,200,255,.55)}
 #scPw,#scBoot{--mark:#0a0507;--markTx:#ffd9df;--markRing:rgba(255,128,152,.5)}
-#app{position:relative;height:100vh;height:100dvh;padding-top:max(calc(env(safe-area-inset-top,0px) + 8px),40px);padding-bottom:env(safe-area-inset-bottom,0px);--dww:600px;overflow:hidden;background:var(--bg,#0c1420)}
-.scr{position:absolute;inset:0;display:none;flex-direction:column;overflow:hidden;color:var(--text)}
+#app{position:relative;height:100vh;height:100dvh;--dww:600px;overflow:hidden;background:var(--bg,#0c1420)}
+.scr{position:absolute;inset:0;display:none;flex-direction:column;overflow:hidden;color:var(--text);padding-top:max(calc(env(safe-area-inset-top,0px) + 14px),56px);padding-bottom:max(env(safe-area-inset-bottom,0px),12px)}
 .scr.on{display:flex}
 .so{background:var(--bgGrad);color:var(--text)}
 
@@ -173,7 +173,8 @@ body{font-family:var(--ui);overflow:hidden;color:var(--text)}
 .ovhud button:hover{background:var(--accSoft2);color:var(--text)}
 
 /* ============ 4. ホーム ============ */
-#scHome .body{flex:1;min-height:0;overflow:auto;padding:20px 22px 30px}
+#scHome .body{flex:1;min-height:0;overflow:auto;padding:18px 22px 10px;display:flex;flex-direction:column}
+#scHome .body>.grid{flex:1 0 auto}
 .grid{display:grid;grid-template-columns:repeat(12,1fr);gap:16px}
 .card{border:1px solid var(--line);border-radius:15px;background:var(--card);padding:17px 18px;position:relative;overflow:hidden}
 .card .ch{display:flex;align-items:center;gap:9px;margin-bottom:13px}
