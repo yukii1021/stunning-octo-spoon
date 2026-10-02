@@ -1439,18 +1439,30 @@ function drillRows(D){
 }
 var DV={s:'',u:'',i:0,chosen:-1};
 function drillTop(){ var b=document.querySelector('#scDrill .body'); if(b) b.scrollTop=0; }
-/* ===== 追加問題の遅延読込 q/index.json -> q/<file>.json ===== */
-var SOQ={}, SOQX={};
-function soPrefetch(s,u){ var k=s+'|'+u; if(SOQX[k]) return; SOQX[k]=1;
-  try{ fetch('q/index.json').then(function(r){ if(!r.ok) throw 0; return r.json(); }).then(function(ix){
-    var f=ix&&ix[k]; if(!f){ SOQX[k]=2; return; }
-    return fetch('q/'+f).then(function(r){ if(!r.ok) throw 0; return r.json(); }).then(function(arr){
-      if(Object.prototype.toString.call(arr)==='[object Array]'&&arr.length) SOQ[k]=arr;
-      SOQX[k]=2; if(typeof DV!=='undefined'&&DV&&DV.s===s&&DV.u===u) renderDrill();
-    });
-  }).catch(function(){ SOQX[k]=2; }); }catch(e){ SOQX[k]=2; } }
+/* over.html v2.28 : flat q loader (folderless) */
+/* ===== 追加問題の遅延読込（フォルダ不要・フラット方式） =====
+   直下に q_<科目key>.json を置くだけ。形式: {"<単元>":[ {p,c,a,pts,e}, ... ]}
+   例: q_English_Reading.json   /   q_Math_IA.json
+   旧方式 q/index.json -> q/<file>.json もそのまま読めます。 ===== */
+var SOQ={}, SOU={}, SOFLAT={}, SOIDXP=null;
+function soMerge(k,arr){ if(!arr||Object.prototype.toString.call(arr)!=='[object Array]'||!arr.length) return;
+  SOQ[k]=(SOQ[k]||[]).concat(arr); }
+function soFetch(url){ return fetch(url).then(function(r){ if(!r.ok) throw 0; return r.json(); }); }
+function soQFile(f){ return soFetch('q_'+f).catch(function(){ return soFetch('q/'+f); }).catch(function(){ return soFetch(f); }); }
+function soIdx(){ if(!SOIDXP) SOIDXP=soFetch('q/index.json').catch(function(){ return soFetch('q_index.json'); }).catch(function(){ return {}; }); return SOIDXP; }
+function soFlat(s){ if(SOFLAT[s]) return SOFLAT[s];
+  SOFLAT[s]=soFetch('q_'+s+'.json').then(function(o){
+    if(o&&typeof o==='object'&&Object.prototype.toString.call(o)!=='[object Array]')
+      Object.keys(o).forEach(function(un){ soMerge(s+'|'+un,o[un]); });
+    return 1;
+  }).catch(function(){ return 0; });
+  return SOFLAT[s]; }
+function soPrefetch(s,u){ var k=s+'|'+u; if(SOU[k]) return; SOU[k]=1;
+  Promise.all([ soFlat(s), soIdx().then(function(ix){ var f=ix&&ix[k]; if(!f) return 0;
+    return soQFile(f).then(function(a){ soMerge(k,a); return 1; }).catch(function(){ return 0; }); }) ])
+  .then(function(){ if(typeof DV!=='undefined'&&DV) renderDrill(); }); }
 (function(){ var _du=drillUnit; drillUnit=function(s,u){ var a=_du(s,u); var ex=SOQ[s+'|'+u]||[];
-  if(a&&a.q&&ex.length) a.q=a.q.concat(ex.map(function(x){ return {p:x.p,c:x.c,a:x.a}; }));
+  if(a&&a.q&&ex.length) a.q=a.q.concat(ex.map(function(x){ var o={p:x.p,c:x.c,a:x.a}; if(x.pts!=null)o.pts=x.pts; if(x.e!=null)o.e=x.e; return o; }));
   return a; }; })();
 function openUnit(s,u){ DV={s:s,u:u,i:0,chosen:-1}; var el=document.getElementById('drSub'); if(el) el.textContent=subjNameOf(s)+' ／ '+u; renderDrill(); drillTop(); go('scDrill'); soPrefetch(s,u); }
 function drillBack(){ go('scHome'); renderHome(); }
