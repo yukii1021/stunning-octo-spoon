@@ -372,6 +372,33 @@ body.dw .drawer{transform:none}
 .mrow .ans{margin-left:8px;font-family:var(--mono);font-size:10.5px;color:var(--ok);white-space:nowrap}
 .resTop{position:sticky;top:0;z-index:3;display:flex;justify-content:flex-end;padding:2px 0 10px;background:var(--scrim)}
 </style>
+<style id="posCss">
+#scHome .subjrow{display:flex;gap:7px;flex-wrap:wrap;margin:12px 0 14px}
+#scHome .subjrow button{font-family:var(--ui);font-size:12px;letter-spacing:.06em;color:var(--dim);background:var(--card2);border:1px solid var(--line);border-radius:999px;padding:7px 13px;cursor:pointer;transition:.18s}
+#scHome .subjrow button.on{color:var(--acc);border-color:var(--accLine);background:var(--accSoft);font-weight:700}
+#scHome .wgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(235px,1fr));gap:11px}
+#scHome .wcard{position:relative;background:var(--card2);border:1px solid var(--line);border-radius:14px;padding:15px 14px 12px;overflow:hidden;cursor:pointer;transition:.18s}
+#scHome .wcard:hover{border-color:var(--accLine)}
+#scHome .wcard.bad{border-color:var(--dangerLine)}
+#scHome .wcard .rib{position:absolute;top:0;left:0;width:0;height:0;border-top:32px solid var(--accLine);border-right:32px solid transparent;opacity:.5}
+#scHome .wcard.bad .rib{border-top-color:var(--dangerLine);opacity:.6}
+#scHome .wcard .ribx{position:absolute;top:4px;left:6px;font-family:var(--mono);font-size:11px;font-weight:700;color:var(--acc)}
+#scHome .wcard.bad .ribx{color:var(--dangerText)}
+#scHome .wcard .wc-h{display:flex;align-items:center;gap:8px;margin-left:26px}
+#scHome .wcard .st{font-family:var(--mono);font-size:9.5px;letter-spacing:.14em;padding:3px 8px;border-radius:999px;border:1px solid var(--line2);color:var(--mute);white-space:nowrap}
+#scHome .wcard.hot .st{color:var(--acc);border-color:var(--accLine)}
+#scHome .wcard .wt{font-size:13.5px;font-weight:600;color:var(--text);margin:9px 0 11px;line-height:1.45}
+#scHome .wcard .wt small{display:block;font-family:var(--mono);font-size:9.5px;color:var(--mute);letter-spacing:.12em;margin-top:3px;font-weight:400}
+#scHome .mline{display:flex;align-items:center;gap:8px;margin-top:7px}
+#scHome .mline .k{font-family:var(--mono);font-size:9.5px;color:var(--mute);letter-spacing:.12em;width:26px;flex:none}
+#scHome .mline .bar{flex:1;height:5px;border-radius:99px;background:var(--track);overflow:hidden}
+#scHome .mline .bar i{display:block;height:100%;border-radius:99px;background:var(--acc);opacity:.8}
+#scHome .wcard.bad .mline .bar i{background:var(--danger)}
+#scHome .mline .n{font-family:var(--mono);font-size:10.5px;color:var(--dim);min-width:46px;text-align:right;flex:none}
+#scHome .wbtn{display:block;width:100%;margin-top:13px;padding:8px 0;border-radius:9px;border:1px solid var(--line2);background:transparent;color:var(--text);font-family:var(--ui);font-size:12px;letter-spacing:.14em;cursor:pointer}
+#scHome .wbtn:hover{border-color:var(--accLine);color:var(--acc)}
+#scHome .wempty{color:var(--mute);font-size:12.5px;line-height:1.8;padding:8px 0}
+</style>
 </head>
 <body>
 <div id="app" class="th-light">
@@ -421,7 +448,7 @@ body.dw .drawer{transform:none}
         <div class="ch"><span class="tt">PAST EXAMS</span></div>
         <div class="lbl">過去問を解く</div>
         <div class="big" id="peBig">—</div>
-        <div class="desc">本物の解答用紙と同じマーク欄で解きます。採点すると WEEK UNIT に単元ごとの穴が記録されます。</div>
+        <div class="desc">本物の解答用紙と同じマーク欄で解きます。採点すると下の「大問別演習」に単元ごとの穴が記録されます。</div>
         <div class="exrow" id="peChips"></div>
         <button class="btnr" onclick="go('scList')">
           科目を選ぶ
@@ -460,15 +487,11 @@ body.dw .drawer{transform:none}
         <div class="streak" id="streak"></div>
       </div>
 
-      <!-- WEEK UNIT -->
+      <!-- 大問別演習 -->
       <div class="card c12">
-        <div class="ch"><span class="tt">WEEK UNIT</span><div class="sp"></div><span class="mini" id="wuMini">過去問で落とした単元</span></div>
-        <div class="ynav">
-          <button id="wnPrev" aria-label="前の教科">‹</button>
-          <div class="lb" id="wnLb">—</div>
-          <button id="wnNext" aria-label="次の教科">›</button>
-        </div>
-        <div id="weeklist"></div>
+        <div class="ch"><span class="tt">大問別演習</span><div class="sp"></div><span class="mini" id="wuMini">落とした単元から演習</span></div>
+        <div class="subjrow" id="wnTabs"></div>
+        <div class="wgrid" id="weeklist"></div>
       </div>
 
     </div>
@@ -584,7 +607,7 @@ body.dw .drawer{transform:none}
   <div class="fx"></div>
   <div class="ovhud">
     <button onclick="drillBack()">‹ BACK</button>
-    <div class="lg" style="margin-left:6px">UNIT <em>DRILL</em></div>
+    <div class="lg" style="margin-left:6px">単元 <em>演習</em></div>
     <div class="sp"></div>
     <div class="stat"><span class="k" id="drSub">—</span></div>
   </div>
@@ -1108,7 +1131,7 @@ function gradeExam(){
        '<div class="bar"><i style="width:'+rr+'%"></i></div>'+
        '<div class="pc">'+r.got+' / '+r.tot+'</div><div class="ar">›</div></div>';
   });
-  if(hasTag){ h+='<div class="resh2" style="margin-top:22px">UNIT ANALYSIS ／ 単元別</div>';
+  if(hasTag){ h+='<div class="resh2" style="margin-top:22px">単元別</div>';
   Object.keys(totByTag).forEach(function(t){
     var t2=totByTag[t], g2=gotByTag[t]||0;
     var r=Math.round(g2/t2*100);
@@ -1424,7 +1447,7 @@ function renderDrill(){
   if(!bk){ el.innerHTML='<div class="dq"><div class="qp">問題がありません</div><div class="df"><button class="exBtn gh" onclick="drillBack()">ホームへ戻る</button></div></div>'; return; }
   if(DV.i>=bk.q.length){
     var st=drillStat(DV.s,DV.u);
-    el.innerHTML='<div class="dq"><div class="qn">UNIT COMPLETE</div><div class="qp">'+esc(DV.u)+'</div>'+
+    el.innerHTML='<div class="dq"><div class="qn">単元クリア</div><div class="qp">'+esc(DV.u)+'</div>'+
       '<div class="ex">この単元の進捗：'+st.a+' / '+st.t+' 問 ／ 正答 '+st.ok+' 問</div>'+
       '<div class="df"><button class="exBtn" onclick="openUnit(\''+DV.s+'\',\''+esc(DV.u)+'\')">もう一度</button>'+
       '<button class="exBtn gh" onclick="drillBack()">ホームへ戻る</button></div></div>';
@@ -1461,11 +1484,13 @@ _on('drillRun','click',function(e){
   var c=e.target.closest('.qc button'); if(c){ drillPick(parseInt(c.dataset.ci,10)); }
 });
 _on('weeklist','click',function(e){
-  var r=e.target.closest('.wrow'); if(!r) return;
+  var r=e.target.closest('.wcard'); if(!r) return;
   openUnit(r.dataset.s, r.dataset.u);
 });
-_on('wnPrev','click',function(){ wnIdx--; renderWeek(); });
-_on('wnNext','click',function(){ wnIdx++; renderWeek(); });
+_on('wnTabs','click',function(e){
+  var b=e.target.closest('button'); if(!b) return;
+  wnIdx=parseInt(b.dataset.i,10); renderWeek();
+});
 /* ---- 年度・本試テスト/追試の切替 ---- */
 var hvIdx=0;
 function sittingsOf(){
@@ -1519,7 +1544,7 @@ function jumpSec(i){
 }
 function backHome(){ try{ closeRes(); }catch(e){} clearInterval(clockT); go('scHome'); renderHome(); }
 
-/* ================= WEEK UNIT（過去問の弱点単元） ================= */
+/* ================= 大問別演習（過去問の弱点単元＋単元ドリル） ================= */
 var wnIdx=0, wnPicked=0;
 function subjOrder(){ var o=Object.keys(SUBJM); return o; }
 function sortSubs(a,b){ var o=subjOrder(), ia=o.indexOf(a), ib=o.indexOf(b); if(ia<0)ia=99; if(ib<0)ib=99; return ia-ib; }
@@ -1542,39 +1567,41 @@ function unitAggFor(A,sk){
   });
   return out;
 }
+function bankStat(sk,u){
+  var bk=drillUnit(sk,u); if(!bk||!bk.q) return {t:0,a:0,ok:0};
+  var D=drillAll(), e=D[UKey(sk,u)]||{a:{},ok:0};
+  return {t:bk.q.length, a:Object.keys(e.a||{}).length, ok:e.ok||0};
+}
+function ribOf(sk){
+  var m={Japanese:'\u56fd',Math_IA:'\u6570',Math_IIBC:'\u6570',English_Reading:'\u82f1',Information_I:'\u60c5',Physics:'\u7406',Chemistry:'\u7406',GeographyIntegrated_Geography:'\u793e'};
+  return m[sk]||'\u2014';
+}
 function renderWeek(){
   var box=document.getElementById('weeklist'); if(!box) return;
-  if(!MAN){ box.innerHTML='<div class="wempty">目次を読み込み中…</div>'; setTimeout(renderWeek,300); return; }
+  if(!MAN){ box.innerHTML='<div class="wempty">\u76ee\u6b21\u3092\u8aad\u307f\u8fbc\u307f\u4e2d\u2026</div>'; setTimeout(renderWeek,300); return; }
   var S=weekSubjects();
-  if(!S.length){ box.innerHTML='<div class="wempty">目次を読み込み中…</div>'; return; }
+  if(!S.length){ box.innerHTML='<div class="wempty">\u8aad\u307f\u8fbc\u307f\u4e2d\u2026</div>'; return; }
   if(wnIdx<0) wnIdx=0; if(wnIdx>=S.length) wnIdx=S.length-1;
   if(!wnPicked){ wnPicked=1; var _A=soAgg(); for(var _i=0;_i<S.length;_i++){ if(Object.keys(unitAggFor(_A,S[_i])).length){ wnIdx=_i; break; } } }
-  var sk=S[wnIdx];
-  var lb=document.getElementById('wnLb'); if(lb) lb.textContent=soName(sk)+'（'+(wnIdx+1)+'/'+S.length+'）';
-  var pb=document.getElementById('wnPrev'); if(pb) pb.disabled=(wnIdx<=0);
-  var nb=document.getElementById('wnNext'); if(nb) nb.disabled=(wnIdx>=S.length-1);
-  var agg=unitAggFor(soAgg(),sk);
-  var list=Object.keys(agg).map(function(u){ var o=agg[u]; return {u:u,g:o.g,t:o.t,r:o.t?o.g/o.t:0}; })
-             .filter(function(x){ return x.t>0; }).sort(function(a,b){ return a.r-b.r; });
-  var mini=document.getElementById('wuMini');
-  if(mini) mini.textContent='過去問で落とした単元';
-  if(!list.length){
-    box.innerHTML='<div class="wempty">'+soName(sk)+' の採点記録がまだありません。過去問を解くと、落とした単元がここに弱点順で並び、タップすると問題集が開きます。</div>';
-    return;
-  }
-  var h='', hasBank=0;
-  list.forEach(function(x){
-    var pc=Math.round(x.r*100);
-    if(drillUnit(sk,x.u)) hasBank++;
-    h+='<div class="wrow'+(pc<60?' bad':'')+'" data-s="'+soEsc(sk)+'" data-u="'+soEsc(x.u)+'">'+
-       '<div class="nm">'+soEsc(x.u)+'</div>'+
-       '<div class="bar"><i style="width:'+pc+'%"></i></div>'+
-       '<div class="pc">'+pc+'%</div>'+
-       '<div class="ar">'+x.g+'/'+x.t+'</div>'+
-       '<div class="go">›</div></div>';
-  });
-  if(!hasBank) h+='<div class="wempty" style="margin-top:10px">この教科の問題集は準備中です。</div>';
-  box.innerHTML=h;
+  var sk=S[wnIdx], agg=unitAggFor(soAgg(),sk);
+  var tb=document.getElementById('wnTabs');
+  if(tb) tb.innerHTML=S.map(function(k,i){ return '<button data-i="'+i+'"'+(i===wnIdx?' class="on"':'')+'>'+esc(soName(k))+'</button>'; }).join('');
+  var units=Object.keys(agg).filter(function(u){ return agg[u].t>0; })
+            .sort(function(a,b){ return (agg[a].g/agg[a].t)-(agg[b].g/agg[b].t); });
+  if(!units.length){ box.innerHTML='<div class="wempty">\u3053\u306e\u6559\u79d1\u306f\u307e\u3060\u63a1\u70b9\u8a18\u9332\u304c\u3042\u308a\u307e\u305b\u3093</div>'; return; }
+  box.innerHTML=units.map(function(u){
+    var o=agg[u], r=Math.round(o.g/o.t*100), bs=bankStat(sk,u);
+    var bad=(r<60)?' bad':'', hot=bs.a?' hot':'';
+    var stTxt=bs.a?'\u6f14\u7fd2\u4e2d':'\u672a\u7740\u624b';
+    return '<div class="wcard'+bad+hot+'" data-s="'+esc(sk)+'" data-u="'+esc(u)+'">'+
+      '<span class="rib"></span><span class="ribx">'+esc(ribOf(sk))+'</span>'+
+      '<div class="wc-h"><span class="st">'+stTxt+'</span></div>'+
+      '<div class="wt">'+esc(u)+'<small>\u5927\u554f\u5225\u6f14\u7fd2 \u30fb '+esc(soName(sk))+'</small></div>'+
+      '<div class="mline"><span class="k">\u9054\u6210</span><span class="bar"><i style="width:'+r+'%"></i></span><span class="n">'+r+'%</span></div>'+
+      '<div class="mline"><span class="k">\u6f14\u7fd2</span><span class="bar"><i style="width:'+(bs.t?Math.round(bs.a/bs.t*100):0)+'%"></i></span><span class="n">'+bs.a+' / '+bs.t+'</span></div>'+
+      '<button class="wbtn">\u6f14\u7fd2 \u203a</button>'+
+      '</div>';
+  }).join('');
 }
 /* ================= SCORE HISTORY（記録のある全科目） ================= */
 function renderChart2(A){
