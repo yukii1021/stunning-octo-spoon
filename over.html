@@ -156,8 +156,21 @@ body{font-family:var(--ui);overflow:hidden;color:var(--text)}
 @keyframes bl{50%{opacity:0}}
 .fx{position:absolute;inset:0;pointer-events:none;z-index:6;
   background:var(--fx)}
-#scBoot.glitch{animation:gl .46s steps(2) 3}
-@keyframes gl{0%{transform:translate(0);filter:none}25%{transform:translate(-7px,2px);filter:hue-rotate(35deg)}50%{transform:translate(6px,-3px);filter:invert(.14)}75%{transform:translate(-3px,1px)}100%{transform:none}}
+/* ============ 重たい扉（起動演出） ============ */
+#doors{position:fixed;inset:0;z-index:200;overflow:hidden;visibility:hidden;pointer-events:none}
+#doors.on{visibility:visible}
+#doors .lf,#doors .rt{position:absolute;top:0;bottom:0;width:50.6%;will-change:transform;
+  background:
+    repeating-linear-gradient(90deg,rgba(255,255,255,.03) 0 1px,rgba(0,0,0,0) 1px 9px),
+    repeating-linear-gradient(0deg,rgba(0,0,0,.45) 0 3px,rgba(0,0,0,0) 3px 6px),
+    linear-gradient(180deg,#15161a,#07070a 55%,#0f1014)}
+#doors .lf{left:0;box-shadow:inset -22px 0 46px rgba(0,0,0,.92),inset 0 0 140px rgba(255,56,92,.05)}
+#doors .rt{right:0;box-shadow:inset 22px 0 46px rgba(0,0,0,.92),inset 0 0 140px rgba(255,56,92,.05)}
+#doors .seam{position:absolute;left:50%;top:0;bottom:0;width:3px;transform:translateX(-50%);border-radius:2px;
+  background:linear-gradient(180deg,rgba(255,56,92,0),#ff385c 18%,#ff385c 82%,rgba(255,56,92,0));
+  box-shadow:0 0 30px 7px rgba(255,56,92,.75)}
+#doors.rumble .lf,#doors.rumble .rt{animation:rmb .3s linear}
+@keyframes rmb{0%{transform:translate3d(0,0,0)}20%{transform:translate3d(-2px,0,0)}40%{transform:translate3d(2px,-1px,0)}60%{transform:translate3d(-1px,0,0)}80%{transform:translate3d(2px,0,0)}100%{transform:translate3d(0,0,0)}}
 .bootskip{position:absolute;bottom:22px;left:0;right:0;text-align:center;color:#8d6a70;font-size:11px;letter-spacing:.24em;z-index:3}
 
 /* ============ 共通 HUD（Study Over） ============ */
@@ -427,6 +440,7 @@ body.dw .drawer{transform:none}
   <div class="term" id="bootTerm"></div>
   <div class="bootskip">TAP TO SKIP</div>
 </section>
+<div id="doors" aria-hidden="true"><i class="lf"></i><i class="rt"></i><b class="seam"></b></div>
 
 <!-- ================= 4. Study Over ホーム ================= -->
 <section class="scr so" id="scHome">
@@ -494,6 +508,13 @@ body.dw .drawer{transform:none}
         <div class="wgrid" id="weeklist"></div>
       </div>
 
+      <!-- 記述演習 -->
+      <div class="card c12">
+        <div class="ch"><span class="tt">記述演習</span><div class="sp"></div><span class="mini">答えを打ち込んで解く</span></div>
+        <div class="subjrow" id="wTabs"></div>
+        <div class="wgrid" id="wlist"></div>
+      </div>
+
     </div>
     <div id="recInfo" style="margin-top:16px;font-family:var(--mono);font-size:10.5px;letter-spacing:.1em;color:var(--mute)">
       記録はまだありません
@@ -501,6 +522,27 @@ body.dw .drawer{transform:none}
     <div style="margin-top:5px;font-family:var(--mono);font-size:10.5px;letter-spacing:.1em;color:var(--mute)">
       単元タグは問題冊子の図表からの推定 / 過去問の正解・配点は個人利用の試作
     </div>
+  </div>
+</section>
+
+<style>
+#wWrap{display:flex;gap:18px;align-items:flex-start;flex-wrap:wrap}
+#wProb{flex:1 1 360px;min-width:0}
+#wSide{flex:0 0 300px}
+.wq{white-space:pre-wrap;line-height:2;font-size:14px}
+.wta{width:100%;min-height:130px;padding:10px 12px;border-radius:10px;border:1px solid var(--line2);background:var(--card);color:var(--ink);font-size:14px;font-family:inherit;box-sizing:border-box}
+@media(max-width:760px){#wSide{flex:1 1 100%}}
+</style>
+<section class="scr so" id="scWrite">
+  <div class="fx"></div>
+  <div class="ovhud">
+    <button onclick="wBack()">‹ BACK</button>
+    <div class="lg" style="margin-left:6px">記述 <em>演習</em></div>
+    <div class="sp"></div>
+    <div class="stat"><span class="k" id="wSub">—</span></div>
+  </div>
+  <div class="body">
+    <div class="dq" id="wRun"></div>
   </div>
 </section>
 
@@ -667,30 +709,52 @@ function bootGo(){ if(bootCfg==='skip'){ go('scHome'); renderHome(); return; }
   clearTimeout(bootTimer);
   (function step(){
     if(bootDone) return;
-    if(li>=LINES.length){
-      var el=document.getElementById('scBoot');
-      el.classList.add('glitch');
-      bootTimer=setTimeout(function(){
-        el.classList.remove('glitch'); go('scHome'); renderHome();
-      }, 620);
-      return;
-    }
+    if(li>=LINES.length){ doorEnter(); return; }
     var txt=LINES[li][0], cls=LINES[li][1];
     if(ci<=txt.length){
       var head=cls?('<span class="'+cls+'">'):'<span>';
       t.innerHTML=html+head+txt.slice(0,ci)+'</span>'+(ci<txt.length?'<span class="cur"></span>':'');
       ci++;
-      bootTimer=setTimeout(step, 12);
+      bootTimer=setTimeout(step, 7);
     }else{
       html+=(cls?('<span class="'+cls+'">'):'<span>')+txt+'</span>\n';
       t.innerHTML=html;
       li++; ci=0;
-      bootTimer=setTimeout(step, 90);
+      bootTimer=setTimeout(step, 55);
     }
   })();
 }
+/* 重たい扉が開く入場演出 */
+var doorT=[];
+function doorEnter(){
+  var dv=document.getElementById('doors');
+  if(!dv){ go('scHome'); renderHome(); return; }
+  var lf=dv.querySelector('.lf'), rt=dv.querySelector('.rt'), sm=dv.querySelector('.seam');
+  doorT.forEach(clearTimeout); doorT=[];
+  dv.classList.add('on'); dv.classList.remove('rumble');
+  lf.style.transition='none'; rt.style.transition='none';
+  lf.style.transform='translateX(-101%)'; rt.style.transform='translateX(101%)';
+  sm.style.transition='none'; sm.style.opacity='.95';
+  void dv.offsetWidth;
+  lf.style.transition=rt.style.transition='transform .26s cubic-bezier(.5,.05,.7,.2)';
+  lf.style.transform='translateX(0)'; rt.style.transform='translateX(0)';
+  doorT.push(setTimeout(function(){
+    go('scHome'); renderHome();
+    dv.classList.add('rumble');
+    doorT.push(setTimeout(function(){
+      dv.classList.remove('rumble');
+      sm.style.transition='opacity .55s'; sm.style.opacity='0';
+      var e='transform 1.12s cubic-bezier(.86,.005,.14,1)';
+      lf.style.transition=rt.style.transition=e;
+      lf.style.transform='translateX(-101%)'; rt.style.transform='translateX(101%)';
+      doorT.push(setTimeout(function(){ dv.classList.remove('on'); },1180));
+    },280));
+  },300));
+}
 document.getElementById('scBoot').addEventListener('click', function(){
   if(bootDone) return; bootDone=true; clearTimeout(bootTimer);
+  doorT.forEach(clearTimeout); doorT=[];
+  var dv=document.getElementById('doors'); if(dv) dv.classList.remove('on','rumble');
   go('scHome'); renderHome();
 });
 
@@ -701,6 +765,10 @@ var SUBJM={
   English_Reading:{n:'英語Ｒ'}, Information_I:{n:'情報Ⅰ'},
   Physics:{n:'物理'}, Chemistry:{n:'化学'}, GeographyIntegrated_Geography:{n:'地理総合，地理探究'}
 };
+var XUNIT={ English_Reading:['文法・語法','熟語・語い・会話表現'] };
+var WSUBJ=[['English_Reading','英語Ｒ']];
+var WUNIT={ English_Reading:['整序英作文','正誤問題'] };
+;
 function soRuns(){ try{ var a=JSON.parse(localStorage.getItem(SO_KEY)||'[]'); return (a&&a.length)?a:[]; }catch(e){ return []; } }
 function soPush(r){ var a=soRuns(); a.push(r); if(a.length>500) a=a.slice(-500); try{ localStorage.setItem(SO_KEY,JSON.stringify(a)); }catch(e){} }
 function soClear(){ try{ localStorage.removeItem(SO_KEY); }catch(e){} renderHome(); renderGoal(); }
@@ -748,6 +816,7 @@ _on('soClear','click',function(){ if(window.confirm('採点の記録をすべて
 
 function renderHome(){
   var A=soAgg(), E=soEstimate(A), GOAL=soGoal();
+  try{ renderWrite(); }catch(e){}
   var gv=document.getElementById('goalv'); if(gv) gv.textContent=GOAL;
   var ev=document.getElementById('est'); if(ev) ev.textContent=(E?E.est:'—');
 
@@ -1180,224 +1249,8 @@ function groupIndexOf(sec,g){
   return n;
 }
 
-/* ================= 単元ドリル（自作問題バンク） ================= */
-var BANK=[
-{"s":"Math_IA","u":"数と式","q":[
-{"p":"a=√5−2 のとき、a²+4a の値は？","c":["1","5","√5","−1"],"a":0,"e":"a²+4a=(a+2)²−4 で a+2=√5 だから 5−4=1。"},
-{"p":"2x²−5x+1=0 の2解を α, β とするとき、1/α+1/β の値は？","c":["5","5/2","2/5","1/5"],"a":0,"e":"(α+β)/αβ=(5/2)/(1/2)=5。"},
-{"p":"不等式 |2x−1| ≦ 5 を満たす整数 x は何個あるか？","c":["6","5","4","7"],"a":0,"e":"−5≦2x−1≦5 より −2≦x≦3。整数は6個。"},
-{"p":"x²−2xy+y²−9 を因数分解したものは？","c":["(x−y+3)(x−y−3)","(x−y+9)(x−y−1)","(x+y+3)(x+y−3)","(x−y−3)²"],"a":0,"e":"(x−y)²−3² とみる。"}]},
-{"s":"Math_IA","u":"2次関数","q":[
-{"p":"y=x²−2ax+3 の 0≦x≦2 における最小値が 2 となる a の値は？","c":["a=1","a=−1","a=1 と a=5/4","そのような a はない"],"a":0,"e":"軸 x=a。0≦a≦2 なら 3−a²=2 より a=1。a<0 では 3、a>2 では 7−4a で 2 にならない。"},
-{"p":"y=x²−4x+5 の 0≦x≦3 における最大値は？","c":["5","2","1","6"],"a":0,"e":"y=(x−2)²+1。x=0 で 5、x=3 で 2 だから最大は 5。"},
-{"p":"放物線 y=x²−4x+a が x軸から切り取る線分の長さが 4 のとき、a の値は？","c":["0","4","−4","2"],"a":0,"e":"解の差が √D だから √D=4 で D=16。16−4a=16 より a=0。"},
-{"p":"2次関数 y=2x²−4x+3 のグラフを x軸方向に 1、y軸方向に −2 だけ平行移動した式は？","c":["y=2x²−8x+7","y=2x²−8x+9","y=2x²+7","y=2x²−4x+1"],"a":0,"e":"y=2(x−1)²+1 を (1,−2) 移動して y=2(x−2)²−1=2x²−8x+7。"}]},
-{"s":"Math_IA","u":"図形と計量","q":[
-{"p":"AB=5, AC=3, ∠A=120° の △ABC の面積は？","c":["15√3/4","15√3/2","15/4","5√3/2"],"a":0,"e":"(1/2)·5·3·sin120°=15√3/4。"},
-{"p":"半径 2 の円に内接する正六角形の面積は？","c":["6√3","12√3","3√3","24√3"],"a":0,"e":"一辺は 2。6×(√3/4)×2²=6√3。"},
-{"p":"0°<θ<90° で sinθ=1/3 のとき、cosθ の値は？","c":["2√2/3","√2/3","8/3","1/3"],"a":0,"e":"cos²θ=1−1/9=8/9。θ は鋭角だから cosθ=2√2/3。"},
-{"p":"△ABC で b=2, c=3, A=60° のとき、a の値は？","c":["√7","√19","7","√13"],"a":0,"e":"a²=4+9−2·2·3·(1/2)=7。"}]},
-{"s":"Math_IA","u":"データの分析","q":[
-{"p":"10個のデータの平均値が 6、分散が 4 である。各値から 3 を引いた10個のデータの分散は？","c":["4","1","7","16"],"a":0,"e":"定数を引いても散らばりは変わらない。"},
-{"p":"5個のデータ 3, 5, 6, 8, 8 の四分位範囲は？","c":["4","5","3","2"],"a":0,"e":"中央値6。下半分 3,5 の中央値 4、上半分 8,8 の中央値 8。8−4=4。"},
-{"p":"相関係数が −0.8 である2変量で、x の値をすべて −2x に変換したときの相関係数は？","c":["0.8","−0.8","0.64","−0.64"],"a":0,"e":"負の定数倍で符号が反転する。"},
-{"p":"データをすべて 2 倍すると、標準偏差はどうなるか？","c":["2倍になる","4倍になる","変わらない","√2倍になる"],"a":0,"e":"標準偏差はスケールに比例する。分散は 4 倍。"}]},
-{"s":"Math_IA","u":"場合の数と確率","q":[
-{"p":"白球5個、赤球3個が入った袋から同時に3個取り出すとき、赤球が2個以上である確率は？","c":["2/7","3/8","1/7","15/56"],"a":0,"e":"(C(3,2)C(5,1)+C(3,3))/C(8,3)=16/56=2/7。"},
-{"p":"1から6までの数字を重複なく使って3桁の整数をつくるとき、3の倍数は何個できるか？","c":["48","36","24","54"],"a":0,"e":"各位の和が3の倍数となる3数の組は8組。8×3!=48 個。"},
-{"p":"袋Aに白玉2個赤玉1個、袋Bに白玉1個赤玉2個が入っている。Aから1個取り出してBに入れ、よく混ぜてからBから1個取り出すとき、それが赤玉である確率は？","c":["7/12","2/3","1/2","5/12"],"a":0,"e":"(2/3)(1/2)+(1/3)(3/4)=1/3+1/4=7/12。"},
-{"p":"さいころを3回投げて、出た目の積が偶数となる確率は？","c":["7/8","1/2","3/4","1/8"],"a":0,"e":"すべて奇数のときだけ積が奇数。1−(1/2)³=7/8。"}]},
-{"s":"Math_IA","u":"整数の性質","q":[
-{"p":"7で割ると3余り、5で割ると2余る3桁の自然数のうち、最小のものは？","c":["122","107","102","117"],"a":0,"e":"n=3+7k とおくと 2k≡4 (mod5) より k≡2。k=17 で n=122。"},
-{"p":"2025 の正の約数の個数は？","c":["15","12","18","9"],"a":0,"e":"2025=3⁴·5² より (4+1)(2+1)=15 個。"},
-{"p":"2¹⁰⁰ を 7 で割った余りは？","c":["2","4","1","3"],"a":0,"e":"2³≡1 (mod7) で 100=3·33+1 だから 2¹⁰⁰≡2。"},
-{"p":"最大公約数が 6、最小公倍数が 180 である2つの自然数の組はどれか？","c":["12 と 90","6 と 180","18 と 60","30 と 36"],"a":0,"e":"積が 6×180=1080。12×90=1080 で gcd も一致する。"}]},
-{"s":"Math_IA","u":"図形の性質","q":[
-{"p":"円の外部の点Pから引いた接線の長さが 6 である。Pを通る割線が円と交わる点をPに近い方からA, Bとし、PA=4 のとき PB の長さは？","c":["9","8","12","6"],"a":0,"e":"方べきの定理より PA·PB=PT² だから 4·PB=36、PB=9。"},
-{"p":"円に内接する四角形 ABCD で ∠A=100° のとき、∠C は？","c":["80°","100°","90°","120°"],"a":0,"e":"円に内接する四角形の対角の和は 180°。"},
-{"p":"△ABC の内心を I とする。∠A=70° のとき ∠BIC は？","c":["125°","110°","115°","120°"],"a":0,"e":"∠BIC=90°+∠A/2=125°。"},
-{"p":"正三角形の外心・内心・重心について正しいものは？","c":["3点はすべて一致する","外心と内心だけが一致する","重心と外心だけが一致する","3点はすべて異なる"],"a":0,"e":"正三角形では3心が一致する。"}]},
-{"s":"Math_IIBC","u":"三角関数","q":[
-{"p":"0≦θ<2π の範囲で sinθ+cosθ=1/2 を満たす θ の個数は？","c":["2個","1個","4個","3個"],"a":0,"e":"√2sin(θ+π/4)=1/2。右辺が正だから範囲内に2解。"},
-{"p":"tanθ=2 のとき、sin2θ の値は？","c":["4/5","3/5","2/5","1/2"],"a":0,"e":"sin2θ=2tanθ/(1+tan²θ)=4/5。"},
-{"p":"y=3sinθ+4cosθ の最大値は？","c":["5","7","25","1"],"a":0,"e":"合成すると √(3²+4²)=5。"},
-{"p":"0≦θ<2π のとき cosθ=−1/2 を満たす θ は？","c":["2π/3, 4π/3","π/3, 5π/3","π/6, 11π/6","2π/3 のみ"],"a":0,"e":"cosθ=−1/2 は第2・第3象限。"}]},
-{"s":"Math_IIBC","u":"指数関数と対数関数","q":[
-{"p":"log₁₀2=0.3010 とする。2⁵⁰ は何桁の整数か？","c":["16桁","15桁","17桁","31桁"],"a":0,"e":"50×0.3010=15.05 だから桁数は 15+1=16。"},
-{"p":"方程式 log₃(x−1)+log₃(x+7)=3 の解は？","c":["x=−3+√43","x=−3−√43","x=4","x=2"],"a":0,"e":"(x−1)(x+7)=27 より x²+6x−34=0。x>1 だから x=−3+√43。"},
-{"p":"2^x=5^y=10 のとき、1/x+1/y の値は？","c":["1","2","1/2","log₁₀50"],"a":0,"e":"1/x=log₁₀2、1/y=log₁₀5 で和は log₁₀10=1。"},
-{"p":"不等式 (1/2)^x > 8 の解は？","c":["x<−3","x>−3","x<3","x>3"],"a":0,"e":"(1/2)^x=2^(−x)>2³ より −x>3、すなわち x<−3。"}]},
-{"s":"Math_IIBC","u":"微分法と積分法","q":[
-{"p":"f(x)=x³−3x²+2 の極大値と極小値の差は？","c":["4","2","6","0"],"a":0,"e":"f'(x)=3x(x−2)。f(0)=2 が極大、f(2)=−2 が極小で差は 4。"},
-{"p":"∫₀¹ (3x²+2x) dx の値は？","c":["2","1","3","5/2"],"a":0,"e":"[x³+x²]₀¹=2。"},
-{"p":"曲線 y=x² と直線 y=2x で囲まれた図形の面積は？","c":["4/3","2/3","8/3","2"],"a":0,"e":"∫₀²(2x−x²)dx=4−8/3=4/3。"},
-{"p":"曲線 y=x³−3x 上の点 (2,2) における接線の傾きは？","c":["9","3","12","6"],"a":0,"e":"y'=3x²−3 で x=2 のとき 9。"}]},
-{"s":"Math_IIBC","u":"数列","q":[
-{"p":"等差数列{aₙ} で a₃=7, a₇=19 のとき、a₁₀ は？","c":["28","25","31","22"],"a":0,"e":"公差は (19−7)/4=3、初項は 1。a₁₀=1+9·3=28。"},
-{"p":"初項 2、公比 3 の等比数列の初項から第5項までの和は？","c":["242","243","240","121"],"a":0,"e":"2(3⁵−1)/(3−1)=242。"},
-{"p":"Σ(k=1→n)(2k−1)=100 となる n は？","c":["10","9","11","50"],"a":0,"e":"左辺は n²。n=10。"},
-{"p":"数列 1, 1, 2, 3, 5, 8, … の第8項は？","c":["21","13","18","24"],"a":0,"e":"直前の2項の和。第7項13、第8項21。"}]},
-{"s":"Math_IIBC","u":"統計的な推測","q":[
-{"p":"母標準偏差が 10 の母集団から大きさ 100 の標本を抽出するとき、標本平均の標準偏差は？","c":["1","10","0.1","100"],"a":0,"e":"10/√100=1。"},
-{"p":"二項分布 B(100, 0.4) の分散は？","c":["24","40","60","16"],"a":0,"e":"np(1−p)=100×0.4×0.6=24。"},
-{"p":"標本平均と母平均の差が標準誤差の 1.96 倍以内に入る確率はおよそ？","c":["95%","68%","99%","50%"],"a":0,"e":"標準正規分布で ±1.96 の範囲は約 95%。"},
-{"p":"信頼区間の幅を半分にするには、標本の大きさを何倍にすればよいか？","c":["4倍","2倍","8倍","変わらない"],"a":0,"e":"標準誤差は 1/√n に比例するため 4 倍が必要。"}]},
-{"s":"Math_IIBC","u":"ベクトル","q":[
-{"p":"a=(1,2), b=(3,−1) のなす角を θ とするとき、cosθ の値は？","c":["√2/10","1/5","√5/10","1/10"],"a":0,"e":"内積 1、|a|=√5、|b|=√10 より 1/√50=√2/10。"},
-{"p":"△OAB で OA=2、OB=3、内積 OA·OB=3 のとき、AB の長さは？","c":["√7","√5","7","√13"],"a":0,"e":"AB²=4+9−2·3=7。"},
-{"p":"3点 A(1,1), B(3,4), C(2,k) が一直線上にあるとき、k の値は？","c":["5/2","2","3","7/2"],"a":0,"e":"AB=(2,3)、AC=(1,k−1) が平行だから 2(k−1)−3=0 より k=5/2。"},
-{"p":"ベクトル a=(2,1) に垂直で大きさが √5 のベクトルは？","c":["(1,−2)","(2,−1)","(−1,2) と (1,−2) の両方","(1,2)"],"a":0,"e":"(2,1)·(1,−2)=0 で大きさ √5。"}]},
-{"s":"Math_IIBC","u":"複素数平面","q":[
-{"p":"z=1+√3 i の絶対値と偏角の組は？","c":["2, 60°","2, 120°","4, 60°","√2, 30°"],"a":0,"e":"|z|=√(1+3)=2、tan から偏角 60°。"},
-{"p":"z³=1 を満たす複素数のうち z≠1 である2つの解の和は？","c":["−1","1","0","−1/2"],"a":0,"e":"3解の和は 0 だから残り2つの和は −1。"},
-{"p":"(1+i)⁸ の値は？","c":["16","−16","16i","8"],"a":0,"e":"1+i=√2(cos45°+i sin45°)。8乗すると 16(cos360°+i sin360°)=16。"},
-{"p":"複素数 z に対して |z−1|=2 が表す図形は？","c":["点1を中心とする半径2の円","原点中心の半径2の円","点−1を中心とする半径2の円","直線"],"a":0,"e":"点1からの距離が常に 2 である点の集合。"}]},
-{"s":"Physics","u":"力学","q":[
-{"p":"水平面と 30° をなすなめらかな斜面上を、質量 2 kg の物体が下滑する。加速度の大きさは？(g=9.8 m/s²)","c":["4.9 m/s²","8.5 m/s²","9.8 m/s²","2.5 m/s²"],"a":0,"e":"g sin30°=9.8×0.5=4.9。"},
-{"p":"高さ 20 m から小球を静かに落とした。空気抵抗を無視すると、地面に達する直前の速さは？(g=9.8 m/s²)","c":["19.8 m/s","14.0 m/s","28.0 m/s","9.8 m/s"],"a":0,"e":"v=√(2×9.8×20)=√392≒19.8。"},
-{"p":"速さ 20 m/s で壁に垂直に当たり、同じ速さではね返った質量 0.5 kg の球が受けた力積の大きさは？","c":["20 N·s","10 N·s","0 N·s","40 N·s"],"a":0,"e":"運動量の変化 0.5×(20+20)=20。"},
-{"p":"あらい水平面上の質量 5 kg の物体に 20 N の力を加えても動かなかった。静止摩擦力の大きさは？","c":["20 N","0 N","25 N","5 N"],"a":0,"e":"静止しているので加えた力とつり合い、20 N。"}]},
-{"s":"Physics","u":"単振動","q":[
-{"p":"ばね定数 50 N/m のばねに質量 0.5 kg の物体をつないだ単振動の周期は？(π=3.14)","c":["0.63 s","0.20 s","3.14 s","0.10 s"],"a":0,"e":"T=2π√(m/k)=2π×0.1=0.628 s。"},
-{"p":"単振動で変位の大きさが振幅の 1/2 のとき、速さは最大値の何倍か？","c":["√3/2 倍","1/2 倍","√2/2 倍","3/4 倍"],"a":0,"e":"v=v₀√(1−(x/A)²)=v₀√(3/4)。"},
-{"p":"単振動の振幅を 2 倍にすると、力学的エネルギーはどうなるか？","c":["4倍","2倍","8倍","変わらない"],"a":0,"e":"エネルギーは振幅の2乗に比例する。"},
-{"p":"単振動の変位 x と加速度 a の関係として正しいものは？","c":["a は x に比例し、向きは逆","a は x に比例し、向きは同じ","a は一定","a は x² に比例"],"a":0,"e":"復元力により a=−ω²x。"}]},
-{"s":"Physics","u":"波動","q":[
-{"p":"振動数 500 Hz、波長 0.68 m の音波の速さは？","c":["340 m/s","170 m/s","735 m/s","240 m/s"],"a":0,"e":"v=fλ=500×0.68=340。"},
-{"p":"屈折率 1.5 の媒質中を進む光の速さは？(真空中 3.0×10⁸ m/s)","c":["2.0×10⁸ m/s","4.5×10⁸ m/s","1.5×10⁸ m/s","3.0×10⁸ m/s"],"a":0,"e":"v=c/n=3.0×10⁸/1.5。"},
-{"p":"ヤングの実験で、スリット間隔 d、スクリーンまでの距離 L、波長 λ のとき、隣り合う明線の間隔は？","c":["λL/d","λd/L","dL/λ","λL"],"a":0,"e":"明線間隔は λL/d。"},
-{"p":"弦の振動で、基本振動の振動数を f とすると、3倍振動の振動数は？","c":["3f","2f","f/3","9f"],"a":0,"e":"弦の固有振動は整数倍。3倍振動は 3f。"}]},
-{"s":"Physics","u":"電磁気","q":[
-{"p":"抵抗値 R の抵抗に電圧 V を加えたときの消費電力が P である。V を 2 倍、R を 1/2 倍にすると消費電力は？","c":["8P","4P","2P","変わらない"],"a":0,"e":"P=V²/R。分子が4倍、分母が1/2で 8 倍。"},
-{"p":"電気容量 2 μF のコンデンサーを 100 V で充電したとき、蓄えられる電荷は？","c":["2.0×10⁻⁴ C","2.0×10⁻² C","5.0×10⁻⁵ C","2.0×10⁻⁶ C"],"a":0,"e":"Q=CV=2×10⁻⁶×100。"},
-{"p":"磁束密度 0.5 T の磁場中で、長さ 0.4 m の導体棒を磁場に垂直に速さ 2 m/s で動かす。生じる誘導起電力の大きさは？","c":["0.40 V","0.20 V","0.80 V","1.60 V"],"a":0,"e":"V=vBL=2×0.5×0.4。"},
-{"p":"抵抗を流れる電流と消費電力の関係として正しいものは？","c":["電流を2倍にすると電力は4倍","電流を2倍にすると電力は2倍","電力は電流に反比例","電力は電流に無関係"],"a":0,"e":"P=RI²。"}]},
-{"s":"Physics","u":"熱","q":[
-{"p":"単原子分子理想気体 2 mol の温度を 100 K 上げるのに必要な内部エネルギーの増加は？(R=8.3 J/(mol·K))","c":["2.5×10³ J","1.7×10³ J","4.2×10³ J","8.3×10² J"],"a":0,"e":"(3/2)nRΔT=1.5×2×8.3×100≒2.5×10³ J。"},
-{"p":"熱効率 30% の熱機関が 1 サイクルで 1000 J の熱を受け取るとき、外部にする仕事は？","c":["300 J","700 J","30 J","333 J"],"a":0,"e":"1000×0.30=300 J。"},
-{"p":"断熱圧縮で気体の温度が上昇するのはなぜか？","c":["外部から仕事をされ、内部エネルギーが増加するから","外部から熱が入るから","気体の分子数が増えるから","圧力が下がるから"],"a":0,"e":"断熱変化では熱の出入りがなく、された仕事が内部エネルギーを増やす。"},
-{"p":"理想気体の状態方程式で、圧力を一定に保ち温度を 2 倍にすると体積は？","c":["2倍になる","半分になる","変わらない","4倍になる"],"a":0,"e":"V/T が一定。"}]},
-{"s":"Physics","u":"原子","q":[
-{"p":"光電効果で、光の強さを 2 倍にしたとき光電子の最大運動エネルギーはどうなるか？","c":["変わらない","2倍になる","√2倍になる","4倍になる"],"a":0,"e":"最大運動エネルギーは振動数で決まる。"},
-{"p":"水素原子で電子が n=3 から n=2 の準位へ移るときに放出される光が属する系列は？","c":["バルマー系列","ライマン系列","パッシェン系列","ブラケット系列"],"a":0,"e":"n=2 へ落ちるものがバルマー系列。"},
-{"p":"質量欠損 Δm と放出されるエネルギー E の関係を表す式は？","c":["E=Δmc²","E=Δmc","E=Δm/c²","E=c²/Δm"],"a":0,"e":"アインシュタインの関係式。"},
-{"p":"半減期 5 年の放射性物質が 20 年後に残る割合は？","c":["1/16","1/4","1/8","1/32"],"a":0,"e":"20 年は半減期 4 回分だから (1/2)⁴=1/16。"}]},
-{"s":"Chemistry","u":"理論化学","q":[
-{"p":"0.10 mol/L の酢酸水溶液の pH が 3.0 のとき、この温度での電離度は？","c":["1.0×10⁻²","1.0×10⁻³","1.0×10⁻¹","1.0×10⁻⁴"],"a":0,"e":"[H⁺]=1.0×10⁻³ mol/L。電離度は 10⁻³/10⁻¹=10⁻²。"},
-{"p":"標準状態で 5.6 L の酸素に含まれる酸素分子の物質量は？","c":["0.25 mol","0.50 mol","0.125 mol","2.0 mol"],"a":0,"e":"5.6/22.4=0.25 mol。"},
-{"p":"0.10 mol/L の硫酸 20 mL を中和するのに必要な 0.20 mol/L 水酸化ナトリウム水溶液の体積は？","c":["20 mL","10 mL","40 mL","5 mL"],"a":0,"e":"H⁺は 2×0.10×0.020=4.0×10⁻³ mol。0.20 mol/L で 20 mL。"},
-{"p":"質量パーセント濃度 20% の水溶液 100 g に含まれる溶質の質量は？","c":["20 g","10 g","80 g","50 g"],"a":0,"e":"100×0.20=20 g。"}]},
-{"s":"Chemistry","u":"無機化学","q":[
-{"p":"塩素水に硫化水素を通じたとき、白濁の原因となる物質は？","c":["硫黄","塩化水素","硫酸","二酸化硫黄"],"a":0,"e":"塩素が硫化水素を酸化して硫黄が析出する。"},
-{"p":"アンモニアの工業的製法の名称は？","c":["ハーバー・ボッシュ法","オストワルト法","接触法","ソルベー法"],"a":0,"e":"窒素と水素から高温高圧で合成する。"},
-{"p":"鉄(Ⅲ)イオンを含む水溶液にヘキサシアニド鉄(Ⅱ)酸カリウム水溶液を加えると生じる沈殿は？","c":["濃青色","赤褐色","白色","黄色"],"a":0,"e":"ベルリンブルーの濃青色沈殿。"},
-{"p":"二酸化炭素を石灰水に通じたときに生じる白濁物質は？","c":["炭酸カルシウム","炭酸水素ナトリウム","酸化カルシウム","水酸化カルシウム"],"a":0,"e":"Ca(OH)₂+CO₂→CaCO₃+H₂O。"}]},
-{"s":"Chemistry","u":"有機化学","q":[
-{"p":"エタノールと濃硫酸の混合物を約 160〜170 ℃ に加熱して得られる主生成物は？","c":["エチレン","ジエチルエーテル","酢酸","アセトアルデヒド"],"a":0,"e":"高温では分子内脱水でエチレンが生じる。"},
-{"p":"分子式 C₄H₁₀O のアルコールのうち、酸化してケトンを与えるものは？","c":["2-ブタノール","1-ブタノール","2-メチル-1-プロパノール","1-プロパノール"],"a":0,"e":"第2級アルコールのみがケトンになる。"},
-{"p":"ベンゼンに濃硝酸と濃硫酸の混酸を作用させて得られる化合物は？","c":["ニトロベンゼン","フェノール","アニリン","安息香酸"],"a":0,"e":"ニトロ化によりニトロベンゼンが生じる。"},
-{"p":"アセチレンに水を付加させると主に生じる化合物は？","c":["アセトアルデヒド","エタノール","酢酸","エチレン"],"a":0,"e":"付加後、不安定なエノールが異性化する。"}]},
-{"s":"Chemistry","u":"高分子","q":[
-{"p":"ナイロン66 の合成に用いられる2種類の原料は？","c":["ヘキサメチレンジアミンとアジピン酸","ε-カプロラクタムのみ","テレフタル酸とエチレングリコール","フェノールとホルムアルデヒド"],"a":0,"e":"二塩基酸とジアミンの縮合重合。"},
-{"p":"ポリエチレンテレフタラートの合成に用いられる2種類の原料は？","c":["テレフタル酸とエチレングリコール","アジピン酸とヘキサメチレンジアミン","フェノールとホルムアルデヒド","スチレンとブタジエン"],"a":0,"e":"縮合重合で得られるポリエステル。"},
-{"p":"タンパク質を構成するアミノ酸の結合様式の名称は？","c":["ペプチド結合","エステル結合","グリコシド結合","水素結合"],"a":0,"e":"アミノ基とカルボキシル基が脱水縮合する。"},
-{"p":"天然ゴムの主成分は？","c":["ポリイソプレン","ポリスチレン","ポリエチレン","ナイロン"],"a":0,"e":"イソプレンが重合した高分子。"}]},
-{"s":"Information_I","u":"情報社会","q":[
-{"p":"共通鍵暗号方式の説明として正しいものは？","c":["暗号化と復号に同じ鍵を用いる","暗号化と復号に別の鍵を用いる","鍵を使わない","公開鍵で暗号化し公開鍵で復号する"],"a":0,"e":"同じ鍵を安全に共有する必要がある。"},
-{"p":"著作物を引用する際に必要とされる要件は？","c":["引用部分を明示し、自分の著作物が主で引用が従であること","出典を書けば自由に使えること","商業利用でなければ自由なこと","改変してもよいこと"],"a":0,"e":"引用の必然性と主従関係、明瞭区分、出典明示が必要。"},
-{"p":"個人情報保護の観点で、個人情報に該当しないものは？","c":["法人の名称のみ","氏名","生年月日","顔写真"],"a":0,"e":"法人その他の団体の情報は個人情報に含まれない。"},
-{"p":"情報セキュリティの3要素に含まれないものは？","c":["効率性","機密性","完全性","可用性"],"a":0,"e":"3要素は機密性・完全性・可用性。"}]},
-{"s":"Information_I","u":"情報デザイン","q":[
-{"p":"Web ページで文字と背景のコントラストを確保する主な目的は？","c":["可読性を高めるため","通信量を減らすため","検索順位を上げるため","ファイル容量を減らすため"],"a":0,"e":"読みやすさの確保が目的。"},
-{"p":"画像に alt 属性を付ける主な理由は？","c":["画像が表示できない場合や音声読み上げに対応するため","画像を速く読み込むため","画像の色を変えるため","画像を圧縮するため"],"a":0,"e":"アクセシビリティの確保。"},
-{"p":"Web ページの情報設計で、近接の原則が意味するものは？","c":["関連する情報を近くに配置する","情報を等間隔に並べる","重要な情報を小さくする","色数を増やす"],"a":0,"e":"ゲシュタルトの原則のひとつ。"},
-{"p":"ユニバーサルデザインの考え方として適切なものは？","c":["できるだけ多くの人が使えるよう最初から設計する","特定の利用者だけに対応する","後から個別に改造する","平均的な利用者に合わせる"],"a":0,"e":"特別な改造を必要としない設計。"}]},
-{"s":"Information_I","u":"プログラミング","q":[
-{"p":"配列の要素が 5 個のとき、バブルソートで昇順に並べ替えるのに必要な比較回数は？","c":["10回","5回","20回","25回"],"a":0,"e":"n(n−1)/2=10。"},
-{"p":"f(n)=n×f(n−1)、f(0)=1 の再帰関数で f(4) の値は？","c":["24","12","4","120"],"a":0,"e":"4×3×2×1=24。"},
-{"p":"変数 x に 5 を代入し、x が 3 より大きいなら x から 2 を引く処理を実行した後の x は？","c":["3","5","2","1"],"a":0,"e":"条件が成立するので 5−2=3。"},
-{"p":"繰り返し処理で、条件を先に判定してから処理を行う方式の名称は？","c":["前判定繰り返し","後判定繰り返し","無限ループ","再帰呼び出し"],"a":0,"e":"while 文が代表例。"}]},
-{"s":"Information_I","u":"データの活用","q":[
-{"p":"一方が増えると他方も増える傾向を表す用語は？","c":["正の相関","負の相関","無相関","相関係数"],"a":0,"e":"散布図が右上がりになる。"},
-{"p":"極端な値の影響を受けにくい代表値は？","c":["中央値","平均値","最大値","範囲"],"a":0,"e":"中央値は外れ値に強い。"},
-{"p":"データを階級ごとに区切り、その度数を棒の高さで表したグラフは？","c":["ヒストグラム","折れ線グラフ","円グラフ","帯グラフ"],"a":0,"e":"度数分布を表すグラフ。"},
-{"p":"あるデータの偏差値が 60 であるとき、平均値との関係は？","c":["平均より上にいる","平均と同じ","平均より下にいる","判断できない"],"a":0,"e":"偏差値 50 が平均。60 は上。"}]},
-{"s":"Information_I","u":"ネットワーク","q":[
-{"p":"IPアドレスの説明として適切なものは？","c":["ネットワーク上の機器を識別するために割り当てられる番号","Web ページの場所を示す文字列","ファイルの容量を表す数値","暗号化の鍵の長さ"],"a":0,"e":"機器の識別に用いられる。"},
-{"p":"プロトコルの役割として適切なものは？","c":["通信の手順を定めた約束事","データを保存する装置","回線の速度","画面の解像度"],"a":0,"e":"通信規約のこと。"},
-{"p":"DNS の役割は？","c":["ドメイン名を IPアドレスに変換する","ファイルを圧縮する","メールを送信する","通信を暗号化する"],"a":0,"e":"名前解決を行う仕組み。"},
-{"p":"LAN と WAN の違いとして適切なものは？","c":["LAN は限られた範囲、WAN はより広い範囲のネットワーク","LAN は無線のみ","WAN は暗号化されない","LAN の方が通信速度が遅い"],"a":0,"e":"規模による区分。"}]},
-{"s":"GeographyIntegrated_Geography","u":"自然環境","q":[
-{"p":"日本の夏に高温多湿をもたらす気団は？","c":["小笠原気団","シベリア気団","オホーツク気団","揚子江気団"],"a":0,"e":"太平洋高気圧から吹く暖湿な気団。"},
-{"p":"冷帯で広く分布し、酸性でやせた土壌は？","c":["ポドゾル","チェルノーゼム","ラテライト","テラローシャ"],"a":0,"e":"冷帯の針葉樹林帯に分布する。"},
-{"p":"プレート境界で発生する地震の多い地域は？","c":["環太平洋造山帯","アフリカ大陸中央部","シベリア内陸部","オーストラリア中央部"],"a":0,"e":"プレートの沈み込み帯に位置する。"},
-{"p":"偏西風の影響で、大陸西岸の高緯度側に形成される気候は？","c":["西岸海洋性気候","砂漠気候","熱帯雨林気候","地中海性気候"],"a":0,"e":"年間を通じて偏西風の影響を受ける。"}]},
-{"s":"GeographyIntegrated_Geography","u":"産業と人口","q":[
-{"p":"人口ピラミッドがつりがね型になるのは人口転換のどの段階か？","c":["晩期","初期","前期","多産多死"],"a":0,"e":"少産少死で人口が安定した段階。"},
-{"p":"日本の施設園芸が盛んな地域に共通する自然条件は？","c":["冬季も比較的温暖で日照時間が長い","冬季の降雪が多い","火山が近い","乾燥している"],"a":0,"e":"温暖で日照に恵まれることが条件。"},
-{"p":"アジアで稲作が盛んな地域の共通する自然条件は？","c":["高温多湿で水が得やすい","冷涼で乾燥している","土壌がやせている","標高が高い"],"a":0,"e":"降水が多く水利に恵まれる。"},
-{"p":"多くの先進国で進んでいる産業構造の変化は？","c":["第3次産業の割合の増加","第1次産業の割合の増加","第2次産業の割合の増加","就業者数の増加"],"a":0,"e":"サービス経済化が進む。"}]},
-{"s":"GeographyIntegrated_Geography","u":"地誌","q":[
-{"p":"西アジアで石油輸出国が多い理由として適切なものは？","c":["ペルシャ湾岸に大規模な油田が分布するため","降水量が多いため","人口が少ないため","工業が発達しているため"],"a":0,"e":"世界有数の油田地帯が分布する。"},
-{"p":"ヨーロッパで EU が拡大したことによる影響は？","c":["域内の人や貿易の移動が活発になった","域内の関税が引き上げられた","通貨が各国でばらばらになった","人の移動が禁止された"],"a":0,"e":"人・物・資本の移動が自由化された。"},
-{"p":"アフリカ諸国に共通して見られる課題は？","c":["一次産品依存からの脱却","人口の急減","耕地の過剰","高齢化の進行"],"a":0,"e":"モノカルチャー経済からの転換が課題。"},
-{"p":"東南アジアで工業化が進んだ背景として適切なものは？","c":["外国企業の進出と安価な労働力","豊富な石油","冷涼な気候","高い関税率"],"a":0,"e":"輸出指向型工業化が進展した。"}]},
-{"s":"GeographyIntegrated_Geography","u":"現代世界の諸課題","q":[
-{"p":"発展途上国で児童労働が生じる主な要因は？","c":["貧困と教育機会の不足","労働時間の短さ","社会保障の充実","人口の減少"],"a":0,"e":"家計を支えるために働かざるを得ない。"},
-{"p":"地球温暖化の原因となる温室効果ガスのうち、排出量が最も多いものは？","c":["二酸化炭素","メタン","フロン","一酸化二窒素"],"a":0,"e":"化石燃料の燃焼に伴い大量に排出される。"},
-{"p":"国際分業が進む中で、多国籍企業が工場を移す主な理由は？","c":["労働費などの生産コストを抑えるため","気候が良いため","関税を高くするため","人口を減らすため"],"a":0,"e":"コスト削減を目的とする。"},
-{"p":"食料問題への対応として、フードマイレージを小さくする行動は？","c":["地元で生産された食材を買う","輸入品を積極的に買う","遠方の名産品を買う","加工食品を多く買う"],"a":0,"e":"輸送距離を減らすことが有効。"}]},
-{"s":"Japanese","u":"評論","q":[
-{"p":"評論文で「一般には〜と言われるが、実は〜だ」という構成が果たす役割は？","c":["通説を提示して否定し、自説を強調する","具体例を並べる","筆者の経歴を示す","読者に質問する"],"a":0,"e":"対比によって主張を際立たせる。"},
-{"p":"「換言すれば」の直後に続く内容は何を表すか？","c":["直前の内容を別の言葉で言い換えたもの","反対の内容","具体例","筆者の体験"],"a":0,"e":"言い換えの標識。"},
-{"p":"評論文で比喩が用いられる主な目的は？","c":["抽象的な内容を具体的に伝えるため","字数を増やすため","文体を変えるため","出典を示すため"],"a":0,"e":"理解を助けるための工夫。"},
-{"p":"「〜にほかならない」が表す意味は？","c":["強く断定する","推量する","比喩する","疑問視する"],"a":0,"e":"強い断定を表す表現。"}]},
-{"s":"Japanese","u":"小説","q":[
-{"p":"小説で心情を直接書かず、動作や表情から推し量らせる表現は？","c":["行動描写","情景描写","心理描写","会話文"],"a":0,"e":"動作や様子で心情を表す。"},
-{"p":"小説の地の文と会話文の違いとして適切なものは？","c":["地の文は語り手の叙述、会話文は登場人物の発話","どちらも語り手の発話","会話文は説明文","地の文は必ず過去形"],"a":0,"e":"語り手と登場人物の区別。"},
-{"p":"小説で「〜らしい」と書かれている場合、何を表すか？","c":["語り手の推量や伝聞","断定","命令","疑問"],"a":0,"e":"推定の助動詞。"},
-{"p":"場面の転換を示す表現として一般的なものは？","c":["「その夜」「翌朝」などの時間の語","「。」の多用","体言止め","倒置法"],"a":0,"e":"時間や場所の語で場面が切り替わる。"}]},
-{"s":"Japanese","u":"実用文","q":[
-{"p":"複数の資料を読み取るときにまず確認すべきことは？","c":["資料の作成時点や条件の違い","文字の大きさ","色の数","ページ数"],"a":0,"e":"条件が異なると結論が変わる。"},
-{"p":"議事録に必ず記録すべき内容は？","c":["決定事項と根拠、担当者と期限","発言者全員の雑談","会議室の広さ","出席者の服装"],"a":0,"e":"後から実行できる形で残す。"},
-{"p":"案内文で条件を読み取るときに有効な方法は？","c":["条件を整理してから該当箇所を探す","全部を暗記する","最初から音読する","結論だけ読む"],"a":0,"e":"必要な情報を絞る。"},
-{"p":"グラフ付きの資料で最初に確認すべきことは？","c":["縦軸の単位と目盛り","グラフの色","タイトルの書体","余白"],"a":0,"e":"単位の取り違えを防ぐ。"}]},
-{"s":"Japanese","u":"古文","q":[
-{"p":"古文の助動詞「けり」が表す意味は？","c":["過去または詠嘆","推量","打消","使役"],"a":0,"e":"物語では過去、和歌では詠嘆が多い。"},
-{"p":"「いとをかし」の意味として正しいものは？","c":["とても趣がある","とても嫌だ","まったく無い","すぐに来い"],"a":0,"e":"「いと」はとても、「をかし」は趣がある。"},
-{"p":"古文で「〜ぬ」が表す意味は？","c":["完了または強意の打消","過去","使役","受け身"],"a":0,"e":"文脈で完了か打消になる。"},
-{"p":"古文の「げに」の意味は？","c":["なるほど","ゆえに","さらに","たとえ"],"a":0,"e":"同意・納得を表す。"}]},
-{"s":"Japanese","u":"漢文","q":[
-{"p":"漢文の返り点で、下から上へ返ることを示す記号は？","c":["レ点","一・二点","上・下点","句点"],"a":0,"e":"一字下から上へ返る。"},
-{"p":"漢文で「以」が表す意味は？","c":["手段・方法","否定","反語","過去"],"a":0,"e":"「〜をもって」と読む。"},
-{"p":"漢文の「不」が表す意味は？","c":["否定","推量","命令","感嘆"],"a":0,"e":"打ち消しを表す。"},
-{"p":"漢文で「而」が表す意味は？","c":["順接・並列","逆接","仮定","限定"],"a":0,"e":"順接や並列を表す。"}]},
-{"s":"English_Reading","u":"短文集約","q":[
-{"p":"Show me the way to the station, please. の意味として最も適切なものは？","c":["駅への道を教えてください","駅で待っていてください","駅まで送ってください","駅の場所を知っていますか"],"a":0,"e":"道順を尋ねる表現。"},
-{"p":"He is used to getting up early. の意味として適切なものは？","c":["彼は早起きすることに慣れている","彼は早起きするために使われる","彼は以前は早起きしていた","彼は早起きするつもりだ"],"a":0,"e":"be used to 〜ing は「〜に慣れている」。"},
-{"p":"It is no use crying over spilt milk. の意味に最も近いものは？","c":["済んだことを嘆いても仕方がない","牛乳をこぼしてはいけない","泣けば解決する","急いで行動すべきだ"],"a":0,"e":"ことわざの意味。"},
-{"p":"The sooner, the better. の意味として適切なものは？","c":["早ければ早いほどよい","早すぎるとよくない","遅れても問題ない","どちらでもよい"],"a":0,"e":"比較級の構文。"}]},
-{"s":"English_Reading","u":"論理展開","q":[
-{"p":"英文で However の直後に続く内容として想定されるものは？","c":["直前の内容と対立する内容","直前の内容の具体例","直前の内容の原因","直前の内容の要約"],"a":0,"e":"逆接の標識。"},
-{"p":"英文で For example が導く文の役割は？","c":["直前の主張を具体例で支える","直前の主張を否定する","話題を変える","結論を述べる"],"a":0,"e":"例示の標識。"},
-{"p":"英文で Therefore が示す関係は？","c":["原因から結果","対比","追加","例示"],"a":0,"e":"帰結を導く。"},
-{"p":"英文で In other words の役割は？","c":["直前の内容を言い換える","話題を変える","反論する","例を挙げる"],"a":0,"e":"言い換えの標識。"}]},
-{"s":"English_Reading","u":"図表読解","q":[
-{"p":"英文の表で N/A とあるときの意味は？","c":["データがない","数値が最大","数値が最小","平均値である"],"a":0,"e":"Not Available の略。"},
-{"p":"グラフで最も高い項目を問われたとき、最初に確認すべきことは？","c":["縦軸の単位と目盛り","グラフの色","凡例の位置","タイトルの書体"],"a":0,"e":"単位の取り違えを防ぐ。"},
-{"p":"英文の広告から条件に合うものを選ぶ効率的な手順は？","c":["条件を整理してから該当箇所を読む","全文を音読する","最初の広告だけ読む","価格の安い順に読む"],"a":0,"e":"必要な情報に絞る。"},
-{"p":"英文のグラフ問題で 'roughly' が示す意味は？","c":["およそ","正確に","最小で","最大で"],"a":0,"e":"概数を表す副詞。"}]},
-{"s":"English_Reading","u":"長文読解","q":[
-{"p":"英文読解で段落の最初の文に注目する理由は？","c":["その段落の主題が述べられていることが多いため","必ず結論だから","文法が簡単だから","単語が少ないから"],"a":0,"e":"トピックセンテンスの位置。"},
-{"p":"指示語 it が指す内容を探すときに有効な方法は？","c":["直前の名詞や文の内容を確認する","文全体を暗記する","最初の段落に戻る","単語の意味を調べる"],"a":0,"e":"指示内容は直前にあることが多い。"},
-{"p":"英文で筆者の意見を表す文を見分ける手がかりは？","c":["I think や should などの表現","数字や年号","固有名詞","接続詞の that"],"a":0,"e":"主張を示す表現に注目する。"},
-{"p":"英文の要旨を問う問題で最も適切な解き方は？","c":["各段落の主題をまとめて全体像をつかむ","1文だけを訳す","単語数を数える","最初と最後の単語を見る"],"a":0,"e":"段落ごとの要点を積み上げる。"}]},
-{"s":"English_Reading","u":"情報検索","q":[
-{"p":"英文の案内から必要な情報を探すとき、最初に見るべきものは？","c":["見出しや太字などの視覚的な強調","本文の1行目","ページ番号","余白"],"a":0,"e":"強調は重要情報の目印。"},
-{"p":"複数の英文資料から条件に合うものを選ぶときの効率的な手順は？","c":["条件を整理してから各資料の該当箇所だけを読む","全文を精読する","資料を音読する","最初の資料だけ読む"],"a":0,"e":"条件に絞って検索する。"},
-{"p":"英文の時刻表で 'departure' が示すものは？","c":["出発","到着","所要時間","料金"],"a":0,"e":"出発を表す語。"},
-{"p":"英文の料金表で 'per person' の意味は？","c":["1人あたり","1回あたり","1日あたり","1kgあたり"],"a":0,"e":"単位あたりの料金を示す。"}]}
-];
+/* ===== 単元ドリル：自作問題は撤去。q_<科目key>.json を置けば読込（問題バンク） ===== */
+var BANK=[];
 (function(){
   function h32(t){ var x=2166136261>>>0; for(var i=0;i<t.length;i++){ x^=t.charCodeAt(i); x=Math.imul(x,16777619)>>>0; } return x>>>0; }
   (BANK||[]).forEach(function(g){ (g.q||[]).forEach(function(q){
@@ -1439,7 +1292,7 @@ function drillRows(D){
 }
 var DV={s:'',u:'',i:0,chosen:-1};
 function drillTop(){ var b=document.querySelector('#scDrill .body'); if(b) b.scrollTop=0; }
-/* over.html v2.28 : flat q loader (folderless) */
+/* over.html v2.29 : flat q loader + 記述演習 (writing mode) */
 /* ===== 追加問題の遅延読込（フォルダ不要・フラット方式） =====
    直下に q_<科目key>.json を置くだけ。形式: {"<単元>":[ {p,c,a,pts,e}, ... ]}
    例: q_English_Reading.json   /   q_Math_IA.json
@@ -1462,13 +1315,105 @@ function soPrefetch(s,u){ var k=s+'|'+u; if(SOU[k]) return; SOU[k]=1;
     return soQFile(f).then(function(a){ soMerge(k,a); return 1; }).catch(function(){ return 0; }); }) ])
   .then(function(){ if(typeof DV!=='undefined'&&DV) renderDrill(); }); }
 (function(){ var _du=drillUnit; drillUnit=function(s,u){ var a=_du(s,u); var ex=SOQ[s+'|'+u]||[];
-  if(a&&a.q&&ex.length) a.q=a.q.concat(ex.map(function(x){ var o={p:x.p,c:x.c,a:x.a}; if(x.pts!=null)o.pts=x.pts; if(x.e!=null)o.e=x.e; return o; }));
+  if(!a){ if(!ex.length) return null; a={s:s,u:u,q:[]}; }
+  if(ex.length) a.q=a.q.concat(ex.map(function(x){ var o={p:x.p,c:x.c,a:x.a}; if(x.pts!=null)o.pts=x.pts; if(x.e!=null)o.e=x.e; return o; }));
   return a; }; })();
+
+/* ===== v2.29 記述演習 : w_<科目key>.json を直下に置くだけ =====
+   {"<単元>":[ {n:番号, univ:大学, y:年, d:大問, q:問題文, img:画像URL, a:模範解答, e:解説} ]} */
+var WQ={}, WL={}, WV={s:'',u:'',i:0}, wIdx=0;
+function wLoad(s){ if(WL[s]) return WL[s];
+  WL[s]=soFetch('w_'+s+'.json').then(function(o){
+    if(o&&typeof o==='object'&&Object.prototype.toString.call(o)!=='[object Array]') WQ[s]=o;
+    return 1; }).catch(function(){ return 0; });
+  return WL[s]; }
+function renderWrite(){
+  var tb=document.getElementById('wTabs'), box=document.getElementById('wlist'); if(!tb||!box) return;
+  tb.innerHTML=WSUBJ.map(function(p,i){ return '<button data-i="'+i+'"'+(i===wIdx?' class="on"':'')+'>'+esc(p[1])+'</button>'; }).join('');
+  var sk=WSUBJ[wIdx][0], o=WQ[sk];
+  if(!o){ box.innerHTML='<div class="wempty">タブを押すと読み込みます</div>'; return; }
+  var us=(WUNIT[sk]||[]).concat(Object.keys(o).filter(function(u){ return (WUNIT[sk]||[]).indexOf(u)<0; }));
+  if(!us.length){ box.innerHTML='<div class="wempty">記述問題はまだありません</div>'; return; }
+  box.innerHTML=us.map(function(u){ var n=(o[u]||[]).length;
+    return '<div class="wcard" data-s="'+esc(sk)+'" data-u="'+esc(u)+'">'+
+      '<span class="rib"></span><span class="ribx">'+esc(ribOf(sk))+'</span>'+
+      '<div class="wc-h"><span class="st">記述</span></div>'+
+      '<div class="wt">'+esc(u)+'<small>答えを打ち込んで解く ・ '+esc(soName(sk))+'</small></div>'+
+      '<div class="mline"><span class="k">問題</span><span class="bar"><i style="width:'+(n?100:0)+'%"></i></span><span class="n">'+n+' 問</span></div>'+
+      '<button class="wbtn">解く &rsaquo;</button></div>'; }).join('');
+}
+function wBack(){ go('scHome'); renderHome(); }
+function wTop(){ var b=document.querySelector('#scWrite .body'); if(b) b.scrollTop=0; }
+function wCur(){ var o=WQ[WV.s]; if(!o) return null; var a=o[WV.u]; if(!a||!a.length) return null;
+  if(WV.i<0)WV.i=0; if(WV.i>=a.length)WV.i=a.length-1; return a[WV.i]; }
+function wOpenUnit(s,u){ WV={s:s,u:u,i:0};
+  var el=document.getElementById('wSub'); if(el) el.textContent=soName(s)+' ／ '+u;
+  go('scWrite');
+  var box=document.getElementById('wRun'); if(box) box.innerHTML='<div class="dq"><div class="qp">読み込み中…</div></div>';
+  wLoad(s).then(function(){ renderWriteRun(); }); }
+function renderWriteRun(){
+  var el=document.getElementById('wRun'); if(!el) return;
+  var o=WQ[WV.s], list=(o&&o[WV.u])||[];
+  if(!list.length){ el.innerHTML='<div class="dq"><div class="qp">問題がありません</div><div class="df"><button class="exBtn gh" onclick="wBack()">ホームへ戻る</button></div></div>'; return; }
+  var it=wCur(), meta=[];
+  if(it.y) meta.push(it.y+'年'); if(it.univ) meta.push(esc(it.univ));
+  if(it.d) meta.push('大問 '+esc(it.d)); if(it.n) meta.push('問 '+esc(it.n));
+  var img=it.img?'<div style="margin-top:12px"><img src="'+esc(it.img)+'" loading="lazy" decoding="async" style="max-width:100%;border-radius:8px;border:1px solid var(--line2)"></div>':'';
+  var mono='font-family:var(--mono);font-size:10.5px;letter-spacing:.1em;color:var(--mute)';
+  el.innerHTML=''+
+   '<div class="dtop" style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:12px">'+
+     '<span style="'+mono+'">'+meta.join(' ／ ')+'</span><span style="flex:1"></span>'+
+     '<span style="'+mono+'">'+(WV.i+1)+' / '+list.length+'</span></div>'+
+   '<div id="wWrap">'+
+     '<div id="wProb"><div class="wq">'+esc(it.q)+'</div>'+img+'</div>'+
+     '<div id="wSide">'+
+       '<div style="'+mono+';margin-bottom:6px">解答欄</div>'+
+       '<textarea id="wAns" class="wta" placeholder="答えを入力" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false"></textarea>'+
+       '<div style="display:flex;gap:8px;margin-top:8px">'+
+         '<button class="exBtn" style="flex:1" onclick="wJudge()">判定</button>'+
+         '<button class="exBtn gh" style="flex:1" onclick="wShow()">模範解答</button></div>'+
+       '<div id="wRes" style="margin-top:10px"></div>'+
+     '</div>'+
+   '</div>'+
+   '<div class="df" style="margin-top:16px">'+
+     '<button class="exBtn gh" onclick="wMove(-1)">&#8249; 前</button>'+
+     '<button class="exBtn gh" onclick="wMove(1)">次 &#8250;</button></div>';
+  wTop();
+}
+function wNorm(t){ return String(t==null?'':t).toLowerCase()
+  .replace(/[\uFF01-\uFF5E]/g,function(c){ return String.fromCharCode(c.charCodeAt(0)-0xFEE0); })
+  .replace(/[^a-z0-9]/g,''); }
+function wTok(t){ var m=String(t==null?'':t).toLowerCase()
+  .replace(/[\uFF01-\uFF5E]/g,function(c){ return String.fromCharCode(c.charCodeAt(0)-0xFEE0); })
+  .match(/[a-z]+/g); return m||[]; }
+function wCands(a){ a=String(a||''); var i=a.indexOf('\u2192'); if(i>=0) a=a.slice(i+1);
+  a=a.replace(/[\u2460-\u2464]/g,'').trim();
+  var base=a.replace(/[\[\(][^\]\)]*[\]\)]/g,'').replace(/[\/\u30FB\u3001,]/g,' ');
+  var opts=a.replace(/[\[\]\(\)]/g,'').replace(/[\/\u30FB\u3001,]/g,' ');
+  return [wNorm(base), wNorm(opts)].filter(function(x){ return x&&x.length; }); }
+function wJudge(){ var it=wCur(); if(!it) return; var t=document.getElementById('wAns'); if(!t) return;
+  var uv=wNorm(t.value), ut=wTok(t.value), cands=wCands(it.a), at=wTok(it.a);
+  var ok=cands.some(function(c){ return uv===c||(uv.length>=4&&c.indexOf(uv)>=0)||(c.length>=4&&uv.indexOf(c)>=0); });
+  var almost=!ok&&at.length>0&&at.every(function(x){ return ut.indexOf(x)>=0; });
+  var res=ok?'正解':(almost?'ほぼ正解':'もう一度');
+  document.getElementById('wRes').innerHTML=
+    '<div style="font-family:var(--mono);font-size:12px;letter-spacing:.08em;color:'+(ok?'var(--hot)':'var(--mute)')+'">'+res+'</div>'+
+    '<div style="margin-top:8px;font-size:13px;line-height:1.8"><b>模範解答</b>　'+esc(it.a)+
+    (it.e?'<div style="margin-top:6px;color:var(--mute);font-size:12.5px;line-height:1.8">'+esc(it.e)+'</div>':'')+'</div>'; }
+function wShow(){ var it=wCur(); if(!it) return; var r=document.getElementById('wRes'); if(!r) return;
+  r.innerHTML='<div style="font-size:13px;line-height:1.8"><b>模範解答</b>　'+esc(it.a)+
+    (it.e?'<div style="margin-top:6px;color:var(--mute);font-size:12.5px;line-height:1.8">'+esc(it.e)+'</div>':'')+'</div>'; }
+function wMove(d){ WV.i+=d; renderWriteRun(); }
+_on('wTabs','click',function(e){ var b=e.target.closest('button'); if(!b) return;
+  wIdx=parseInt(b.dataset.i,10)||0; renderWrite(); wLoad(WSUBJ[wIdx][0]).then(renderWrite); });
+_on('wlist','click',function(e){ var r=e.target.closest('.wcard'); if(!r) return;
+  wOpenUnit(r.dataset.s, r.dataset.u); });
 function openUnit(s,u){ DV={s:s,u:u,i:0,chosen:-1}; var el=document.getElementById('drSub'); if(el) el.textContent=subjNameOf(s)+' ／ '+u; renderDrill(); drillTop(); go('scDrill'); soPrefetch(s,u); }
 function drillBack(){ go('scHome'); renderHome(); }
 function renderDrill(){
   var el=document.getElementById('drillRun'); if(!el) return;
   var bk=drillUnit(DV.s,DV.u);
+  if(!bk&&SOU[DV.s+'|'+DV.u]){ el.innerHTML='<div class="dq"><div class="qp">問題を読み込んでいます…</div></div>'; return; }
   if(!bk){ el.innerHTML='<div class="dq"><div class="qp">問題がありません</div><div class="df"><button class="exBtn gh" onclick="drillBack()">ホームへ戻る</button></div></div>'; return; }
   if(DV.i>=bk.q.length){
     var st=drillStat(DV.s,DV.u);
@@ -1611,11 +1556,15 @@ function renderWeek(){
   var sk=S[wnIdx], agg=unitAggFor(soAgg(),sk);
   var tb=document.getElementById('wnTabs');
   if(tb) tb.innerHTML=S.map(function(k,i){ return '<button data-i="'+i+'"'+(i===wnIdx?' class="on"':'')+'>'+esc(soName(k))+'</button>'; }).join('');
-  var units=Object.keys(agg).filter(function(u){ return agg[u].t>0; })
+  var rl=Object.keys(agg).filter(function(u){ return agg[u].t>0; })
             .sort(function(a,b){ return (agg[a].g/agg[a].t)-(agg[b].g/agg[b].t); });
+  var extra=[];
+  ((XUNIT[sk])||[]).concat((BANK||[]).filter(function(x){ return x.s===sk; }).map(function(x){ return x.u; }))
+    .forEach(function(u){ if(rl.indexOf(u)<0&&extra.indexOf(u)<0) extra.push(u); });
+  var units=rl.concat(extra);
   if(!units.length){ box.innerHTML='<div class="wempty">\u3053\u306e\u6559\u79d1\u306f\u307e\u3060\u63a1\u70b9\u8a18\u9332\u304c\u3042\u308a\u307e\u305b\u3093</div>'; return; }
   box.innerHTML=units.map(function(u){
-    var o=agg[u], r=Math.round(o.g/o.t*100), bs=bankStat(sk,u);
+    var o=agg[u], r=o?Math.round(o.g/o.t*100):0, bs=bankStat(sk,u);
     var bad=(r<60)?' bad':'', hot=bs.a?' hot':'';
     var stTxt=bs.a?'\u6f14\u7fd2\u4e2d':'\u672a\u7740\u624b';
     return '<div class="wcard'+bad+hot+'" data-s="'+esc(sk)+'" data-u="'+esc(u)+'">'+
