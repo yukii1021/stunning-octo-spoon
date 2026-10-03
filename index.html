@@ -288,6 +288,12 @@ a{color:var(--accent)}
 .deck-tabs button.on{background:var(--bg-elev);color:var(--text);font-weight:700;box-shadow:var(--shadow)}
 .deck-bar{display:flex;gap:8px;align-items:center;margin:0 0 10px}
 .deck-bar input{flex:1;min-width:0;width:auto;margin:0}
+.pickbar{display:flex;gap:8px;align-items:center;margin:0 0 10px;flex-wrap:wrap}
+.pickbar .btn{margin:0}
+.cbx{width:22px;height:22px;border-radius:6px;border:1.5px solid var(--line);flex:none;display:grid;place-items:center;font-size:13px;color:transparent;background:var(--bg-elev-2)}
+.cbx.on{background:var(--accent);border-color:var(--accent);color:#fff}
+.crow.pick{cursor:pointer;-webkit-user-select:none;user-select:none}
+.sel-toggle{flex:none;white-space:nowrap}
 .sort-btn{flex:none;display:flex;align-items:center;gap:7px;min-height:44px;padding:0 12px 0 14px;border-radius:12px;border:1px solid var(--line);background:var(--bg-elev);font-size:13px;font-weight:600;color:var(--text-dim);white-space:nowrap}
 .sort-btn.on{color:var(--text);border-color:var(--text-mute)}
 .sort-btn .cv{font-size:9px;opacity:.7}
@@ -488,7 +494,7 @@ html.fo-locked,html.fo-locked body{overscroll-behavior:none}
 
     <div class="card">
       <h2>超集中モード</h2>
-      <div class="hint">決めた時間が終わるまで画面がロックされ、タップしても反応しません。</div>
+      
       <button class="btn primary block" id="focus-go" style="margin-top:12px" onclick="focusGoTap()">超集中モードを開始</button>
       <div class="hint" id="focus-status" style="text-align:center;margin-top:8px"></div>
     </div>
@@ -854,7 +860,7 @@ html.fo-locked,html.fo-locked body{overscroll-behavior:none}
 
 <div class="modal-bg" id="modal-focus"><div class="modal">
   <h3>超集中モード</h3>
-  <div class="hint">決めた時間が終わるまで画面がロックされ、タップしても反応しません。</div>
+  
   <div class="foc-lbl">集中する時間</div>
   <div class="seg" id="foc-durs" style="grid-template-columns:repeat(5,1fr)"></div>
   <input id="foc-custom" type="number" inputmode="numeric" min="1" max="720" placeholder="分（自分で決める）" style="margin-top:8px" />
@@ -2365,7 +2371,7 @@ function openWeak(sid){
 function deckWeak(){
   const cs = weakCards(deckSid,'prob');
   if(!cs.length) return `<div class="empty">要復習の問題はありません。<br>まちがえた問題がここにたまります。</div>`;
-  return `<div class="hint">まちがえた問題 <b>${cs.length}件</b>。ここでとき直しても「1発目で正解」と同じ扱いにはなりません（要復習に残したまま、練習した回数だけ記録します）。</div>
+  return `<div class="hint">まちがえた問題 <b>${cs.length}件</b></div>
   <button class="btn primary block" style="margin-top:10px" onclick="startWeakSession('${deckSid}')">まとめて挑戦（${Math.min(20,cs.length)}問）</button>
   <div style="height:12px"></div>` + cs.map(c=>`<div class="crow">
     <div style="flex:1;min-width:0">
@@ -2387,14 +2393,35 @@ function sortOpts(kind){
     ? [['add','追加順'],['kana','五十音順'],['tag','分野順'],['rand','ランダム']]
     : [['add','追加順'],['kana','五十音順'],['rand','ランダム']];
 }
+var deckPick = null;
+function pickEnter(){ deckPick = new Set(); renderDeck() }
+function pickExit(){ deckPick = null; renderDeck() }
+function pickToggle(id){ if(!deckPick) return; if(deckPick.has(id)) deckPick.delete(id); else deckPick.add(id); renderDeck() }
+function pickAll(kind){ if(!deckPick) return; subjCards(deckSid, kind).forEach(c=>deckPick.add(c.id)); renderDeck() }
+function pickNone(){ if(!deckPick) return; deckPick.clear(); renderDeck() }
+function pickDelete(){
+  if(!deckPick || !deckPick.size){ toast('削除する項目を選んでください'); return }
+  const n = deckPick.size;
+  if(!confirm(n+'件を削除しますか？')) return;
+  state.cards = (state.cards||[]).filter(c=>!deckPick.has(c.id));
+  saveState(); deckPick = null; renderDeck(); toast(n+'件を削除しました');
+}
 function deckList(kind){
   const os = sortOpts(kind);
   const cur = os.filter(o=>o[0]===deckSortOf(kind))[0] || os[0];
-  return `<div class="deck-bar">
+  const bar = deckPick
+    ? `<div class="pickbar">
+    <button class="btn sm" onclick="pickAll('${kind}')">すべて選択</button>
+    <button class="btn sm" onclick="pickNone()">選択解除</button>
+    <button class="btn sm primary" onclick="pickDelete()">削除 (${deckPick.size})</button>
+    <button class="btn sm ghost" onclick="pickExit()">やめる</button>
+  </div>`
+    : `<div class="deck-bar">
     <input id="deck-search" placeholder="検索" />
     <button class="sort-btn${cur[0]==='add'?'':' on'}" onclick="openSortSheet('${kind}')"><span>${cur[1]}</span><span class="cv">▼</span></button>
-  </div>
-  <div id="deck-list">${listRows('', kind)}</div>`;
+    <button class="btn sm sel-toggle" onclick="pickEnter()">選択</button>
+  </div>`;
+  return bar + `<div id="deck-list">${listRows('', kind)}</div>`;
 }
 function openSortSheet(kind){
   const cur = deckSortOf(kind);
@@ -2413,11 +2440,21 @@ function listRows(q, kind){
   if(q){ const qq = q.toLowerCase(); cs = cs.filter(c=>((c.f||'')+(c.b||'')+(c.tag||'')).toLowerCase().includes(qq)) }
   if(!cs.length) return `<div class="empty">該当する${kind==='card'?'カード':'問題'}がありません</div>`;
   cs = sortCards(cs, kind);
+  const meta = c=>(c.w&&c.w.length?'4択 · ':'')+(c.tag?escapeHtml(c.tag)+' · ':'')+((c.due||'0000')<=t?'<span style="color:var(--bad)">今日</span>':'次回 '+mdShort(c.due))+((c.n||0)>0?' · '+(c.n||0)+'回':' · 未挑戦');
+  if(deckPick) return cs.map(c=>{
+    const on = deckPick.has(c.id);
+    return `<div class="crow pick" onclick="pickToggle('${c.id}')">
+    <span class="cbx${on?' on':''}">✓</span>
+    <div style="flex:1;min-width:0">
+      <div class="cf">${escapeHtml(c.f)}</div>
+      <div class="cb">${escapeHtml(c.b||'')}</div>
+      <div class="ct">${meta(c)}</div>
+    </div></div>`;}).join('');
   return cs.map(c=>`<div class="crow">
     <div style="flex:1;min-width:0">
       <div class="cf">${escapeHtml(c.f)}</div>
       <div class="cb">${escapeHtml(c.b||'')}</div>
-      <div class="ct">${(c.w&&c.w.length)?'4択 · ':''}${c.tag?escapeHtml(c.tag)+' · ':''}${(c.due||'0000')<=t?'<span style="color:var(--bad)">今日</span>':'次回 '+mdShort(c.due)}${(c.n||0)>0?' · '+(c.n||0)+'回':' · 未挑戦'}</div>
+      <div class="ct">${meta(c)}</div>
     </div>
     <button class="icon-btn" onclick="startCard('${c.id}')">▶</button>
     <button class="icon-btn" onclick="editCard('${c.id}')">✎</button>
@@ -2713,7 +2750,6 @@ function renderSess(){
     body.innerHTML = `<div class="deck-prob" style="text-align:center">
         <div class="deck-big">${sess.ok} / ${sess.q.length}</div>
         <div class="hint">${md==='memorize'?'おぼえた':'正解'}</div></div>
-      ${sess.retry?`<div class="hint" style="margin-top:10px">要復習の練習です。ここでの正解は1発目で正解したのと同じ扱いにはしていません（要復習に残ります）。</div>`:''}
       <button class="btn primary block" style="margin-top:16px" onclick="againSess()">もう一度</button>
       <button class="btn block" style="margin-top:8px" onclick="closeSess()">終わる</button>`;
     return;
