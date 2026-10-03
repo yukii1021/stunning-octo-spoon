@@ -765,8 +765,8 @@ var SUBJM={
   English_Reading:{n:'英語Ｒ'}, Information_I:{n:'情報Ⅰ'},
   Physics:{n:'物理'}, Chemistry:{n:'化学'}, GeographyIntegrated_Geography:{n:'地理総合，地理探究'}
 };
-var XUNIT={ English_Reading:['文法・語法','熟語・語い・会話表現'] };
-var WSUBJ=[['English_Reading','英語Ｒ']];
+var XUNIT={ English_Reading:['文法・語法','熟語・語い・会話表現'], Chemistry:['カルボン酸とエステル','ヨードホルム反応'] };
+var WSUBJ=[['English_Reading','英語Ｒ'],['Chemistry','化学']];
 var WUNIT={ English_Reading:['整序英作文','正誤問題'] };
 ;
 function soRuns(){ try{ var a=JSON.parse(localStorage.getItem(SO_KEY)||'[]'); return (a&&a.length)?a:[]; }catch(e){ return []; } }
@@ -1382,7 +1382,7 @@ function renderWriteRun(){
 }
 function wNorm(t){ return String(t==null?'':t).toLowerCase()
   .replace(/[\uFF01-\uFF5E]/g,function(c){ return String.fromCharCode(c.charCodeAt(0)-0xFEE0); })
-  .replace(/[^a-z0-9]/g,''); }
+  .replace(/[^a-z0-9\u3040-\u30ff\u3400-\u9fff]/g,''); }
 function wTok(t){ var m=String(t==null?'':t).toLowerCase()
   .replace(/[\uFF01-\uFF5E]/g,function(c){ return String.fromCharCode(c.charCodeAt(0)-0xFEE0); })
   .match(/[a-z]+/g); return m||[]; }
