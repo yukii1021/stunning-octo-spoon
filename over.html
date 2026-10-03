@@ -356,7 +356,7 @@ body.dw .drawer{transform:none}
 .secrow .bar{flex:1;margin:0}
 .secrow .pc{font-family:var(--num);font-size:15px;color:var(--dim);width:72px;text-align:right}
 .secrow .ar{color:var(--mute);font-family:var(--mono);font-size:12px}
-#scDrill .body{flex:1;min-height:0;overflow:auto;padding:22px}
+#scDrill .body{flex:1;min-height:0;overflow:auto;padding:26px 22px 44px}
 /* --- v2.25 home --- */
 #scHome .body{padding:14px 18px 10px}
 #scHome .card{padding:14px 15px}
@@ -526,12 +526,21 @@ body.dw .drawer{transform:none}
 </section>
 
 <style>
-#wWrap{display:flex;gap:18px;align-items:flex-start;flex-wrap:wrap}
-#wProb{flex:1 1 360px;min-width:0}
-#wSide{flex:0 0 300px}
-.wq{white-space:pre-wrap;line-height:2;font-size:14px}
-.wta{width:100%;min-height:130px;padding:10px 12px;border-radius:10px;border:1px solid var(--line2);background:var(--card);color:var(--ink);font-size:14px;font-family:inherit;box-sizing:border-box}
-@media(max-width:760px){#wSide{flex:1 1 100%}}
+#scWrite .body{flex:1;min-height:0;overflow:auto;padding:26px 22px 44px}
+#wWrap{display:block;max-width:760px;margin:0 auto}
+#wProb{min-width:0}
+#wSide{max-width:760px;margin:18px auto 0}
+.wstemCard{position:sticky;top:-1px;z-index:3;background:var(--card);backdrop-filter:blur(8px);border:1px solid var(--line2);border-radius:12px;padding:12px 14px;margin-bottom:14px;box-shadow:0 8px 20px rgba(0,0,0,.22)}
+.wStL{font-family:var(--mono);font-size:10px;letter-spacing:.14em;color:var(--acc2);margin-bottom:6px}
+.wstem{white-space:pre-wrap;line-height:1.95;font-size:14.5px;color:var(--text)}
+.wsubq{font-size:16px;line-height:1.9;color:var(--text);padding:2px 2px 6px}
+.wsubq .n{color:var(--acc2);font-family:var(--mono);margin-right:8px}
+.wq{white-space:pre-wrap;line-height:2;font-size:15px;padding:12px 14px;border:1px solid var(--line2);border-radius:12px;background:var(--card2);margin-bottom:14px}
+.wta{width:100%;min-height:130px;padding:10px 12px;border-radius:10px;border:1px solid var(--line2);background:var(--card);color:var(--ink);font-size:15px;font-family:inherit;box-sizing:border-box}
+.wself{margin-top:12px}
+.wself .exBtn.on{border-color:var(--ok);background:rgba(74,222,128,.16);color:var(--text)}
+.wself .exBtn.ng.on{border-color:var(--bad);background:rgba(255,107,107,.16);color:var(--text)}
+@media(max-width:760px){#scWrite .body{padding:22px 14px 44px}}
 </style>
 <section class="scr so" id="scWrite">
   <div class="fx"></div>
@@ -1345,7 +1354,7 @@ function renderWrite(){
 function wBack(){ go('scHome'); renderHome(); }
 function wTop(){ var b=document.querySelector('#scWrite .body'); if(b) b.scrollTop=0; }
 function wCur(){ var o=WQ[WV.s]; if(!o) return null; var a=o[WV.u]; if(!a||!a.length) return null;
-  if(WV.i<0)WV.i=0; if(WV.i>=a.length)WV.i=a.length-1; return a[WV.i]; }
+  if(WV.i<0)WV.i=0; return a[WV.i]; }
 function wOpenUnit(s,u){ WV={s:s,u:u,i:0};
   var el=document.getElementById('wSub'); if(el) el.textContent=soName(s)+' ／ '+u;
   go('scWrite');
@@ -1355,29 +1364,52 @@ function renderWriteRun(){
   var el=document.getElementById('wRun'); if(!el) return;
   var o=WQ[WV.s], list=(o&&o[WV.u])||[];
   if(!list.length){ el.innerHTML='<div class="dq"><div class="qp">問題がありません</div><div class="df"><button class="exBtn gh" onclick="wBack()">ホームへ戻る</button></div></div>'; return; }
+  var mono='font-family:var(--mono);font-size:10.5px;letter-spacing:.1em;color:var(--mute)';
+  if(WV.i>=list.length){
+    var st=wStat(WV.s,WV.u);
+    el.innerHTML='<div class="dq">'+
+      '<div class="qn">単元クリア</div>'+
+      '<div class="qp">'+esc(WV.u)+'</div>'+
+      '<div class="ex">記述 '+list.length+' 問 ／ 自己採点 正解 '+st.ok+' 問</div>'+
+      '<div class="df"><button class="exBtn" onclick="wRestart()">もう一度</button>'+
+      '<button class="exBtn gh" onclick="wBack()">ホームへ戻る</button></div></div>';
+    wTop(); return;
+  }
   var it=wCur(), meta=[];
   if(it.y) meta.push(it.y+'年'); if(it.univ) meta.push(esc(it.univ));
   if(it.d) meta.push('大問 '+esc(it.d)); if(it.n) meta.push('問 '+esc(it.n));
-  var img=it.img?'<div style="margin-top:12px"><img src="'+esc(it.img)+'" loading="lazy" decoding="async" style="max-width:100%;border-radius:8px;border:1px solid var(--line2)"></div>':'';
-  var mono='font-family:var(--mono);font-size:10.5px;letter-spacing:.1em;color:var(--mute)';
+  var stem='';
+  if(it.stem) stem='<div class="wstemCard"><div class="wStL">問題文</div><div class="wstem">'+esc(it.stem)+'</div>'+
+    (it.img?'<div style="margin-top:10px"><img src="'+esc(it.img)+'" loading="lazy" decoding="async" style="max-width:100%;border-radius:8px;border:1px solid var(--line2)"></div>':'')+'</div>';
+  var img=(!it.stem&&it.img)?'<div style="margin-top:10px"><img src="'+esc(it.img)+'" loading="lazy" decoding="async" style="max-width:100%;border-radius:8px;border:1px solid var(--line2)"></div>':'';
+  var D=wAll(), k=WV.s+'|'+WV.u, e=D[k]||{a:{}}, got=e.a[WV.i];
+  var last=(WV.i+1>=list.length);
   el.innerHTML=''+
-   '<div class="dtop" style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:12px">'+
+   '<div class="dtop" style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:14px">'+
      '<span style="'+mono+'">'+meta.join(' ／ ')+'</span><span style="flex:1"></span>'+
      '<span style="'+mono+'">'+(WV.i+1)+' / '+list.length+'</span></div>'+
    '<div id="wWrap">'+
-     '<div id="wProb"><div class="wq">'+esc(it.q)+'</div>'+img+'</div>'+
+     stem + '<div id="wProb">'+
+       '<div class="wsubq">'+(it.n?'<span class="n">'+esc(it.n)+'</span>':'')+esc(it.q)+img+'</div>'+
+     '</div>'+
      '<div id="wSide">'+
        '<div style="'+mono+';margin-bottom:6px">解答欄</div>'+
-       '<textarea id="wAns" class="wta" placeholder="答えを入力" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false"></textarea>'+
-       '<div style="display:flex;gap:8px;margin-top:8px">'+
-         '<button class="exBtn" style="flex:1" onclick="wJudge()">判定</button>'+
-         '<button class="exBtn gh" style="flex:1" onclick="wShow()">模範解答</button></div>'+
+       '<textarea id="wAns" class="wta" placeholder="答えを入力して、自分で答え合わせ" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false"></textarea>'+
+       '<div style="display:flex;gap:8px;margin-top:8px;flex-wrap:wrap">'+
+         '<button class="exBtn" style="flex:1" onclick="wShow()">答えを見る</button>'+
+         '<button class="exBtn gh" style="flex:1" onclick="wClear()">入力クリア</button></div>'+
+       '<div class="wself" id="wSelf">'+
+         '<div style="'+mono+';margin-bottom:6px">自分で採点</div>'+
+         '<div style="display:flex;gap:8px">'+
+           '<button class="exBtn" id="wOk" style="flex:1" onclick="wMark(1)">&#9675; 正解</button>'+
+           '<button class="exBtn gh ng" id="wNg" style="flex:1" onclick="wMark(0)">&#10005; 不正解</button></div></div>'+
        '<div id="wRes" style="margin-top:10px"></div>'+
      '</div>'+
    '</div>'+
    '<div class="df" style="margin-top:16px">'+
      '<button class="exBtn gh" onclick="wMove(-1)">&#8249; 前</button>'+
-     '<button class="exBtn gh" onclick="wMove(1)">次 &#8250;</button></div>';
+     '<button class="exBtn" onclick="wMove(1)">'+(last?'完了 &#8250;':'次 &#8250;')+'</button></div>';
+  if(got!==undefined) wPaint(got?1:0);
   wTop();
 }
 function wNorm(t){ return String(t==null?'':t).toLowerCase()
@@ -1391,19 +1423,27 @@ function wCands(a){ a=String(a||''); var i=a.indexOf('\u2192'); if(i>=0) a=a.sli
   var base=a.replace(/[\[\(][^\]\)]*[\]\)]/g,'').replace(/[\/\u30FB\u3001,]/g,' ');
   var opts=a.replace(/[\[\]\(\)]/g,'').replace(/[\/\u30FB\u3001,]/g,' ');
   return [wNorm(base), wNorm(opts)].filter(function(x){ return x&&x.length; }); }
-function wJudge(){ var it=wCur(); if(!it) return; var t=document.getElementById('wAns'); if(!t) return;
-  var uv=wNorm(t.value), ut=wTok(t.value), cands=wCands(it.a), at=wTok(it.a);
-  var ok=cands.some(function(c){ return uv===c||(uv.length>=4&&c.indexOf(uv)>=0)||(c.length>=4&&uv.indexOf(c)>=0); });
-  var almost=!ok&&at.length>0&&at.every(function(x){ return ut.indexOf(x)>=0; });
-  var res=ok?'正解':(almost?'ほぼ正解':'もう一度');
-  document.getElementById('wRes').innerHTML=
-    '<div style="font-family:var(--mono);font-size:12px;letter-spacing:.08em;color:'+(ok?'var(--hot)':'var(--mute)')+'">'+res+'</div>'+
-    '<div style="margin-top:8px;font-size:13px;line-height:1.8"><b>模範解答</b>　'+esc(it.a)+
-    (it.e?'<div style="margin-top:6px;color:var(--mute);font-size:12.5px;line-height:1.8">'+esc(it.e)+'</div>':'')+'</div>'; }
 function wShow(){ var it=wCur(); if(!it) return; var r=document.getElementById('wRes'); if(!r) return;
-  r.innerHTML='<div style="font-size:13px;line-height:1.8"><b>模範解答</b>　'+esc(it.a)+
+  r.innerHTML='<div style="font-size:13.5px;line-height:1.85"><b>模範解答</b>　'+esc(it.a)+
     (it.e?'<div style="margin-top:6px;color:var(--mute);font-size:12.5px;line-height:1.8">'+esc(it.e)+'</div>':'')+'</div>'; }
-function wMove(d){ WV.i+=d; renderWriteRun(); }
+function wPaint(v){ var ok=document.getElementById('wOk'), ng=document.getElementById('wNg');
+  if(ok) ok.classList.toggle('on', v===1);
+  if(ng) ng.classList.toggle('on', v===0); }
+function wMark(v){ var list=(WQ[WV.s]&&WQ[WV.s][WV.u])||[]; if(!list.length) return;
+  var k=WV.s+'|'+WV.u, D=wAll(), e=D[k]||{a:{},ok:0}, prev=e.a[WV.i];
+  if(prev!==undefined){ if(prev) e.ok=Math.max(0,(e.ok||0)-1); }
+  e.a[WV.i]=v?1:0; if(v) e.ok=(e.ok||0)+1; D[k]=e; wSave(D);
+  wPaint(v?1:0);
+  var r=document.getElementById('wRes'); if(r && !r.innerHTML) wShow(); }
+function wStat(s,u){ var D=wAll(), e=D[s+'|'+u]||{a:{},ok:0}; var a=e.a||{};
+  return { ok:(e.ok||0), t:Object.keys(a).length }; }
+function wRestart(){ WV.i=0; renderWriteRun(); }
+function wClear(){ var t=document.getElementById('wAns'); if(t){ t.value=''; t.focus(); } }
+function wAll(){ try{ return JSON.parse(localStorage.getItem(W_KEY)||'{}')||{}; }catch(e){ return {}; } }
+function wSave(D){ try{ localStorage.setItem(W_KEY, JSON.stringify(D)); }catch(e){} }
+var W_KEY='so_wr_v1';
+function wMove(d){ var list=(WQ[WV.s]&&WQ[WV.s][WV.u])||[]; WV.i+=d;
+  if(WV.i<0)WV.i=0; if(WV.i>list.length)WV.i=list.length; renderWriteRun(); }
 _on('wTabs','click',function(e){ var b=e.target.closest('button'); if(!b) return;
   wIdx=parseInt(b.dataset.i,10)||0; renderWrite(); wLoad(WSUBJ[wIdx][0]).then(renderWrite); });
 _on('wlist','click',function(e){ var r=e.target.closest('.wcard'); if(!r) return;
@@ -1426,6 +1466,7 @@ function renderDrill(){
   var q=bk.q[DV.i], D=drillAll(), e=D[UKey(DV.s,DV.u)]||{a:{}};
   var picked=e.a[DV.i];
   var h='<div class="dq"><div class="qn">Q '+(DV.i+1)+' / '+bk.q.length+' ／ '+esc(subjNameOf(DV.s))+' ・ '+esc(DV.u)+'</div>';
+  if(q.stem) h+='<div class="wstemCard"><div class="wStL">問題文</div><div class="wstem">'+esc(q.stem)+'</div></div>';
   h+='<div class="qp">'+esc(q.p)+'</div><div class="qc">';
   q.c.forEach(function(c,ci){
     var cls='';
