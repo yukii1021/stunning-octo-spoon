@@ -156,22 +156,47 @@ body{font-family:var(--ui);overflow:hidden;color:var(--text)}
 @keyframes bl{50%{opacity:0}}
 .fx{position:absolute;inset:0;pointer-events:none;z-index:6;
   background:var(--fx)}
-/* ============ 重たい扉（起動演出） ============ */
-#doors{position:fixed;inset:0;z-index:200;overflow:hidden;visibility:hidden;pointer-events:none}
-#doors.on{visibility:visible}
-#doors .lf,#doors .rt{position:absolute;top:0;bottom:0;width:50.6%;will-change:transform;
-  background:
-    repeating-linear-gradient(90deg,rgba(255,255,255,.03) 0 1px,rgba(0,0,0,0) 1px 9px),
-    repeating-linear-gradient(0deg,rgba(0,0,0,.45) 0 3px,rgba(0,0,0,0) 3px 6px),
-    linear-gradient(180deg,#15161a,#07070a 55%,#0f1014)}
-#doors .lf{left:0;box-shadow:inset -22px 0 46px rgba(0,0,0,.92),inset 0 0 140px rgba(255,56,92,.05)}
-#doors .rt{right:0;box-shadow:inset 22px 0 46px rgba(0,0,0,.92),inset 0 0 140px rgba(255,56,92,.05)}
-#doors .seam{position:absolute;left:50%;top:0;bottom:0;width:3px;transform:translateX(-50%);border-radius:2px;
-  background:linear-gradient(180deg,rgba(255,56,92,0),#ff385c 18%,#ff385c 82%,rgba(255,56,92,0));
-  box-shadow:0 0 30px 7px rgba(255,56,92,.75)}
-#doors.rumble .lf,#doors.rumble .rt{animation:rmb .3s linear}
-@keyframes rmb{0%{transform:translate3d(0,0,0)}20%{transform:translate3d(-2px,0,0)}40%{transform:translate3d(2px,-1px,0)}60%{transform:translate3d(-1px,0,0)}80%{transform:translate3d(2px,0,0)}100%{transform:translate3d(0,0,0)}}
-.bootskip{position:absolute;bottom:22px;left:0;right:0;text-align:center;color:#8d6a70;font-size:11px;letter-spacing:.24em;z-index:3}
+/* ============ 起動グリッチ（ブブッ→バチッ） ============ */
+#scBoot.gl{animation:bu .18s steps(1) 3}
+@keyframes bu{
+0%{transform:translate(0,0);filter:none;clip-path:none}
+8%{transform:translate(-6px,2px);filter:invert(.9) hue-rotate(90deg);clip-path:inset(12% 0 62% 0)}
+16%{transform:translate(7px,-3px);filter:none;clip-path:inset(64% 0 8% 0)}
+24%{transform:translate(-4px,1px);filter:invert(1);clip-path:inset(38% 0 40% 0)}
+32%{transform:translate(5px,-2px);filter:hue-rotate(-60deg);clip-path:none}
+40%{transform:translate(-8px,3px);filter:invert(.9) hue-rotate(120deg);clip-path:inset(70% 0 6% 0)}
+48%{transform:translate(3px,0);filter:none;clip-path:inset(4% 0 78% 0)}
+56%{transform:translate(-2px,-2px);filter:invert(1);clip-path:inset(50% 0 30% 0)}
+64%{transform:translate(6px,2px);filter:hue-rotate(60deg);clip-path:none}
+72%{transform:translate(-5px,-1px);filter:invert(.85);clip-path:inset(24% 0 56% 0)}
+80%{transform:translate(4px,2px);filter:none;clip-path:inset(78% 0 2% 0)}
+88%{transform:translate(-3px,0);filter:invert(1) hue-rotate(150deg);clip-path:none}
+100%{transform:translate(0);filter:none;clip-path:none}}
+#scBoot.snap{animation:snap .09s steps(1) 3}
+@keyframes snap{
+0%{transform:translate(0);filter:none}
+20%{transform:translate(-14px,5px) skewX(-4deg);filter:invert(1) contrast(1.5)}
+45%{transform:translate(12px,-6px) skewX(3deg);filter:invert(1) hue-rotate(200deg)}
+70%{transform:translate(-5px,2px);filter:invert(.5)}
+100%{transform:translate(0);filter:none}}
+#gl{position:fixed;inset:0;z-index:200;pointer-events:none;visibility:hidden;overflow:hidden}
+#gl.on{visibility:visible}
+#gl i{position:absolute;inset:0;display:block;opacity:0}
+#gl .fl{background:#fff}
+#gl .rd{background:radial-gradient(120% 90% at 50% 50%,rgba(255,56,92,.95),rgba(255,56,92,.35) 60%,rgba(255,56,92,0))}
+#gl .bars{background:repeating-linear-gradient(0deg,rgba(0,0,0,.85) 0 2px,rgba(0,0,0,0) 2px 5px)}
+#gl .tear{inset:auto -10% auto -10%;height:46px;top:42%;mix-blend-mode:screen;
+  background:linear-gradient(90deg,rgba(255,56,92,0),rgba(255,56,92,.6),rgba(255,255,255,.85),rgba(255,56,92,.6),rgba(255,56,92,0))}
+#gl.fl .fl{animation:fla .34s steps(1) 1}
+@keyframes fla{0%,12%{opacity:0}16%{opacity:.97}28%{opacity:.18}42%{opacity:.92}56%{opacity:.06}100%{opacity:0}}
+#gl.fl .rd{animation:rda .34s steps(1) 1}
+@keyframes rda{0%,10%{opacity:0}18%{opacity:.85}34%{opacity:.22}50%{opacity:.8}68%{opacity:0}100%{opacity:0}}
+#gl.fl .bars{animation:ba .34s linear 1}
+@keyframes ba{0%{opacity:.9;transform:translateY(0)}100%{opacity:0;transform:translateY(-26px)}}
+#gl.fl .tear{animation:tea .3s steps(2) 2}
+@keyframes tea{0%{opacity:0;transform:translateX(-14%) scaleY(.4)}25%{opacity:.95;transform:translateX(9%) scaleY(1)}50%{opacity:.25;transform:translateX(-6%) scaleY(.8)}75%{opacity:.85;transform:translateX(12%) scaleY(1)}100%{opacity:0;transform:translateX(0) scaleY(.6)}}
+#scHome.glh{animation:glh .34s steps(1) 1}
+@keyframes glh{0%{filter:invert(.4) hue-rotate(90deg);transform:translate(-4px,2px)}22%{filter:none;transform:translate(3px,-2px)}46%{filter:invert(.22);transform:translate(-2px,0)}70%{filter:none;transform:translate(2px,1px)}100%{filter:none;transform:none}}
 
 /* ============ 共通 HUD（Study Over） ============ */
 .ovhud{flex:0 0 auto;display:flex;align-items:center;gap:18px;padding:12px 22px;border-bottom:1px solid var(--line);background:var(--hud);backdrop-filter:blur(6px)}
@@ -440,7 +465,7 @@ body.dw .drawer{transform:none}
   <div class="term" id="bootTerm"></div>
   <div class="bootskip">TAP TO SKIP</div>
 </section>
-<div id="doors" aria-hidden="true"><i class="lf"></i><i class="rt"></i><b class="seam"></b></div>
+<div id="gl" aria-hidden="true"><i class="fl"></i><i class="rd"></i><i class="bars"></i><i class="tear"></i></div>
 
 <!-- ================= 4. Study Over ホーム ================= -->
 <section class="scr so" id="scHome">
@@ -718,7 +743,7 @@ function bootGo(){ if(bootCfg==='skip'){ go('scHome'); renderHome(); return; }
   clearTimeout(bootTimer);
   (function step(){
     if(bootDone) return;
-    if(li>=LINES.length){ doorEnter(); return; }
+    if(li>=LINES.length){ glitchEnter(); return; }
     var txt=LINES[li][0], cls=LINES[li][1];
     if(ci<=txt.length){
       var head=cls?('<span class="'+cls+'">'):'<span>';
@@ -733,37 +758,34 @@ function bootGo(){ if(bootCfg==='skip'){ go('scHome'); renderHome(); return; }
     }
   })();
 }
-/* 重たい扉が開く入場演出 */
-var doorT=[];
-function doorEnter(){
-  var dv=document.getElementById('doors');
-  if(!dv){ go('scHome'); renderHome(); return; }
-  var lf=dv.querySelector('.lf'), rt=dv.querySelector('.rt'), sm=dv.querySelector('.seam');
-  doorT.forEach(clearTimeout); doorT=[];
-  dv.classList.add('on'); dv.classList.remove('rumble');
-  lf.style.transition='none'; rt.style.transition='none';
-  lf.style.transform='translateX(-101%)'; rt.style.transform='translateX(101%)';
-  sm.style.transition='none'; sm.style.opacity='.95';
-  void dv.offsetWidth;
-  lf.style.transition=rt.style.transition='transform .26s cubic-bezier(.5,.05,.7,.2)';
-  lf.style.transform='translateX(0)'; rt.style.transform='translateX(0)';
-  doorT.push(setTimeout(function(){
-    go('scHome'); renderHome();
-    dv.classList.add('rumble');
-    doorT.push(setTimeout(function(){
-      dv.classList.remove('rumble');
-      sm.style.transition='opacity .55s'; sm.style.opacity='0';
-      var e='transform 1.12s cubic-bezier(.86,.005,.14,1)';
-      lf.style.transition=rt.style.transition=e;
-      lf.style.transform='translateX(-101%)'; rt.style.transform='translateX(101%)';
-      doorT.push(setTimeout(function(){ dv.classList.remove('on'); },1180));
-    },280));
-  },300));
+/* 起動グリッチ（ブブッ→バチッ＝画面乗っ取り） */
+var glitchT=[];
+function glitchEnter(){
+  glitchT.forEach(clearTimeout); glitchT=[];
+  var sb=document.getElementById('scBoot'), gl=document.getElementById('gl');
+  if(!sb){ go('scHome'); renderHome(); return; }
+  sb.classList.remove('snap','gl'); void sb.offsetWidth; sb.classList.add('gl');
+  glitchT.push(setTimeout(function(){
+    sb.classList.remove('gl'); void sb.offsetWidth; sb.classList.add('snap');
+    if(gl){ gl.classList.remove('fl'); void gl.offsetWidth; gl.classList.add('on','fl'); }
+    glitchT.push(setTimeout(function(){
+      go('scHome'); renderHome();
+      var hm=document.getElementById('scHome');
+      if(hm){ hm.classList.remove('glh'); void hm.offsetWidth; hm.classList.add('glh'); }
+    },80));
+    glitchT.push(setTimeout(function(){
+      sb.classList.remove('snap');
+      if(gl) gl.classList.remove('on','fl');
+      var hm=document.getElementById('scHome'); if(hm) hm.classList.remove('glh');
+    },620));
+  },560));
 }
 document.getElementById('scBoot').addEventListener('click', function(){
   if(bootDone) return; bootDone=true; clearTimeout(bootTimer);
-  doorT.forEach(clearTimeout); doorT=[];
-  var dv=document.getElementById('doors'); if(dv) dv.classList.remove('on','rumble');
+  glitchT.forEach(clearTimeout); glitchT=[];
+  var sb=document.getElementById('scBoot'); if(sb) sb.classList.remove('gl','snap');
+  var gl=document.getElementById('gl'); if(gl) gl.classList.remove('on','fl');
+  var hm=document.getElementById('scHome'); if(hm) hm.classList.remove('glh');
   go('scHome'); renderHome();
 });
 
