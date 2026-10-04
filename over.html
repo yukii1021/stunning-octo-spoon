@@ -323,6 +323,12 @@ body.dw .drawer{transform:none}
 .exBtn{border:1px solid var(--accLine);background:var(--accSoft);color:var(--text);border-radius:10px;padding:11px 20px;font-size:13.5px;font-family:inherit;cursor:pointer}
 .exBtn:disabled{opacity:.4;cursor:default}
 .exBtn.gh{background:none;border-color:var(--line);color:var(--dim)}
+/* v2.30 : 演習ボタン統一（同色・押したときだけ光る） */
+.ubtn{border:1px solid var(--line2);background:var(--card2);color:var(--text);border-radius:10px;padding:11px 20px;font-size:13.5px;font-family:inherit;cursor:pointer;-webkit-tap-highlight-color:transparent;transition:box-shadow .13s,background .13s,border-color .13s}
+.ubtn:active{box-shadow:0 0 0 2px var(--accLine),0 0 20px var(--accSoft);border-color:var(--accLine);background:var(--card3)}
+.ubtn.on{box-shadow:0 0 0 2px var(--accLine),0 0 16px var(--accSoft);border-color:var(--accLine)}
+.mkbtn{border:1px solid var(--line2);background:var(--card2);color:var(--dim);border-radius:9px;padding:8px 12px;font-size:12px;font-family:inherit;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.mkbtn.on{color:var(--acc);border-color:var(--accLine);box-shadow:0 0 0 2px var(--accSoft)}
 
 /* 採点結果 */
 .res{position:absolute;inset:0;z-index:9;display:none;background:var(--scrim);backdrop-filter:blur(4px);overflow:auto}
@@ -1301,7 +1307,9 @@ function UKey(s,u){ return s+'|'+u; }
 function drillAll(){ try{ var o=JSON.parse(localStorage.getItem('so_drill_v1')||'{}'); return (o&&typeof o==='object')?o:{}; }catch(e){ return {}; } }
 function drillSave(o){ try{ localStorage.setItem('so_drill_v1',JSON.stringify(o)); }catch(e){} }
 function drillUnit(s,u){ return (BANK||[]).filter(function(x){ return x.s===s&&x.u===u; })[0]; }
-function drillStat(s,u,D){ D=D||drillAll(); var e=D[UKey(s,u)]||{}; var t=unitItems(s,u).length; var a=e.a?Object.keys(e.a).length:0; return {a:a,t:t,ok:e.ok||0}; }
+function drillStat(s,u,D){ D=D||drillAll(); var e=D[UKey(s,u)]||{}; var t=unitItems(s,u).length;
+  var A=e.a||{},a=0,c=0; Object.keys(A).forEach(function(i){ a++; if(A[i]) c++; });
+  return {a:a,c:c,t:t,ok:e.ok||0,m:e.m?Object.keys(e.m).length:0}; }
 function esc(s){ return String(s==null?'':s).split('&').join('&amp;').split('<').join('&lt;').split('>').join('&gt;').split('"').join('&quot;').split("'").join('&#39;'); }
 function drillRows(D){
   var out='', seen={};
@@ -1309,14 +1317,14 @@ function drillRows(D){
   Object.keys(seen).forEach(function(sk){
     var units=(BANK||[]).filter(function(x){ return x.s===sk; });
     var tot=0, ans=0;
-    units.forEach(function(u){ var st=drillStat(sk,u.u,D); tot+=st.t; ans+=st.a; });
+    units.forEach(function(u){ var st=drillStat(sk,u.u,D); tot+=st.t; ans+=st.c; });
     var pc=tot?Math.round(ans/tot*100):0;
     out+='<div class="dgrp"><div class="gh"><span>'+esc(subjNameOf(sk))+'</span><span class="sp"></span><span class="pc">'+ans+' / '+tot+' 問 ・ '+pc+'%</span></div>';
     units.forEach(function(u){
-      var st=drillStat(sk,u.u,D), r=st.t?Math.round(st.a/st.t*100):0;
+      var st=drillStat(sk,u.u,D), r=st.t?Math.round(st.c/st.t*100):0;
       out+='<div class="drow" data-s="'+esc(sk)+'" data-u="'+esc(u.u)+'">'+
         '<div class="nm">'+esc(u.u)+'</div><div class="bar"><i style="width:'+r+'%"></i></div>'+
-        '<div class="pc">'+r+'%</div><div class="ar">'+st.a+'/'+st.t+'</div></div>';
+        '<div class="pc">'+r+'%</div><div class="ar">'+st.c+'/'+st.t+'</div></div>';
     });
     out+='</div>';
   });
@@ -1394,8 +1402,8 @@ function renderWriteRun(){
       '<div class="qn">単元クリア</div>'+
       '<div class="qp">'+esc(WV.u)+'</div>'+
       '<div class="ex">記述 '+list.length+' 問 ／ 自己採点 正解 '+st.ok+' 問</div>'+
-      '<div class="df"><button class="exBtn" onclick="wRestart()">もう一度</button>'+
-      '<button class="exBtn gh" onclick="wBack()">ホームへ戻る</button></div></div>';
+      '<div class="df"><button class="ubtn" onclick="wRestart()">もう一度</button>'+
+      '<button class="ubtn" onclick="wBack()">ホームへ戻る</button></div></div>';
     wTop(); return;
   }
   var it=wCur(), meta=[];
@@ -1419,19 +1427,19 @@ function renderWriteRun(){
        '<div style="'+mono+';margin-bottom:6px">解答欄</div>'+
        '<textarea id="wAns" class="wta" placeholder="答えを入力して、自分で答え合わせ" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false"></textarea>'+
        '<div style="display:flex;gap:8px;margin-top:8px;flex-wrap:wrap">'+
-         '<button class="exBtn" style="flex:1" onclick="wShow()">答えを見る</button>'+
-         '<button class="exBtn gh" style="flex:1" onclick="wClear()">入力クリア</button></div>'+
+         '<button class="ubtn" style="flex:1 1 0;min-width:0" onclick="wShow()">答えを見る</button>'+
+         '<button class="ubtn" style="flex:1 1 0;min-width:0" onclick="wClear()">入力クリア</button></div>'+
        '<div class="wself" id="wSelf">'+
          '<div style="'+mono+';margin-bottom:6px">自分で採点</div>'+
          '<div style="display:flex;gap:8px">'+
-           '<button class="exBtn" id="wOk" style="flex:1" onclick="wMark(1)">&#9675; 正解</button>'+
-           '<button class="exBtn gh ng" id="wNg" style="flex:1" onclick="wMark(0)">&#10005; 不正解</button></div></div>'+
+           '<button class="ubtn" id="wOk" style="flex:1 1 0;min-width:0" onclick="wMark(1)">&#9675; 正解</button>'+
+           '<button class="ubtn" id="wNg" style="flex:1 1 0;min-width:0" onclick="wMark(0)">&#10005; 不正解</button></div></div>'+
        '<div id="wRes" style="margin-top:10px"></div>'+
      '</div>'+
    '</div>'+
    '<div class="df" style="margin-top:16px">'+
-     '<button class="exBtn gh" onclick="wMove(-1)">&#8249; 前</button>'+
-     '<button class="exBtn" onclick="wMove(1)">'+(last?'完了 &#8250;':'次 &#8250;')+'</button></div>';
+     '<button class="ubtn" onclick="wMove(-1)">&#8249; 前</button>'+
+     '<button class="ubtn" onclick="wMove(1)">'+(last?'完了 &#8250;':'次 &#8250;')+'</button></div>';
   if(got!==undefined) wPaint(got?1:0);
   wTop();
 }
@@ -1489,20 +1497,20 @@ function unitItems(s,u){
 function uwPaint(v){ var ok=document.getElementById('wOk'), ng=document.getElementById('wNg');
   if(ok) ok.classList.toggle('on', v===1);
   if(ng) ng.classList.toggle('on', v===0); }
-function uwShow(){ var list=unitItems(DV.s,DV.u), it=list[DV.i]; if(!it) return;
+function uwShow(){ var list=unitItems(DV.s,DV.u), it=list[curIdx()]; if(!it) return;
   var r=document.getElementById('wRes'); if(!r) return;
   r.innerHTML='<div style="font-size:13.5px;line-height:1.85"><b>模範解答</b>　'+esc(it.a)+
     (it.e?'<div style="margin-top:6px;color:var(--mute);font-size:12.5px;line-height:1.8">'+esc(it.e)+'</div>':'')+'</div>'; }
 function uwClear(){ var t=document.getElementById('wAns'); if(t){ t.value=''; t.focus(); } }
 function uwMark(v){
   var list=unitItems(DV.s,DV.u); if(!list.length) return;
-  var k=UKey(DV.s,DV.u), D=drillAll(), e=D[k]||{a:{},ok:0}, prev=e.a[DV.i];
+  var oi=curIdx(), k=UKey(DV.s,DV.u), D=drillAll(), e=D[k]||{a:{},ok:0}, prev=e.a[oi];
   if(prev!==undefined){ if(prev) e.ok=Math.max(0,(e.ok||0)-1); }
-  e.a[DV.i]=v?1:0; if(v) e.ok=(e.ok||0)+1; D[k]=e; drillSave(D);
-  DV.done[DV.i]=v?1:0; uwPaint(v?1:0);
+  e.a[oi]=v?1:0; if(v) e.ok=(e.ok||0)+1; D[k]=e; drillSave(D);
+  DV.done[oi]=v?1:0; uwPaint(v?1:0);
   var r=document.getElementById('wRes'); if(r && !r.innerHTML) uwShow();
 }
-function unitMove(d){ var list=unitItems(DV.s,DV.u); DV.i+=d; if(DV.i<0)DV.i=0; if(DV.i>list.length)DV.i=list.length; DV.chosen=-1; renderDrill(); drillTop(); }
+function unitMove(d){ var idx=unitIdx(); DV.i+=d; if(DV.i<0)DV.i=0; if(DV.i>idx.length)DV.i=idx.length; DV.chosen=-1; renderDrill(); drillTop(); }
 function unitRestart(){ DV.i=0; DV.chosen=-1; DV.done={}; renderDrill(); drillTop(); }
 function renderUnits(){
   var tb=document.getElementById('wuTabs'), box=document.getElementById('wuList'); if(!tb||!box) return;
@@ -1524,42 +1532,79 @@ function paintUnits(sk){
   box.innerHTML=groups.map(function(g){
     return '<div class="ugroup">'+esc(g[0])+'</div><div class="wgrid">'+g[1].map(function(u){
       var its=unitItems(sk,u), mc=its.filter(function(x){ return x.t==='m'; }).length, wc=its.length-mc;
-      var st=drillStat(sk,u), r=st.t?Math.round(st.a/st.t*100):0;
+      var st=drillStat(sk,u), r=st.t?Math.round(st.c/st.t*100):0;
       var kinds=(mc?'4択 '+mc+'問':'')+(mc&&wc?' ／ ':'')+(wc?'記述 '+wc+'問':'');
       return '<div class="wcard" data-s="'+esc(sk)+'" data-u="'+esc(u)+'">'+
         '<span class="rib"></span><span class="ribx">'+esc(ribOf(sk))+'</span>'+
-        '<div class="wc-h"><span class="st">'+(st.a?'演習中':'未着手')+'</span></div>'+
+        '<div class="wc-h"><span class="st">'+(st.a?'演習中':'未着手')+'</span>'+(st.m?'<span class="st" style="color:var(--acc);border-color:var(--accLine)">&#9733; '+st.m+'</span>':'')+'</div>'+
         '<div class="wt">'+esc(u)+'<small>'+esc(kinds)+' ／ '+esc(soName(sk))+'</small></div>'+
-        '<div class="mline"><span class="k">演習</span><span class="bar"><i style="width:'+r+'%"></i></span><span class="n">'+st.a+' / '+st.t+'</span></div>'+
+        '<div class="mline"><span class="k">演習</span><span class="bar"><i style="width:'+r+'%"></i></span><span class="n">'+st.c+' / '+st.t+'</span></div>'+
         '<button class="wbtn">解く ›</button></div>';
     }).join('')+'</div>';
   }).join('');
 }
 
 function openUnit(s,u){
-  DV={s:s,u:u,i:0,chosen:-1,done:{}};
+  DV={s:s,u:u,i:0,chosen:-1,done:{},mk:0,idx:[]};
   var el=document.getElementById('drSub'); if(el) el.textContent=subjNameOf(s)+' ／ '+u;
   var box=document.getElementById('drillRun'); if(box) box.innerHTML='<div class="dq"><div class="qp">読み込み中…</div></div>';
   go('scDrill'); drillTop();
   uLoad(s).then(function(){ renderDrill(); drillTop(); });
 }
 function drillBack(){ go('scHome'); renderHome(); }
+function unitMarkMap(){ var D=drillAll(), e=D[UKey(DV.s,DV.u)]||{}; return e.m||{}; }
+function unitIdx(){ var n=unitItems(DV.s,DV.u).length, out=[], i;
+  if(!DV.mk){ for(i=0;i<n;i++) out.push(i); return out; }
+  var m=unitMarkMap(); for(i=0;i<n;i++){ if(m[i]) out.push(i); } return out; }
+function curIdx(){ return (DV.idx&&DV.idx.length)?DV.idx[DV.i]:DV.i; }
+function toggleMark(){
+  var idx=DV.idx||unitIdx(); if(!idx.length||DV.i>=idx.length) return;
+  var oi=idx[DV.i], k=UKey(DV.s,DV.u), D=drillAll(), e=D[k]||{a:{},ok:0}, m=e.m||(e.m={});
+  if(m[oi]) delete m[oi]; else m[oi]=1;
+  e.m=m; D[k]=e; drillSave(D);
+  DV.idx=unitIdx(); if(DV.i>=DV.idx.length) DV.i=Math.max(0,DV.idx.length-1);
+  renderDrill(); drillTop();
+}
+function toggleMarksOnly(){ DV.mk=DV.mk?0:1; DV.i=0; DV.chosen=-1; renderDrill(); drillTop(); }
+function retryOne(){
+  var oi=curIdx(), k=UKey(DV.s,DV.u), D=drillAll(), e=D[k]||{a:{},ok:0};
+  if(e.a&&e.a[oi]!==undefined){ if(e.a[oi]) e.ok=Math.max(0,(e.ok||0)-1); delete e.a[oi]; }
+  D[k]=e; drillSave(D); delete DV.done[oi]; DV.chosen=-1; renderDrill(); drillTop();
+}
 function renderDrill(){
   var el=document.getElementById('drillRun'); if(!el) return;
   var list=unitItems(DV.s,DV.u);
-  if(!list.length){ el.innerHTML='<div class="dq"><div class="qp">問題がありません</div><div class="df"><button class="exBtn gh" onclick="drillBack()">ホームへ戻る</button></div></div>'; return; }
+  if(!list.length){ el.innerHTML='<div class="dq"><div class="qp">問題がありません</div><div class="df"><button class="ubtn" onclick="drillBack()">ホームへ戻る</button></div></div>'; return; }
   var mono='font-family:var(--mono);font-size:10.5px;letter-spacing:.1em;color:var(--mute)';
-  if(DV.i>=list.length){
-    var st=drillStat(DV.s,DV.u);
-    el.innerHTML='<div class="dq"><div class="qn">単元クリア</div><div class="qp">'+esc(DV.u)+'</div>'+
-      '<div class="ex">'+list.length+' 問 ／ 正答 '+st.ok+' 問</div>'+
-      '<div class="df"><button class="exBtn" onclick="unitRestart()">もう一度</button>'+
-      '<button class="exBtn gh" onclick="drillBack()">ホームへ戻る</button></div></div>';
+  var idx=unitIdx(); DV.idx=idx;
+  if(!idx.length){
+    el.innerHTML='<div class="dq"><div class="qn">&#9733; マーク</div><div class="qp">'+esc(DV.u)+'</div>'+
+      '<div class="ex">まだマークした問題がありません。問題の右上の「&#9734; マーク」を押すと印がつき、ここに集まります。</div>'+
+      '<div class="df"><button class="ubtn" onclick="toggleMarksOnly()">すべての問題を見る</button>'+
+      '<button class="ubtn" onclick="drillBack()">ホームへ戻る</button></div></div>';
     drillTop(); return;
   }
-  var it=list[DV.i];
-  var answered=DV.done[DV.i];
-  var h='<div class="dq"><div class="qn">Q '+(DV.i+1)+' / '+list.length+' ／ '+esc(subjNameOf(DV.s))+' ・ '+esc(DV.u)+' ／ '+(it.t==='m'?'4択':'記述')+'</div>';
+  if(DV.i>=idx.length){
+    var st=drillStat(DV.s,DV.u);
+    el.innerHTML='<div class="dq"><div class="qn">単元クリア</div><div class="qp">'+esc(DV.u)+'</div>'+
+      '<div class="ex">'+idx.length+' 問 ／ 正解 '+st.ok+' 問'+(st.m?'　&#9733; マーク '+st.m+' 問':'')+'</div>'+
+      '<div class="df">'+(st.m?'<button class="ubtn" onclick="toggleMarksOnly()">&#9733; マークを解く</button>':'')+
+      '<button class="ubtn" onclick="unitRestart()">もう一度</button>'+
+      '<button class="ubtn" onclick="drillBack()">ホームへ戻る</button></div></div>';
+    drillTop(); return;
+  }
+  var oi=idx[DV.i], it=list[oi], answered=DV.done[oi], marked=unitMarkMap()[oi]?1:0;
+  var meta=[];
+  if(it.y) meta.push(it.y+'年'); if(it.univ) meta.push(esc(it.univ));
+  if(it.d) meta.push('大問 '+esc(it.d)); if(it.n) meta.push('問 '+esc(it.n));
+  var h='<div class="dq">'+
+    '<div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:9px">'+
+      '<span style="'+mono+'">Q '+(DV.i+1)+' / '+idx.length+' ／ '+esc(subjNameOf(DV.s))+' ・ '+esc(DV.u)+' ／ '+(it.t==='m'?'4択':'記述')+'</span>'+
+      '<span style="flex:1"></span>'+
+      '<button class="mkbtn'+(marked?' on':'')+'" onclick="toggleMark()">'+(marked?'&#9733; マーク済み':'&#9734; マーク')+'</button>'+
+      '<button class="mkbtn'+(DV.mk?' on':'')+'" onclick="toggleMarksOnly()">マークだけ</button>'+
+    '</div>'+
+    (meta.length?'<div style="'+mono+';margin:-3px 0 11px">'+meta.join(' ／ ')+'</div>':'');
   if(it.stem) h+='<div class="wstemCard"><div class="wStL">問題文</div><div class="wstem">'+esc(it.stem)+'</div>'+
     (it.img?'<div style="margin-top:10px"><img src="'+esc(it.img)+'" loading="lazy" decoding="async" style="max-width:100%;border-radius:8px;border:1px solid var(--line2)"></div>':'')+'</div>';
   if(it.t==='m'){
@@ -1570,39 +1615,40 @@ function renderDrill(){
       h+='<button class="'+cls+'" data-ci="'+ci+'">'+esc(c)+'</button>';
     });
     h+='</div>';
-    if(answered!==undefined) h+='<div class="ex">'+(answered?'正解':'不正解')+(it.e?'　'+esc(it.e):'')+'</div>';
+    if(answered!==undefined) h+='<div class="ex">'+(answered?'正解':'不正解')+(it.e?'　'+esc(it.e):'')+
+      '<div style="margin-top:9px"><button class="ubtn" style="padding:8px 14px;font-size:12.5px" onclick="retryOne()">もう一度解く</button></div></div>';
   } else {
     var img=(!it.stem&&it.img)?'<div style="margin-top:10px"><img src="'+esc(it.img)+'" loading="lazy" decoding="async" style="max-width:100%;border-radius:8px;border:1px solid var(--line2)"></div>':'';
     h+='<div class="wsubq">'+(it.n?'<span class="n">'+esc(it.n)+'</span>':'')+esc(it.p)+img+'</div>'+
       '<div style="margin-top:14px"><div style="'+mono+';margin-bottom:6px">解答欄</div>'+
       '<textarea id="wAns" class="wta" placeholder="答えを入力して、自分で答え合わせ" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false"></textarea>'+
       '<div style="display:flex;gap:8px;margin-top:8px;flex-wrap:wrap">'+
-        '<button class="exBtn" style="flex:1" onclick="uwShow()">答えを見る</button>'+
-        '<button class="exBtn gh" style="flex:1" onclick="uwClear()">入力クリア</button></div>'+
+        '<button class="ubtn" style="flex:1 1 0;min-width:0" onclick="uwShow()">答えを見る</button>'+
+        '<button class="ubtn" style="flex:1 1 0;min-width:0" onclick="uwClear()">入力クリア</button></div>'+
       '<div class="wself" id="wSelf"><div style="'+mono+';margin-bottom:6px">自分で採点</div>'+
         '<div style="display:flex;gap:8px">'+
-          '<button class="exBtn" id="wOk" style="flex:1" onclick="uwMark(1)">&#9675; 正解</button>'+
-          '<button class="exBtn gh ng" id="wNg" style="flex:1" onclick="uwMark(0)">&#10005; 不正解</button></div></div>'+
+          '<button class="ubtn" id="wOk" style="flex:1 1 0;min-width:0" onclick="uwMark(1)">&#9675; 正解</button>'+
+          '<button class="ubtn" id="wNg" style="flex:1 1 0;min-width:0" onclick="uwMark(0)">&#10005; 不正解</button></div></div>'+
       '<div id="wRes" style="margin-top:10px"></div></div>';
   }
-  var last=(DV.i+1>=list.length);
+  var last=(DV.i+1>=idx.length);
   h+='<div class="df">'+
-     '<button class="exBtn gh" style="flex:1 1 0;min-width:0" onclick="unitMove(-1)">&#8249; 前</button>'+
-     '<button class="exBtn" style="flex:1 1 0;min-width:0" onclick="unitMove(1)">'+(last?'完了 &#8250;':'次 &#8250;')+'</button>'+
-     '<button class="exBtn gh" style="flex:1 1 0;min-width:0" onclick="drillBack()">やめる</button>'+
+     '<button class="ubtn" style="flex:1 1 0;min-width:0" onclick="unitMove(-1)">&#8249; 前</button>'+
+     '<button class="ubtn" style="flex:1 1 0;min-width:0" onclick="unitMove(1)">'+(last?'完了 &#8250;':'次 &#8250;')+'</button>'+
+     '<button class="ubtn" style="flex:1 1 0;min-width:0" onclick="drillBack()">やめる</button>'+
      '</div></div>';
   el.innerHTML=h;
   if(it.t==='w'&&answered!==undefined){ uwPaint(answered?1:0); }
   drillTop();
 }
 function drillPick(ci){
-  var list=unitItems(DV.s,DV.u); if(!list.length) return; var q=list[DV.i];
-  if(DV.done[DV.i]!==undefined) return;
+  var list=unitItems(DV.s,DV.u); if(!list.length) return; var oi=curIdx(), q=list[oi];
+  if(DV.done[oi]!==undefined) return;
   var D=drillAll(), k=UKey(DV.s,DV.u), e=D[k]||{a:{},ok:0};
   DV.chosen=ci;
   var right=(ci===q.a);
-  e.a[DV.i]=right?1:0; if(right) e.ok=(e.ok||0)+1;
-  D[k]=e; drillSave(D); DV.done[DV.i]=right?1:0;
+  e.a[oi]=right?1:0; if(right) e.ok=(e.ok||0)+1;
+  D[k]=e; drillSave(D); DV.done[oi]=right?1:0;
   renderDrill(); drillTop();
 }
 function drillNext(){ DV.i++; DV.chosen=-1; renderDrill(); drillTop(); }
@@ -1696,9 +1742,10 @@ function unitAggFor(A,sk){
   return out;
 }
 function bankStat(sk,u){
-  var bk=drillUnit(sk,u); if(!bk||!bk.q) return {t:0,a:0,ok:0};
+  var bk=drillUnit(sk,u); if(!bk||!bk.q) return {t:0,a:0,c:0,ok:0};
   var D=drillAll(), e=D[UKey(sk,u)]||{a:{},ok:0};
-  return {t:bk.q.length, a:Object.keys(e.a||{}).length, ok:e.ok||0};
+  var A=e.a||{}, a=0, c=0; Object.keys(A).forEach(function(i){ a++; if(A[i]) c++; });
+  return {t:bk.q.length, a:a, c:c, ok:e.ok||0};
 }
 function ribOf(sk){
   var m={Japanese:'\u56fd',Math_IA:'\u6570',Math_IIBC:'\u6570',English_Reading:'\u82f1',Information_I:'\u60c5',Physics:'\u7406',Chemistry:'\u7406',GeographyIntegrated_Geography:'\u793e'};
@@ -1730,7 +1777,7 @@ function renderWeek(){
       '<div class="wc-h"><span class="st">'+stTxt+'</span></div>'+
       '<div class="wt">'+esc(u)+'<small>\u5927\u554f\u5225\u6f14\u7fd2 \u30fb '+esc(soName(sk))+'</small></div>'+
       '<div class="mline"><span class="k">\u9054\u6210</span><span class="bar"><i style="width:'+r+'%"></i></span><span class="n">'+r+'%</span></div>'+
-      '<div class="mline"><span class="k">\u6f14\u7fd2</span><span class="bar"><i style="width:'+(bs.t?Math.round(bs.a/bs.t*100):0)+'%"></i></span><span class="n">'+bs.a+' / '+bs.t+'</span></div>'+
+      '<div class="mline"><span class="k">\u6f14\u7fd2</span><span class="bar"><i style="width:'+(bs.t?Math.round(bs.c/bs.t*100):0)+'%"></i></span><span class="n">'+bs.c+' / '+bs.t+'</span></div>'+
       '<button class="wbtn">\u6f14\u7fd2 \u203a</button>'+
       '</div>';
   }).join('');
