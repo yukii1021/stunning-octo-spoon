@@ -1587,10 +1587,9 @@ function renderDrill(){
   }
   var last=(DV.i+1>=list.length);
   h+='<div class="df">'+
-     '<button class="exBtn gh" onclick="unitMove(-1)">&#8249; 前</button>'+
-     (answered!==undefined
-       ? '<button class="exBtn" onclick="unitMove(1)">'+(last?'完了 &#8250;':'次 &#8250;')+'</button>'
-       : '<button class="exBtn gh" onclick="drillBack()">やめる</button>')+
+     '<button class="exBtn gh" style="flex:1 1 0;min-width:0" onclick="unitMove(-1)">&#8249; 前</button>'+
+     '<button class="exBtn" style="flex:1 1 0;min-width:0" onclick="unitMove(1)">'+(last?'完了 &#8250;':'次 &#8250;')+'</button>'+
+     '<button class="exBtn gh" style="flex:1 1 0;min-width:0" onclick="drillBack()">やめる</button>'+
      '</div></div>';
   el.innerHTML=h;
   if(it.t==='w'&&answered!==undefined){ uwPaint(answered?1:0); }
