@@ -787,15 +787,15 @@ document.getElementById('scBoot').addEventListener('click', function(){
 /* ================= ホーム描画 ================= */
 var SO_KEY='so_runs_v1', YRS=['2021','2022','2023','2024','2025','2026'];
 var SUBJM={
-  Japanese:{n:'国語'}, Math_IA:{n:'数学ⅠＡ'}, Math_IIBC:{n:'数学ⅡＢＣ'},
+  Japanese:{n:'国語'}, Math_IA:{n:'数学ⅠＡ'}, Math_IIBC:{n:'数学ⅡＢＣ'}, Math_III:{n:'数学Ⅲ'},
   English_Reading:{n:'英語Ｒ'}, Information_I:{n:'情報Ⅰ'},
   Physics:{n:'物理'}, Chemistry:{n:'化学'}, GeographyIntegrated_Geography:{n:'地理総合，地理探究'}
 };
 var XUNIT={ English_Reading:['文法・語法','熟語・語い・会話表現'], Chemistry:['カルボン酸とエステル','ヨードホルム反応'] };
-var WSUBJ=[['English_Reading','英語Ｒ'],['Chemistry','化学'],['Physics','物理']];
+var WSUBJ=[['English_Reading','英語Ｒ'],['Chemistry','化学'],['Physics','物理'],['Math_III','数学Ⅲ']];
 var WUNIT={ English_Reading:['整序英作文','正誤問題'] };
 var USUBJ=WSUBJ.slice();
-var UGROUP={
+var UGROUP={ Math_III:[['極限',['数列の極限','無限級数','漸化式と極限(1)','漸化式と極限(2)','関数の極限']],['関数',['分数関数・無理関数','関数の性質']],['微分',['導関数']]], 
   Chemistry:[['有機化学',['カルボン酸とエステル','ヨードホルム反応','エステルの反応','物質の識別','油脂の構成','けん化価とヨウ素価']]],
   Physics:[['電磁気',['関西学院大 磁場中の荷電粒子','大阪大 電磁誘導と導体棒']]],
   English_Reading:[['文法・語法',['文法・語法','熟語・語い・会話表現','正誤問題']],['英作文',['整序英作文']]]
