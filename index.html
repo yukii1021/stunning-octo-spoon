@@ -320,6 +320,17 @@ a{color:var(--accent)}
 .ang b{display:block;font-size:11.5px;color:var(--accent);margin-bottom:4px;letter-spacing:.04em}
 .ang + .ang{margin-top:8px}
 .deck-prob{background:var(--bg-elev);border:1px solid var(--line);border-radius:14px;padding:14px}
+.note-card{background:var(--bg-elev);border:1px solid var(--line);border-radius:14px;padding:16px;margin-bottom:12px}
+.note-tt{font-size:16px;font-weight:800;margin-bottom:10px}
+.note-tt span{font-size:11px;font-weight:600;color:var(--text-mute);border:1px solid var(--line);border-radius:999px;padding:2px 8px;margin-left:8px;vertical-align:middle}
+.note-h{font-size:13.5px;font-weight:700;color:var(--accent);margin:14px 0 6px}
+.note-t{font-size:14px;line-height:1.9;color:var(--text)}
+.note-l{margin:6px 0 0 18px;font-size:14px;line-height:1.9}
+.note-fig{margin:10px 0;overflow-x:auto}
+.note-fig svg{max-width:100%;height:auto}
+.note-tb{width:100%;border-collapse:collapse;margin:10px 0;font-size:13px}
+.note-tb th,.note-tb td{border:1px solid var(--line);padding:6px 9px;text-align:left}
+.note-tb th{background:var(--bg-elev-2);font-weight:700}
 .pq{font-size:16px;line-height:1.65;margin:8px 0;white-space:pre-wrap;word-break:break-word}
 .ans{font-size:17px;font-weight:700;white-space:pre-wrap;word-break:break-word}
 .flip{background:var(--bg-elev);border:1px solid var(--line);border-radius:18px;min-height:42vh;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;padding:22px;cursor:pointer;text-align:center}
@@ -1802,15 +1813,16 @@ function renderSubjects(){
     el.innerHTML='<div class="empty">教科を追加してください</div>';
   } else {
     el.innerHTML = state.subjects.map(s=>{
+      const isNote = deckKinds(s).indexOf('note')>=0;
       const nc = subjCards(s.id,'card').length, np = subjCards(s.id,'prob').length;
       const d = dueCards(s.id,'card').length + (np && !probDoneToday(s.id) ? 1 : 0);
-      const pill = (nc||np) ? (d>0 ? `<span class="pill hot">今日 ${d}</span>` : `<span class="pill">✓</span>`) : '';
+      const pill = isNote ? '<span class="pill">ノート</span>' : ((nc||np) ? (d>0 ? `<span class="pill hot">今日 ${d}</span>` : `<span class="pill">✓</span>`) : '');
       return `
       <div class="subj-row" onclick="openDeck('${s.id}')">
         <span class="dot" style="background:${s.color}"></span>
         <div style="flex:1;min-width:0">
           <div class="name">${escapeHtml(s.name)}</div>
-          <div class="meta">1日 ${s.daily?fmtHM(s.daily):'—'} · 週 ${s.weekly?fmtHM(s.weekly):'—'}${s.weak?' · 苦手':''}${s.focus?' · 重点':''}${(nc||np)?' · 単語'+nc+'件'+(np?' · 問題'+np+'件':''):''}</div>
+          <div class="meta">1日 ${s.daily?fmtHM(s.daily):'—'} · 週 ${s.weekly?fmtHM(s.weekly):'—'}${s.weak?' · 苦手':''}${s.focus?' · 重点':''}${isNote?' · ノート':((nc||np)?' · 単語'+nc+'件'+(np?' · 問題'+np+'件':''):'')}</div>
         </div>
         ${pill}
         <button class="icon-btn" onclick="event.stopPropagation();openSubjectModal('${s.id}')">✎</button>
@@ -2188,12 +2200,13 @@ function setMemOrder(sid, v){
   renderDeck();
 }
 const DECK_KIND_RULES = [
+  [/化学/, ['note']],
   [/数学|算数|物理/, ['prob']],
-  [/化学|地理|英語|英単語|国語|古文|漢文|現代文/, ['card','prob']],
+  [/地理|英語|英単語|国語|古文|漢文|現代文/, ['card','prob']],
   [/世界史|日本史|社会|生物|地学|公民|倫理|政治|経済/, ['card']]
 ];
 function deckKinds(s){ const n = (s&&s.name)||''; for(const r of DECK_KIND_RULES){ if(r[0].test(n)) return r[1].slice() } return ['card','prob'] }
-function kindLabel(k){ return k==='card' ? '単語カード' : '問題' }
+function kindLabel(k){ return k==='card' ? '単語カード' : k==='note' ? 'ノート' : '問題' }
 
 function todayKey(d){ const x = d?new Date(d):new Date(); return x.getFullYear()+'-'+pad2(x.getMonth()+1)+'-'+pad2(x.getDate()) }
 function addDaysKey(n){ const x = new Date(); x.setDate(x.getDate()+n); return todayKey(x) }
@@ -2261,8 +2274,51 @@ function sortCards(cs, kind){
   return a;
 }
 
+/* ---- 化学ノート（写真から書き起こした図を見る） ---- */
+let NOTES=null, notesBusy=false, noteOpen=null;
+function notesFile(s){ const map={'化学':'Chemistry'}; return 'notes_'+((map[s.name])||s.name)+'.json' }
+function loadNotes(s, cb){
+  if(NOTES!==null){ cb&&cb(); return }
+  if(notesBusy) return;
+  notesBusy=true;
+  fetch(notesFile(s)).then(r=>{ if(!r.ok) throw 0; return r.json() })
+    .then(d=>{ NOTES=(d&&typeof d==='object')?d:{pages:[]} })
+    .catch(()=>{ NOTES={pages:[]} })
+    .then(()=>{ notesBusy=false; cb&&cb() });
+}
+function noteBlockHTML(b){
+  let out='';
+  if(b.h) out+=`<div class="note-h">${escapeHtml(b.h)}</div>`;
+  if(b.t) out+=`<div class="note-t">${escapeHtml(b.t)}</div>`;
+  if(b.list) out+='<ul class="note-l">'+b.list.map(x=>`<li>${escapeHtml(x)}</li>`).join('')+'</ul>';
+  if(b.fig) out+=`<div class="note-fig">${b.fig}</div>`;
+  if(b.table) out+='<table class="note-tb"><thead><tr>'+b.table.head.map(h=>`<th>${escapeHtml(h)}</th>`).join('')+'</tr></thead><tbody>'+b.table.rows.map(r=>'<tr>'+r.map(c=>`<td>${escapeHtml(c)}</td>`).join('')+'</tr>').join('')+'</tbody></table>';
+  return out;
+}
+function notePageHTML(p){
+  return `<div class="note-card"><div class="note-tt">${escapeHtml(p.title||'ノート')}${p.tag?`<span>${escapeHtml(p.tag)}</span>`:''}</div>`+(p.blocks||[]).map(noteBlockHTML).join('')+'</div>';
+}
+function notesListHTML(){
+  const d=NOTES||{pages:[]};
+  if(!d.pages||!d.pages.length) return `<div class="empty">化学ノートはまだありません。<br><span class="hint" style="display:inline">手書きノートの写真を送ってください。見やすい図に作り直して、ここに表示します。</span></div>`;
+  if(noteOpen!=null){ const p=d.pages[noteOpen]; if(!p){ noteOpen=null; return notesListHTML() }
+    return `<button class="btn sm ghost" onclick="noteOpen=null;renderDeck()" style="margin-bottom:10px">‹ 一覧へ</button>`+notePageHTML(p) }
+  return d.pages.map((p,i)=>`<div class="crow" onclick="noteOpen=${i};openNote(${i})">
+     <div style="flex:1;min-width:0"><div class="cf">${escapeHtml(p.title||'ノート')}</div>
+     <div class="ct">${p.tag?escapeHtml(p.tag)+' · ':''}${(p.blocks||[]).length}ブロック</div></div>
+     <span class="icon-btn">›</span></div>`).join('');
+}
+function openNote(i){ noteOpen=i; renderDeck() }
+function renderNoteDeck(s){
+  document.getElementById('deck-title').textContent = s.name+' ノート';
+  document.getElementById('deck-head').innerHTML = '';
+  document.getElementById('deck-tabs').innerHTML = deckTabsHTML(s);
+  const pane=document.getElementById('deck-pane');
+  if(!NOTES){ pane.innerHTML='<div class="hint">読み込み中…</div>'; loadNotes(s, ()=>renderNoteDeck(s)); return }
+  pane.innerHTML = notesListHTML();
+}
 /* ---- 教科ノート画面 ---- */
-function openDeck(sid){ deckSid = sid; deckTab = 'today'; sess = null;
+function openDeck(sid){ deckSid = sid; const _k=deckKinds(findSubject(sid)); deckTab = (_k[0]==='note') ? 'note' : 'today'; sess = null;
   const s0 = findSubject(sid); if(s0){ const k0 = deckKinds(s0); if(k0.indexOf(addKind)<0) addKind = k0[0] }
   document.getElementById('sess-view').classList.remove('show');
   document.getElementById('deck-view').classList.add('show');
@@ -2270,7 +2326,9 @@ function openDeck(sid){ deckSid = sid; deckTab = 'today'; sess = null;
 function closeDeck(){ deckSid = null; document.getElementById('deck-view').classList.remove('show'); renderAll() }
 function setDeckTab(t){ deckTab = t; renderDeck() }
 function deckTabsHTML(s){
-  const ks = deckKinds(s), t = [['today','今日']];
+  const ks = deckKinds(s);
+  if(ks.indexOf('note')>=0) return `<button data-t="note" class="${deckTab==='note'?'on':''}" onclick="setDeckTab('note')">ノート</button>`;
+  const t = [['today','今日']];
   if(ks.indexOf('card')>=0) t.push(['card','単語']);
   if(ks.indexOf('prob')>=0){ t.push(['prob','問題']); t.push(['weak','要復習']); }
   t.push(['add','追加']);
@@ -2282,6 +2340,7 @@ function renderDeck(){
   if(!s){ closeDeck(); return }
   const ks = deckKinds(s);
   if(ks.indexOf(addKind)<0) addKind = ks[0];
+  if(ks.indexOf('note')>=0){ renderNoteDeck(s); return }
   const two = ks.indexOf('card')>=0 && ks.indexOf('prob')>=0;
   const stc = cardStats(deckSid,'card'), stp = cardStats(deckSid,'prob');
   const todo = stc.due + (stp.total && !probDoneToday(deckSid) ? 1 : 0);
