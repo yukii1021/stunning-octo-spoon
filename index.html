@@ -70,6 +70,116 @@ html[data-theme="light"]{
   --status-bg:#1b2130;
   color-scheme:light;
 }
+/* ================= 古文書テーマ（grimoire） — 金の飾り罫 / 羊皮紙 / 明朝 */
+#theme-seg{grid-template-columns:repeat(4,1fr)}
+html[data-theme="grimoire"]{
+  --bg:#120e09;
+  --bg-elev:#1e1710;
+  --bg-elev-2:#292018;
+  --line:#4d3c23;
+  --line-strong:#8c6c34;
+  --text:#f3e7c9;
+  --text-dim:#cbb386;
+  --text-mute:#917d59;
+  --accent:#d9b355;
+  --accent-2:#a8802f;
+  --ok:#8fbf6c;
+  --warn:#e0a33a;
+  --bad:#c6553f;
+  --on-accent:#1a1308;
+  --nav-bg:rgba(18,14,9,.94);
+  --accent-soft:rgba(217,179,85,.10);
+  --advice-bg:linear-gradient(135deg,rgba(217,179,85,.10),rgba(140,47,47,.10));
+  --advice-line:rgba(217,179,85,.34);
+  --danger-line:#5e2a22;
+  --shadow:0 6px 20px rgba(0,0,0,.55);
+  --overlay:rgba(6,4,2,.7);
+  --unrec:#33291c;
+  --status-bg:#120e09;
+  --radius:10px;
+  color-scheme:dark;
+  --gold-hi:#f2d98e; --gold-lo:#8c6c34;
+  --qserif:"Cinzel","Shippori Mincho B1","Hiragino Mincho ProN","Yu Mincho",serif;
+}
+html[data-theme="grimoire"] body{
+  font-family:var(--qserif);
+  background:
+    radial-gradient(130% 70% at 50% -10%, rgba(217,179,85,.10), transparent 62%),
+    repeating-linear-gradient(0deg, rgba(255,255,255,.013) 0 1px, transparent 1px 3px),
+    repeating-linear-gradient(90deg, rgba(0,0,0,.05) 0 1px, transparent 1px 3px),
+    var(--bg);
+  background-attachment:fixed;
+}
+html[data-theme="grimoire"] .hint,
+html[data-theme="grimoire"] .meta,
+html[data-theme="grimoire"] .sub,
+html[data-theme="grimoire"] input,
+html[data-theme="grimoire"] textarea{
+  font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","Hiragino Sans","Noto Sans JP",system-ui,sans-serif;
+}
+html[data-theme="grimoire"] h1,
+html[data-theme="grimoire"] h2,
+html[data-theme="grimoire"] h3{
+  font-family:var(--qserif); letter-spacing:.05em; font-weight:700;
+  background:linear-gradient(180deg,var(--gold-hi),var(--accent) 58%,#9b7a2c);
+  -webkit-background-clip:text; background-clip:text;
+  color:transparent; -webkit-text-fill-color:transparent;
+}
+html[data-theme="grimoire"] h1 span,
+html[data-theme="grimoire"] h2 span{ color:var(--text-dim); -webkit-text-fill-color:var(--text-dim) }
+html[data-theme="grimoire"] .header{ border-bottom:1px solid rgba(217,179,85,.16) }
+html[data-theme="grimoire"] .header h1::after{
+  content:""; display:block; height:1px; margin-top:7px;
+  background:linear-gradient(90deg,rgba(217,179,85,.85),rgba(217,179,85,.12) 70%,transparent);
+}
+html[data-theme="grimoire"] .card{
+  position:relative;
+  border:1px solid #5b4626;
+  background:
+    radial-gradient(circle at 6px 6px, var(--accent) 0 1.1px, transparent 1.7px),
+    radial-gradient(circle at calc(100% - 6px) 6px, var(--accent) 0 1.1px, transparent 1.7px),
+    radial-gradient(circle at 6px calc(100% - 6px), var(--accent) 0 1.1px, transparent 1.7px),
+    radial-gradient(circle at calc(100% - 6px) calc(100% - 6px), var(--accent) 0 1.1px, transparent 1.7px),
+    linear-gradient(180deg, rgba(217,179,85,.055), rgba(0,0,0,0) 45%),
+    var(--bg-elev);
+  box-shadow:
+    inset 0 0 0 1px rgba(217,179,85,.09),
+    inset 0 0 30px rgba(0,0,0,.45),
+    0 6px 18px rgba(0,0,0,.45);
+}
+html[data-theme="grimoire"] .card::before,
+html[data-theme="grimoire"] .card::after{
+  content:""; position:absolute; left:8px; right:8px; height:1px; pointer-events:none;
+  background:linear-gradient(90deg,transparent,rgba(217,179,85,.5) 18%,rgba(217,179,85,.5) 82%,transparent);
+}
+html[data-theme="grimoire"] .card::before{ top:4px }
+html[data-theme="grimoire"] .card::after{ bottom:4px }
+html[data-theme="grimoire"] .btn{
+  border-color:#5b4626;
+  background:linear-gradient(180deg,rgba(217,179,85,.07),rgba(0,0,0,.18));
+  text-shadow:0 1px 0 rgba(0,0,0,.5);
+}
+html[data-theme="grimoire"] .btn.primary{
+  background:linear-gradient(180deg,var(--gold-hi),var(--accent) 45%,#a8802f);
+  color:#1a1308; text-shadow:none; border:none;
+  box-shadow:0 0 0 1px rgba(242,217,142,.35), 0 3px 12px rgba(0,0,0,.5);
+}
+html[data-theme="grimoire"] .seg{
+  background:linear-gradient(180deg,rgba(0,0,0,.35),rgba(0,0,0,.10)), var(--bg-elev-2);
+  border-color:#4d3c23;
+}
+html[data-theme="grimoire"] .seg button{ font-family:var(--qserif); font-weight:600 }
+html[data-theme="grimoire"] .seg button.on{
+  background:linear-gradient(180deg,rgba(217,179,85,.22),rgba(217,179,85,.06));
+  color:var(--gold-hi); outline:1px solid rgba(217,179,85,.5);
+}
+html[data-theme="grimoire"] .nav{
+  border-top:1px solid rgba(217,179,85,.28);
+  box-shadow:0 -6px 20px rgba(0,0,0,.5);
+}
+html[data-theme="grimoire"] .nav button{ font-family:var(--qserif); letter-spacing:.03em }
+html[data-theme="grimoire"] .nav button.active{ color:var(--gold-hi); text-shadow:0 0 10px rgba(217,179,85,.45) }
+html[data-theme="grimoire"] .pill{ border-color:#5b4626 }
 html{color-scheme:dark}
 /* iPhoneの時計（白文字）が読めるように、ライト時はステータスバー部分だけ濃い帯 */
 body::before{content:"";position:fixed;left:0;right:0;top:0;height:var(--safe-top);background:var(--status-bg);z-index:300;pointer-events:none}
@@ -663,8 +773,9 @@ html.fo-locked,html.fo-locked body{overscroll-behavior:none}
         <button data-t="light" onclick="setTheme('light')">ライト</button>
         <button data-t="dark" onclick="setTheme('dark')">ダーク</button>
         <button data-t="auto" onclick="setTheme('auto')">自動</button>
+        <button data-t="grimoire" onclick="setTheme('grimoire')">古文書</button>
       </div>
-      <div class="hint" style="margin-top:8px">自動＝iPhone/iPadの外観設定（ライト/ダーク）に合わせます</div>
+      <div class="hint" style="margin-top:8px">自動＝iPhone/iPadの外観設定に合わせます<br>古文書＝金の飾り罫と明朝体の幻想調</div>
     </div>
 
     <div class="card">
@@ -3230,8 +3341,17 @@ function applyTheme(){
   const pref = (state.settings&&state.settings.theme)||'dark';
   const t = pref==='auto' ? (matchMedia('(prefers-color-scheme: light)').matches?'light':'dark') : pref;
   document.documentElement.dataset.theme = t;
-  const m = document.querySelector('meta[name=theme-color]'); if(m) m.content = t==='light'?'#f4f6fb':'#0b0d12';
+  const m = document.querySelector('meta[name=theme-color]');
+  if(m) m.content = t==='light' ? '#f4f6fb' : (t==='grimoire' ? '#120e09' : '#0b0d12');
+  if(t==='grimoire') loadGrimoireFont();
   document.querySelectorAll('#theme-seg button').forEach(b=>b.classList.toggle('on', b.dataset.t===pref));
+}
+let grimoireFontLoaded=false;
+function loadGrimoireFont(){
+  if(grimoireFontLoaded) return; grimoireFontLoaded=true;
+  const l=document.createElement('link'); l.rel='stylesheet';
+  l.href='https://fonts.googleapis.com/css2?family=Cinzel:wght@600;800&family=Shippori+Mincho+B1:wght@400;700;800&display=swap';
+  document.head.appendChild(l);
 }
 function setTheme(t){
   state.settings = state.settings||{}; state.settings.theme = t;
