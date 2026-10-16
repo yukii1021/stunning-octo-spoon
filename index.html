@@ -448,6 +448,89 @@ html.fo-locked,html.fo-locked body{overscroll-behavior:none}
 .fo-panel.on{display:flex}
 .fo-pt{font-size:20px;font-weight:800}
 .fo-ps{font-size:13px;opacity:.85;line-height:1.6}
+/* ============ 華胥配色：理想郷（中華寄り） ============ */
+html[data-game="huaxu"]{
+  --bg:#faf4ea;
+  --bg-elev:rgba(255,253,248,.92);
+  --bg-elev-2:#f4ead9;
+  --line:rgba(168,124,88,.26);
+  --line-strong:rgba(168,124,88,.46);
+  --text:#2b2320;
+  --text-dim:#5e4d43;
+  --text-mute:#8e7c6e;
+  --accent:#b5342b;
+  --accent-2:#c9a227;
+  --on-accent:#fffaf3;
+  --ok:#2f7d63;
+  --warn:#b8860b;
+  --bad:#b5342b;
+  --nav-bg:rgba(253,249,242,.95);
+  --accent-soft:rgba(181,52,43,.09);
+  --advice-bg:linear-gradient(135deg,rgba(181,52,43,.07),rgba(47,125,99,.08));
+  --advice-line:rgba(168,124,88,.26);
+  --danger-line:#e2b9b2;
+  --shadow:0 8px 22px rgba(94,66,44,.15);
+  --overlay:rgba(43,35,32,.42);
+  --unrec:#e9ddce;
+  --status-bg:#2b2320;
+  --radius:12px;
+  color-scheme:light;
+  --hx:#b5342b;--hx-hi:#f0cfc9;--jade:#2f7d63;--hx-gold:#c9a227;
+  --gnum:"SF Mono",ui-monospace,Menlo,monospace;
+}
+html[data-game="huaxu"] body{
+  background:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='88' height='88' viewBox='0 0 88 88'%3E%3Cg fill='none' stroke='%23b5342b' stroke-opacity='0.07' stroke-width='1.3'%3E%3Ccircle cx='16' cy='16' r='9'/%3E%3Cpath d='M7 16a9 9 0 0 1 18 0'/%3E%3Ccircle cx='60' cy='60' r='9'/%3E%3Cpath d='M51 60a9 9 0 0 1 18 0'/%3E%3C/g%3E%3C/svg%3E") 0 0/88px 88px repeat,
+    radial-gradient(90% 42% at 14% -8%, rgba(232,158,148,.28), transparent 62%),
+    radial-gradient(78% 38% at 96% 0%, rgba(122,182,152,.20), transparent 64%),
+    linear-gradient(180deg,#fffbf4,#f8f0e3 46%,#f1e5d4);
+  background-attachment:fixed;
+}
+html[data-game="huaxu"] .header{border-bottom:1px solid var(--line);box-shadow:0 1px 0 rgba(201,162,39,.28)}
+html[data-game="huaxu"] .header h1{background:linear-gradient(180deg,#3a2b25,#8d3327 66%,#b5342b);
+  -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+html[data-game="huaxu"] .header .sub{color:var(--text-mute)}
+html[data-game="huaxu"] .card{background:linear-gradient(180deg,rgba(255,253,248,.95),rgba(250,243,232,.94));
+  border:1px solid var(--line);border-radius:12px;
+  box-shadow:0 8px 22px rgba(94,66,44,.13),inset 0 1px 0 rgba(255,255,255,.9);
+  -webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px)}
+html[data-game="huaxu"] .card h2{color:#3a2b25;padding-left:11px;position:relative}
+html[data-game="huaxu"] .card h2::before{content:'';position:absolute;left:0;top:.18em;bottom:.18em;width:2px;border-radius:2px;
+  background:linear-gradient(180deg,var(--hx),var(--hx-gold));box-shadow:0 0 8px rgba(181,52,43,.35)}
+html[data-game="huaxu"] .btn{background:linear-gradient(180deg,#fffdf9,#f2e8d8);border:1px solid var(--line);
+  color:#43322b;border-radius:10px;box-shadow:0 2px 6px rgba(94,66,44,.10)}
+html[data-game="huaxu"] .btn.primary{background:linear-gradient(180deg,#c8483c,#a52c24);border:1px solid rgba(201,162,39,.62);
+  color:#fffaf3;font-weight:700;box-shadow:0 6px 16px rgba(181,52,43,.28),inset 0 1px 0 rgba(255,255,255,.30)}
+html[data-game="huaxu"] .btn.danger{color:#a52c24;border-color:var(--danger-line);background:linear-gradient(180deg,#fffdf9,#fbeceb)}
+html[data-game="huaxu"] .btn.ghost{background:transparent;border-color:var(--line)}
+html[data-game="huaxu"] .chip{background:rgba(255,253,248,.78);border-color:var(--line);color:var(--text-dim)}
+html[data-game="huaxu"] .seg{background:#f4ead9;border:1px solid var(--line);border-radius:10px}
+html[data-game="huaxu"] .seg button{color:var(--text-dim);border-radius:8px}
+html[data-game="huaxu"] .seg button.on{background:#fffdf9;color:#8d3327;outline:1px solid var(--line-strong);box-shadow:0 2px 8px rgba(94,66,44,.14)}
+html[data-game="huaxu"] .nav{background:var(--nav-bg);border-top:1px solid var(--line);
+  box-shadow:0 -6px 20px rgba(94,66,44,.13);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px)}
+html[data-game="huaxu"] .nav button{color:var(--text-mute)}
+html[data-game="huaxu"] .nav button.active{color:var(--hx);text-shadow:0 0 10px rgba(181,52,43,.35)}
+html[data-game="huaxu"] .nav button.active svg{filter:drop-shadow(0 0 6px rgba(181,52,43,.40))}
+html[data-game="huaxu"] .now-card{background:linear-gradient(160deg,rgba(255,253,248,.96),rgba(247,238,225,.94));
+  border:1px solid rgba(201,162,39,.55);border-radius:12px;
+  box-shadow:0 12px 30px rgba(94,66,44,.16),inset 0 0 0 1px rgba(255,255,255,.85)}
+html[data-game="huaxu"] .now-label{color:var(--text-mute)}
+html[data-game="huaxu"] .now-name{color:#2b2320}
+html[data-game="huaxu"] .now-time{font-family:var(--gnum);color:#3a2b25;letter-spacing:.02em}
+html[data-game="huaxu"] .now-sub{color:var(--text-dim)}
+html[data-game="huaxu"] .stat{background:linear-gradient(180deg,rgba(255,253,248,.95),rgba(249,241,229,.94));
+  border:1px solid var(--line);border-top:2px solid rgba(201,162,39,.6);border-radius:10px;
+  box-shadow:0 6px 16px rgba(94,66,44,.10)}
+html[data-game="huaxu"] .stat .label{color:var(--text-mute)}
+html[data-game="huaxu"] .stat .value{color:#2b2320;font-family:var(--gnum)}
+html[data-game="huaxu"] .stat .sub{color:var(--text-dim)}
+html[data-game="huaxu"] .pill{border-color:var(--line);background:rgba(255,253,248,.75)}
+html[data-game="huaxu"] .hint{color:var(--text-mute)}
+html[data-game="huaxu"] .group-tabs button{color:var(--text-dim)}
+html[data-game="huaxu"] .sync-badge{color:var(--text-dim)}
+html[data-game="huaxu"] input,html[data-game="huaxu"] select,html[data-game="huaxu"] textarea{
+  background:rgba(255,253,248,.92);border:1px solid var(--line);border-radius:10px}
 </style>
 <style id="gm-theme">
 /* ============ デザイン編集ページ ============ */
@@ -461,81 +544,101 @@ html.fo-locked,html.fo-locked body{overscroll-behavior:none}
 .dcard.on .nm::after{content:'✓';float:right;color:var(--accent);font-weight:800}
 @media (min-width:560px){#design-grid{grid-template-columns:repeat(3,1fr)}}
 
-/* ============ ゲーム配色：デュエットナイトアビス ============ */
+#game-seg{grid-template-columns:repeat(2,1fr)}
 html[data-game="game"]{
-  --bg:#0b0910;
-  --bg-elev:#1c1825;
-  --bg-elev-2:#282232;
-  --line:rgba(226,208,180,.16);
-  --line-strong:rgba(226,208,180,.32);
-  --text:#f8f5f5;
-  --text-dim:#cdc6cf;
-  --text-mute:#8f8a94;
-  --accent:#c9a15f;
-  --accent-2:#7d6234;
-  --on-accent:#16131a;
-  --ok:#7fb8a0;
-  --warn:#d9b06a;
-  --bad:#d9534f;
-  --nav-bg:rgba(14,12,18,.94);
-  --accent-soft:rgba(201,161,95,.12);
-  --advice-bg:linear-gradient(135deg,rgba(201,161,95,.10),rgba(88,160,188,.08));
-  --advice-line:rgba(226,208,180,.20);
-  --danger-line:#5a2a2c;
-  --shadow:0 12px 30px rgba(0,0,0,.55);
-  --overlay:rgba(8,7,11,.78);
-  --unrec:#2a2531;
-  --status-bg:#0b0910;
+  --bg:#0d0e11;
+  --bg-elev:#1a1d22;
+  --bg-elev-2:#22262b;
+  --line:rgba(255,255,255,.085);
+  --line-strong:rgba(255,255,255,.18);
+  --text:#ffffff;
+  --text-dim:#cdd2d8;
+  --text-mute:#8b9199;
+  --accent:#e6b450;
+  --accent-2:#8a6a2f;
+  --on-accent:#14161a;
+  --ok:#7fbf6a;
+  --warn:#e6b450;
+  --bad:#ee3f3f;
+  --nav-bg:rgba(16,18,21,.93);
+  --accent-soft:rgba(230,180,80,.10);
+  --advice-bg:linear-gradient(135deg,rgba(230,180,80,.07),rgba(238,63,63,.06));
+  --advice-line:rgba(255,255,255,.12);
+  --danger-line:#5b2222;
+  --shadow:0 10px 26px rgba(0,0,0,.52);
+  --overlay:rgba(6,7,9,.76);
+  --unrec:#262b31;
+  --status-bg:#0d0e11;
   --radius:12px;
   color-scheme:dark;
-  --gold:#c9a15f;--gold-hi:#f0e0c0;--gold-lo:#7d6234;
-  --teal:#58a0bc;--teal-hi:#a2d8e3;
-  --gl:rgba(201,161,95,.36);--gl-hi:rgba(240,224,192,.46);
+  --gold:#e6b450; --gold-hi:#f6dda6; --gold-lo:#8a6a2f;
+  --gl:rgba(230,180,80,.30); --gl-hi:rgba(246,221,166,.44);
   --gnum:"SF Mono",ui-monospace,Menlo,monospace;
 }
 html[data-game="game"] body{
   background:
-    radial-gradient(86% 40% at 16% -6%, rgba(88,160,188,.13), transparent 62%),
-    radial-gradient(72% 38% at 96% 0%, rgba(139,125,137,.14), transparent 66%),
-    radial-gradient(120% 58% at 50% 106%, rgba(201,161,95,.08), transparent 72%),
-    linear-gradient(180deg,#1a1622,#100e15 46%,#08070c);
+    radial-gradient(90% 42% at 22% -8%, rgba(230,180,80,.055), transparent 62%),
+    radial-gradient(70% 40% at 92% 4%, rgba(120,150,200,.05), transparent 66%),
+    linear-gradient(180deg,#15181d,#0d0e11 46%,#08090b);
   background-attachment:fixed;
 }
-html[data-game="game"] .header{border-bottom:1px solid rgba(226,208,180,.18)}
-html[data-game="game"] .header h1{background:linear-gradient(180deg,#f6efe2,#e2cfae 62%,#b99a63);
-  -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+html[data-game="game"] .header{border-bottom:1px solid var(--line)}
+html[data-game="game"] .header h1{
+  color:#fff;
+  background:linear-gradient(180deg,#ffffff,#d9dde2 70%,#aeb4bb);
+  -webkit-background-clip:text; background-clip:text;
+  -webkit-text-fill-color:transparent;
+}
 html[data-game="game"] .header .sub{color:var(--text-mute)}
-html[data-game="game"] .card{background:linear-gradient(180deg,rgba(38,33,48,.90),rgba(20,17,26,.94));
-  border:1px solid var(--line);border-radius:12px;
-  box-shadow:0 12px 30px rgba(0,0,0,.5),inset 0 1px 0 rgba(240,224,192,.06);
-  -webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px)}
-html[data-game="game"] .card h2{color:#efe7db;padding-left:11px;position:relative}
-html[data-game="game"] .card h2::before{content:'';position:absolute;left:0;top:.18em;bottom:.18em;width:2px;border-radius:2px;
-  background:linear-gradient(180deg,var(--gold-hi),var(--gold),rgba(201,161,95,.18));box-shadow:0 0 10px rgba(201,161,95,.5)}
-html[data-game="game"] .btn{background:linear-gradient(180deg,rgba(52,46,62,.92),rgba(28,24,36,.94));
-  border:1px solid var(--line);color:#eee9f0;border-radius:10px;box-shadow:inset 0 1px 0 rgba(240,224,192,.07)}
-html[data-game="game"] .btn.primary{background:linear-gradient(180deg,rgba(64,56,74,.96),rgba(30,26,38,.96));
-  border:1px solid var(--gl);color:var(--gold-hi);font-weight:700;
-  box-shadow:inset 0 1px 0 rgba(240,224,192,.12),0 8px 20px rgba(0,0,0,.5)}
-html[data-game="game"] .btn.danger{color:#f0a8a6;border-color:var(--danger-line)}
+html[data-game="game"] .card{
+  border:1px solid var(--line); border-radius:var(--radius);
+  background:linear-gradient(180deg,rgba(30,33,38,.92),rgba(20,23,27,.94));
+  box-shadow:0 10px 26px rgba(0,0,0,.45);
+}
+html[data-game="game"] .card h2{color:#e6e8ea}
+html[data-game="game"] .btn{
+  border:1px solid rgba(255,255,255,.15); border-radius:10px;
+  background:linear-gradient(180deg,rgba(48,53,60,.9),rgba(28,31,36,.92));
+  color:#eef0f2; box-shadow:inset 0 1px 0 rgba(255,255,255,.06);
+}
+html[data-game="game"] .btn.primary{
+  background:linear-gradient(180deg,rgba(58,63,70,.96),rgba(28,31,36,.96));
+  border:1px solid var(--gl); color:var(--gold-hi); font-weight:700;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.08), 0 6px 16px rgba(0,0,0,.45);
+}
+html[data-game="game"] .btn.danger{color:#ff9d9d;border-color:var(--danger-line)}
 html[data-game="game"] .btn.ghost{background:transparent;border-color:var(--line)}
 html[data-game="game"] .chip{background:rgba(255,255,255,.05);border-color:var(--line);color:var(--text-dim)}
-html[data-game="game"] .seg{background:linear-gradient(180deg,#141119,#1e1a25);border:1px solid var(--line);border-radius:10px}
+html[data-game="game"] .seg{
+  background:linear-gradient(180deg,#121519,#1a1e22);
+  border:1px solid var(--line); border-radius:10px;
+}
 html[data-game="game"] .seg button{color:var(--text-dim);border-radius:8px}
-html[data-game="game"] .seg button.on{background:linear-gradient(180deg,rgba(240,224,192,.16),rgba(201,161,95,.06));
-  color:#f7f0e4;outline:1px solid rgba(240,224,192,.32);box-shadow:none}
-html[data-game="game"] .nav{background:var(--nav-bg);border-top:1px solid rgba(226,208,180,.16)}
+html[data-game="game"] .seg button.on{
+  background:linear-gradient(180deg,rgba(255,255,255,.14),rgba(255,255,255,.04));
+  color:#fff; outline:1px solid rgba(246,221,166,.30); box-shadow:none;
+}
+html[data-game="game"] .nav{
+  background:var(--nav-bg); border-top:1px solid var(--line);
+}
 html[data-game="game"] .nav button{color:var(--text-mute)}
-html[data-game="game"] .nav button.active{color:var(--gold-hi);text-shadow:0 0 12px rgba(201,161,95,.5)}
-html[data-game="game"] .nav button.active svg{filter:drop-shadow(0 0 6px rgba(201,161,95,.5))}
-html[data-game="game"] .now-card{background:linear-gradient(160deg,rgba(40,34,50,.94),rgba(19,16,25,.96));
-  border:1px solid var(--line);border-radius:12px;box-shadow:0 12px 30px rgba(0,0,0,.5)}
+html[data-game="game"] .nav button.active{
+  color:var(--gold-hi);
+  text-shadow:0 0 12px rgba(230,180,80,.45);
+}
+html[data-game="game"] .nav button.active svg{filter:drop-shadow(0 0 6px rgba(230,180,80,.45))}
+html[data-game="game"] .now-card{
+  border:1px solid var(--line); border-radius:var(--radius);
+  background:linear-gradient(180deg,rgba(30,33,38,.92),rgba(18,21,24,.94));
+}
 html[data-game="game"] .now-label{color:var(--text-mute)}
 html[data-game="game"] .now-name{color:#fff}
-html[data-game="game"] .now-time{font-family:var(--gnum);color:#fbf7f1;letter-spacing:.02em}
+html[data-game="game"] .now-time{font-family:var(--gnum);color:#f4f6f8;letter-spacing:.02em}
 html[data-game="game"] .now-sub{color:var(--text-dim)}
-html[data-game="game"] .stat{background:linear-gradient(180deg,rgba(38,33,48,.90),rgba(19,16,25,.94));
-  border:1px solid var(--line);border-radius:12px}
+html[data-game="game"] .stat{
+  border:1px solid var(--line); border-radius:10px;
+  background:linear-gradient(180deg,rgba(32,35,40,.88),rgba(19,21,25,.92));
+}
 html[data-game="game"] .stat .label{color:var(--text-mute)}
 html[data-game="game"] .stat .value{color:#fff;font-family:var(--gnum)}
 html[data-game="game"] .stat .sub{color:var(--text-dim)}
@@ -543,8 +646,6 @@ html[data-game="game"] .pill{border-color:var(--line)}
 html[data-game="game"] .hint{color:var(--text-mute)}
 html[data-game="game"] .group-tabs button{color:var(--text-dim)}
 html[data-game="game"] .sync-badge{color:var(--text-dim)}
-html[data-game="game"] input,html[data-game="game"] select,html[data-game="game"] textarea{
-  background:rgba(12,10,16,.7);border:1px solid var(--line);border-radius:10px}
 
 /* ============ ゲーム配色：アイスレイク城 ============ */
 html[data-game="ice"]{
@@ -3424,8 +3525,9 @@ const DESIGNS=[
   {id:'light', name:'ライト', pv:{bg:'linear-gradient(180deg,#ffffff,#e9eef7)', panel:'#ffffff', line:'#dde2ec', acc:'#1f7ae0', txt:'#141821'}},
   {id:'dark',  name:'ダーク', pv:{bg:'linear-gradient(180deg,#161a20,#0b0d12)', panel:'#1b1f26', line:'#2c333d', acc:'#7cc4ff', txt:'#e8ecf2'}},
   {id:'auto',  name:'自動',   pv:{bg:'linear-gradient(115deg,#f6f8fc 0 50%,#0b0d12 50% 100%)', panel:'rgba(150,160,176,.6)', line:'rgba(255,255,255,.4)', acc:'#1f7ae0', txt:'#9aa3b2'}},
-  {id:'game',  name:'ゲーム', pv:{bg:'linear-gradient(180deg,#1d1926,#0b0910)', panel:'#262130', line:'rgba(226,208,180,.34)', acc:'#c9a15f', txt:'#f8f5f5'}},
-  {id:'ice',   name:'アイスレイク城', pv:{bg:'linear-gradient(180deg,#f8fcff,#d9e8f6)', panel:'#ffffff', line:'#a9c6e0', acc:'#3f7fb8', txt:'#16283a'}}
+  {id:'game',  name:'蒔絵',   pv:{bg:'linear-gradient(180deg,#1d2026,#0d0e11)', panel:'#1a1d22', line:'rgba(255,255,255,.28)', acc:'#e6b450', txt:'#ffffff'}},
+  {id:'ice',   name:'アイスレイク城', pv:{bg:'linear-gradient(180deg,#f8fcff,#d9e8f6)', panel:'#ffffff', line:'#a9c6e0', acc:'#3f7fb8', txt:'#16283a'}},
+  {id:'huaxu', name:'華胥',   pv:{bg:'linear-gradient(180deg,#fffbf4,#f2e6d5)', panel:'#fffdf8', line:'rgba(168,124,88,.45)', acc:'#b5342b', txt:'#2b2320'}}
 ];
 function designById(d){ for(var i=0;i<DESIGNS.length;i++){ if(DESIGNS[i].id===d) return DESIGNS[i] } return DESIGNS[1] }
 function currentDesign(){
@@ -3433,11 +3535,13 @@ function currentDesign(){
   if(s.design) return s.design;
   if(s.game==='game') return 'game';
   if(s.game==='ice') return 'ice';
+  if(s.game==='huaxu') return 'huaxu';
   return (s.theme==='light'||s.theme==='auto')?s.theme:'dark';
 }
 function designSpec(d){
   if(d==='game') return {theme:'dark', game:'game'};
   if(d==='ice') return {theme:'light', game:'ice'};
+  if(d==='huaxu') return {theme:'light', game:'huaxu'};
   if(d==='light') return {theme:'light', game:'none'};
   if(d==='auto') return {theme:'auto', game:'none'};
   return {theme:'dark', game:'none'};
@@ -3469,7 +3573,7 @@ function applyTheme(){
   document.documentElement.dataset.theme=t;
   document.documentElement.dataset.game=sp.game;
   if(sp.game!=='none'){ try{loadGameFont()}catch(e){} }
-  try{ var m=document.querySelector('meta[name=theme-color]'); if(m) m.content=(sp.game==='ice')?'#eef4fb':(sp.game==='game')?'#0e0c12':(t==='light'?'#f4f6fb':'#0b0d12'); }catch(e){}
+  try{ var m=document.querySelector('meta[name=theme-color]'); if(m) m.content=(sp.game==='ice')?'#eef4fb':(sp.game==='huaxu')?'#faf4ea':(sp.game==='game')?'#0e0c12':(t==='light'?'#f4f6fb':'#0b0d12'); }catch(e){}
   try{ var dc=document.getElementById('design-current'); if(dc) dc.textContent=designById(d).name; }catch(e){}
   try{ var sw=document.getElementById('design-swatch'); if(sw){ var p=designById(d).pv; sw.style.background=p.bg; sw.style.borderColor=p.line; sw.style.boxShadow='inset 0 0 0 3px '+p.panel; } }catch(e){}
   try{ renderDesignGrid(); }catch(e){}
