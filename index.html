@@ -3525,7 +3525,7 @@ const DESIGNS=[
   {id:'light', name:'ライト', pv:{bg:'linear-gradient(180deg,#ffffff,#e9eef7)', panel:'#ffffff', line:'#dde2ec', acc:'#1f7ae0', txt:'#141821'}},
   {id:'dark',  name:'ダーク', pv:{bg:'linear-gradient(180deg,#161a20,#0b0d12)', panel:'#1b1f26', line:'#2c333d', acc:'#7cc4ff', txt:'#e8ecf2'}},
   {id:'auto',  name:'自動',   pv:{bg:'linear-gradient(115deg,#f6f8fc 0 50%,#0b0d12 50% 100%)', panel:'rgba(150,160,176,.6)', line:'rgba(255,255,255,.4)', acc:'#1f7ae0', txt:'#9aa3b2'}},
-  {id:'game',  name:'蒔絵',   pv:{bg:'linear-gradient(180deg,#1d2026,#0d0e11)', panel:'#1a1d22', line:'rgba(255,255,255,.28)', acc:'#e6b450', txt:'#ffffff'}},
+  {id:'game',  name:'金襴',   pv:{bg:'linear-gradient(180deg,#1d2026,#0d0e11)', panel:'#1a1d22', line:'rgba(255,255,255,.28)', acc:'#e6b450', txt:'#ffffff'}},
   {id:'ice',   name:'アイスレイク城', pv:{bg:'linear-gradient(180deg,#f8fcff,#d9e8f6)', panel:'#ffffff', line:'#a9c6e0', acc:'#3f7fb8', txt:'#16283a'}},
   {id:'huaxu', name:'華胥',   pv:{bg:'linear-gradient(180deg,#fffbf4,#f2e6d5)', panel:'#fffdf8', line:'rgba(168,124,88,.45)', acc:'#b5342b', txt:'#2b2320'}}
 ];
@@ -3899,5 +3899,211 @@ if ('serviceWorker' in navigator) {
 
 try{if(document.documentElement.dataset.game==='game')loadGameFont()}catch(e){}
 </script>
+<style id="gm-theme2">
+/* ============ デザイン：アイスレイク城（氷の城塞） ============ */
+html[data-game="ice"]{
+  --bg:#eaf2fb;
+  --bg-elev:rgba(255,255,255,.90);
+  --bg-elev-2:#e2ecf8;
+  --line:rgba(90,132,178,.32);
+  --line-strong:rgba(90,132,178,.54);
+  --text:#12283e;
+  --text-dim:#3d5d7c;
+  --text-mute:#7590ab;
+  --accent:#2f76b5;
+  --accent-2:#8fbde2;
+  --on-accent:#ffffff;
+  --ok:#2f9e86;
+  --warn:#c2872a;
+  --bad:#cf4a4a;
+  --nav-bg:rgba(250,253,255,.95);
+  --accent-soft:rgba(47,118,181,.10);
+  --advice-bg:linear-gradient(135deg,rgba(47,118,181,.12),rgba(190,228,255,.5));
+  --advice-line:rgba(90,132,178,.30);
+  --danger-line:#e3c0c0;
+  --shadow:0 10px 26px rgba(42,84,128,.18);
+  --overlay:rgba(14,38,62,.44);
+  --unrec:#cddcea;
+  --status-bg:#12283e;
+  --radius:14px;
+  color-scheme:light;
+  --ice:#5aa9e6;--ice-hi:#d6ecff;--ice-lo:#265f96;
+  --gnum:"SF Mono",ui-monospace,Menlo,monospace;
+}
+html[data-game="ice"] body{
+  background-color:#eef5fd;
+  background-image:url(data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20width%3D%27148%27%20height%3D%27148%27%20viewBox%3D%270%200%20148%20148%27%3E%3Cg%20transform%3D%27translate%2874%2C74%29%27%20fill%3D%27none%27%20stroke%3D%27%233f86c4%27%20stroke-opacity%3D%27.30%27%20stroke-width%3D%271.15%27%20stroke-linecap%3D%27round%27%20stroke-linejoin%3D%27round%27%3E%3Cg%20transform%3D%27rotate%280%29%27%3E%3Cpath%20d%3D%27M0%200%20V-58%27%2F%3E%3Cpath%20d%3D%27M0%20-40%20l-11.5%20-11.5%20M0%20-40%20l11.5%20-11.5%27%2F%3E%3Cpath%20d%3D%27M0%20-23%20l-8%20-8%20M0%20-23%20l8%20-8%27%2F%3E%3C%2Fg%3E%3Cg%20transform%3D%27rotate%2860%29%27%3E%3Cpath%20d%3D%27M0%200%20V-58%27%2F%3E%3Cpath%20d%3D%27M0%20-40%20l-11.5%20-11.5%20M0%20-40%20l11.5%20-11.5%27%2F%3E%3Cpath%20d%3D%27M0%20-23%20l-8%20-8%20M0%20-23%20l8%20-8%27%2F%3E%3C%2Fg%3E%3Cg%20transform%3D%27rotate%28120%29%27%3E%3Cpath%20d%3D%27M0%200%20V-58%27%2F%3E%3Cpath%20d%3D%27M0%20-40%20l-11.5%20-11.5%20M0%20-40%20l11.5%20-11.5%27%2F%3E%3Cpath%20d%3D%27M0%20-23%20l-8%20-8%20M0%20-23%20l8%20-8%27%2F%3E%3C%2Fg%3E%3Cg%20transform%3D%27rotate%28180%29%27%3E%3Cpath%20d%3D%27M0%200%20V-58%27%2F%3E%3Cpath%20d%3D%27M0%20-40%20l-11.5%20-11.5%20M0%20-40%20l11.5%20-11.5%27%2F%3E%3Cpath%20d%3D%27M0%20-23%20l-8%20-8%20M0%20-23%20l8%20-8%27%2F%3E%3C%2Fg%3E%3Cg%20transform%3D%27rotate%28240%29%27%3E%3Cpath%20d%3D%27M0%200%20V-58%27%2F%3E%3Cpath%20d%3D%27M0%20-40%20l-11.5%20-11.5%20M0%20-40%20l11.5%20-11.5%27%2F%3E%3Cpath%20d%3D%27M0%20-23%20l-8%20-8%20M0%20-23%20l8%20-8%27%2F%3E%3C%2Fg%3E%3Cg%20transform%3D%27rotate%28300%29%27%3E%3Cpath%20d%3D%27M0%200%20V-58%27%2F%3E%3Cpath%20d%3D%27M0%20-40%20l-11.5%20-11.5%20M0%20-40%20l11.5%20-11.5%27%2F%3E%3Cpath%20d%3D%27M0%20-23%20l-8%20-8%20M0%20-23%20l8%20-8%27%2F%3E%3C%2Fg%3E%3Cpath%20d%3D%27M0%20-7.5%20l6.5%203.75%20v7.5%20l-6.5%203.75%20l-6.5%20-3.75%20v-7.5%20z%27%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E),url(data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20width%3D%27168%27%20height%3D%27158%27%20viewBox%3D%270%200%20168%20158%27%3E%3Cg%20fill%3D%27none%27%20stroke%3D%27%234b8fc9%27%20stroke-opacity%3D%27.26%27%20stroke-width%3D%271.2%27%20stroke-linejoin%3D%27round%27%3E%3Cpath%20d%3D%27M8%20150%20V78%20C8%2044%2022%2028%2040%208%20C58%2028%2072%2044%2072%2078%20V150%27%2F%3E%3Cpath%20d%3D%27M17%20150%20V82%20C17%2056%2028%2044%2040%2028%20C52%2044%2063%2056%2063%2082%20V150%27%2F%3E%3Ccircle%20cx%3D%2740%27%20cy%3D%2752%27%20r%3D%276.5%27%2F%3E%3Cpath%20d%3D%27M88%20150%20V78%20C88%2044%20102%2028%20120%208%20C138%2028%20152%2044%20152%2078%20V150%27%2F%3E%3Cpath%20d%3D%27M97%20150%20V82%20C97%2056%20108%2044%20120%2028%20C132%2044%20143%2056%20143%2082%20V150%27%2F%3E%3Ccircle%20cx%3D%27120%27%20cy%3D%2752%27%20r%3D%276.5%27%2F%3E%3Cpath%20d%3D%27M0%20152%20H168%27%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E),
+    radial-gradient(90% 62% at 8% -2%, rgba(120,196,255,.50), transparent 62%),
+    radial-gradient(80% 52% at 94% -2%, rgba(178,150,236,.26), transparent 64%),
+    radial-gradient(150% 60% at 50% 102%, rgba(255,255,255,.95), transparent 74%),
+    linear-gradient(180deg,#fbfdff,#e9f2fc 40%,#d2e3f5);
+  background-repeat:repeat,repeat,no-repeat,no-repeat,no-repeat,no-repeat;
+  background-size:148px 148px,168px 158px,100% 900px,100% 760px,100% 900px,100% 100%;
+  background-position:6px 10px,44px 34px,0 0,100% 0,50% 100%,0 0;
+}
+html[data-game="ice"] .header{border-bottom:14px solid transparent;
+  border-image:url(data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20width%3D%2740%27%20height%3D%2714%27%20viewBox%3D%270%200%2040%2014%27%3E%3Crect%20x%3D%270%27%20y%3D%270%27%20width%3D%2740%27%20height%3D%273%27%20fill%3D%27%23e8f4ff%27%2F%3E%3Cpath%20d%3D%27M0%203%20h7%20l-3.5%2010.5%20z%27%20fill%3D%27%23dceeff%27%20stroke%3D%27%23a6d1f0%27%20stroke-width%3D%27.7%27%2F%3E%3Cpath%20d%3D%27M8%203%20h6%20l-3%207.5%20z%27%20fill%3D%27%23eef8ff%27%20stroke%3D%27%23a6d1f0%27%20stroke-width%3D%27.7%27%2F%3E%3Cpath%20d%3D%27M16%203%20h9%20l-4.5%2011%20z%27%20fill%3D%27%23d0e8fd%27%20stroke%3D%27%23a6d1f0%27%20stroke-width%3D%27.7%27%2F%3E%3Cpath%20d%3D%27M27%203%20h6%20l-3%208.5%20z%27%20fill%3D%27%23eef8ff%27%20stroke%3D%27%23a6d1f0%27%20stroke-width%3D%27.7%27%2F%3E%3Cpath%20d%3D%27M34%203%20h6%20l-3%206.5%20z%27%20fill%3D%27%23dceeff%27%20stroke%3D%27%23a6d1f0%27%20stroke-width%3D%27.7%27%2F%3E%3C%2Fsvg%3E) 0 0 14 0 repeat;
+  background:linear-gradient(180deg,rgba(255,255,255,.95),rgba(231,242,252,.72));
+  box-shadow:0 6px 18px rgba(42,84,128,.10)}
+html[data-game="ice"] .header h1{background:linear-gradient(180deg,#123049,#2f76b5 66%,#7db3dd);
+  -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;
+  text-shadow:0 0 18px rgba(120,196,255,.45)}
+html[data-game="ice"] .header .sub{color:var(--text-mute)}
+html[data-game="ice"] .card{background-image:url(data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20width%3D%2730%27%20height%3D%2730%27%20viewBox%3D%270%200%2030%2030%27%3E%3Cg%20fill%3D%27none%27%20stroke%3D%27%234b8fc9%27%20stroke-opacity%3D%27.74%27%20stroke-width%3D%271.4%27%20stroke-linecap%3D%27round%27%3E%3Cpath%20d%3D%27M2%2016%20V6.5%20Q2%202%206.5%202%20H16%27%2F%3E%3Cpath%20d%3D%27M2.5%202.5%20L14%2014%27%2F%3E%3C%2Fg%3E%3Ccircle%20cx%3D%2716.5%27%20cy%3D%2716.5%27%20r%3D%271.7%27%20fill%3D%27%238fc4ea%27%20fill-opacity%3D%27.9%27%2F%3E%3C%2Fsvg%3E),url(data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20width%3D%2730%27%20height%3D%2730%27%20viewBox%3D%270%200%2030%2030%27%3E%3Cg%20transform%3D%27translate%2830%2C0%29%20scale%28-1%2C1%29%27%3E%3Cg%20fill%3D%27none%27%20stroke%3D%27%234b8fc9%27%20stroke-opacity%3D%27.74%27%20stroke-width%3D%271.4%27%20stroke-linecap%3D%27round%27%3E%3Cpath%20d%3D%27M2%2016%20V6.5%20Q2%202%206.5%202%20H16%27%2F%3E%3Cpath%20d%3D%27M2.5%202.5%20L14%2014%27%2F%3E%3C%2Fg%3E%3Ccircle%20cx%3D%2716.5%27%20cy%3D%2716.5%27%20r%3D%271.7%27%20fill%3D%27%238fc4ea%27%20fill-opacity%3D%27.9%27%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E),url(data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20width%3D%2730%27%20height%3D%2730%27%20viewBox%3D%270%200%2030%2030%27%3E%3Cg%20transform%3D%27translate%280%2C30%29%20scale%281%2C-1%29%27%3E%3Cg%20fill%3D%27none%27%20stroke%3D%27%234b8fc9%27%20stroke-opacity%3D%27.74%27%20stroke-width%3D%271.4%27%20stroke-linecap%3D%27round%27%3E%3Cpath%20d%3D%27M2%2016%20V6.5%20Q2%202%206.5%202%20H16%27%2F%3E%3Cpath%20d%3D%27M2.5%202.5%20L14%2014%27%2F%3E%3C%2Fg%3E%3Ccircle%20cx%3D%2716.5%27%20cy%3D%2716.5%27%20r%3D%271.7%27%20fill%3D%27%238fc4ea%27%20fill-opacity%3D%27.9%27%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E),url(data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20width%3D%2730%27%20height%3D%2730%27%20viewBox%3D%270%200%2030%2030%27%3E%3Cg%20transform%3D%27translate%2830%2C30%29%20scale%28-1%2C-1%29%27%3E%3Cg%20fill%3D%27none%27%20stroke%3D%27%234b8fc9%27%20stroke-opacity%3D%27.74%27%20stroke-width%3D%271.4%27%20stroke-linecap%3D%27round%27%3E%3Cpath%20d%3D%27M2%2016%20V6.5%20Q2%202%206.5%202%20H16%27%2F%3E%3Cpath%20d%3D%27M2.5%202.5%20L14%2014%27%2F%3E%3C%2Fg%3E%3Ccircle%20cx%3D%2716.5%27%20cy%3D%2716.5%27%20r%3D%271.7%27%20fill%3D%27%238fc4ea%27%20fill-opacity%3D%27.9%27%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E),
+    linear-gradient(180deg,rgba(255,255,255,.95),rgba(234,243,253,.93));
+  background-repeat:no-repeat,no-repeat,no-repeat,no-repeat,no-repeat;
+  background-position:left 7px top 7px,right 7px top 7px,left 7px bottom 7px,right 7px bottom 7px,0 0;
+  background-size:28px 28px,28px 28px,28px 28px,28px 28px,auto;
+  border:1px solid var(--line);border-radius:14px;
+  box-shadow:0 10px 26px rgba(42,84,128,.15),inset 0 1px 0 rgba(255,255,255,.95),inset 0 0 22px rgba(150,205,245,.28);
+  -webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px)}
+html[data-game="ice"] .card h2{color:#1d4364;padding-left:11px;position:relative}
+html[data-game="ice"] .card h2::before{content:'';position:absolute;left:0;top:.18em;bottom:.18em;width:2px;border-radius:2px;
+  background:linear-gradient(180deg,var(--ice-hi),var(--ice),rgba(90,169,230,.18));box-shadow:0 0 9px rgba(90,169,230,.6)}
+html[data-game="ice"] .btn{background:linear-gradient(180deg,#ffffff,#e6f0fb);border:1px solid var(--line);
+  color:#1e3d5c;border-radius:12px;box-shadow:0 2px 6px rgba(42,84,128,.12)}
+html[data-game="ice"] .btn.primary{background:linear-gradient(180deg,#74b6ec,#2f76b5);border:1px solid rgba(38,95,150,.55);
+  color:#fff;font-weight:700;box-shadow:0 6px 18px rgba(47,118,181,.34),inset 0 1px 0 rgba(255,255,255,.5)}
+html[data-game="ice"] .btn.danger{color:#b93b3b;border-color:var(--danger-line);background:linear-gradient(180deg,#fff,#fdeeee)}
+html[data-game="ice"] .btn.ghost{background:transparent;border-color:var(--line)}
+html[data-game="ice"] .chip{background:rgba(255,255,255,.75);border-color:var(--line);color:var(--text-dim)}
+html[data-game="ice"] .seg{background:#e4eef9;border:1px solid var(--line);border-radius:12px}
+html[data-game="ice"] .seg button{color:var(--text-dim);border-radius:9px}
+html[data-game="ice"] .seg button.on{background:#fff;color:#16405f;outline:1px solid var(--line-strong);box-shadow:0 2px 8px rgba(42,84,128,.16)}
+html[data-game="ice"] .nav{background:var(--nav-bg);border-top:1px solid var(--line);
+  box-shadow:0 -8px 26px rgba(42,84,128,.14);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px)}
+html[data-game="ice"] .nav button{color:var(--text-mute)}
+html[data-game="ice"] .nav button.active{color:var(--accent);text-shadow:0 0 10px rgba(90,169,230,.6)}
+html[data-game="ice"] .nav button.active svg{filter:drop-shadow(0 0 6px rgba(90,169,230,.65))}
+html[data-game="ice"] .now-card{background-image:url(data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20width%3D%2730%27%20height%3D%2730%27%20viewBox%3D%270%200%2030%2030%27%3E%3Cg%20fill%3D%27none%27%20stroke%3D%27%234b8fc9%27%20stroke-opacity%3D%27.74%27%20stroke-width%3D%271.4%27%20stroke-linecap%3D%27round%27%3E%3Cpath%20d%3D%27M2%2016%20V6.5%20Q2%202%206.5%202%20H16%27%2F%3E%3Cpath%20d%3D%27M2.5%202.5%20L14%2014%27%2F%3E%3C%2Fg%3E%3Ccircle%20cx%3D%2716.5%27%20cy%3D%2716.5%27%20r%3D%271.7%27%20fill%3D%27%238fc4ea%27%20fill-opacity%3D%27.9%27%2F%3E%3C%2Fsvg%3E),url(data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20width%3D%2730%27%20height%3D%2730%27%20viewBox%3D%270%200%2030%2030%27%3E%3Cg%20transform%3D%27translate%2830%2C0%29%20scale%28-1%2C1%29%27%3E%3Cg%20fill%3D%27none%27%20stroke%3D%27%234b8fc9%27%20stroke-opacity%3D%27.74%27%20stroke-width%3D%271.4%27%20stroke-linecap%3D%27round%27%3E%3Cpath%20d%3D%27M2%2016%20V6.5%20Q2%202%206.5%202%20H16%27%2F%3E%3Cpath%20d%3D%27M2.5%202.5%20L14%2014%27%2F%3E%3C%2Fg%3E%3Ccircle%20cx%3D%2716.5%27%20cy%3D%2716.5%27%20r%3D%271.7%27%20fill%3D%27%238fc4ea%27%20fill-opacity%3D%27.9%27%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E),url(data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20width%3D%2730%27%20height%3D%2730%27%20viewBox%3D%270%200%2030%2030%27%3E%3Cg%20transform%3D%27translate%280%2C30%29%20scale%281%2C-1%29%27%3E%3Cg%20fill%3D%27none%27%20stroke%3D%27%234b8fc9%27%20stroke-opacity%3D%27.74%27%20stroke-width%3D%271.4%27%20stroke-linecap%3D%27round%27%3E%3Cpath%20d%3D%27M2%2016%20V6.5%20Q2%202%206.5%202%20H16%27%2F%3E%3Cpath%20d%3D%27M2.5%202.5%20L14%2014%27%2F%3E%3C%2Fg%3E%3Ccircle%20cx%3D%2716.5%27%20cy%3D%2716.5%27%20r%3D%271.7%27%20fill%3D%27%238fc4ea%27%20fill-opacity%3D%27.9%27%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E),url(data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20width%3D%2730%27%20height%3D%2730%27%20viewBox%3D%270%200%2030%2030%27%3E%3Cg%20transform%3D%27translate%2830%2C30%29%20scale%28-1%2C-1%29%27%3E%3Cg%20fill%3D%27none%27%20stroke%3D%27%234b8fc9%27%20stroke-opacity%3D%27.74%27%20stroke-width%3D%271.4%27%20stroke-linecap%3D%27round%27%3E%3Cpath%20d%3D%27M2%2016%20V6.5%20Q2%202%206.5%202%20H16%27%2F%3E%3Cpath%20d%3D%27M2.5%202.5%20L14%2014%27%2F%3E%3C%2Fg%3E%3Ccircle%20cx%3D%2716.5%27%20cy%3D%2716.5%27%20r%3D%271.7%27%20fill%3D%27%238fc4ea%27%20fill-opacity%3D%27.9%27%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E),
+    linear-gradient(160deg,rgba(255,255,255,.96),rgba(230,241,252,.94));
+  background-repeat:no-repeat,no-repeat,no-repeat,no-repeat,no-repeat;
+  background-position:left 9px top 9px,right 9px top 9px,left 9px bottom 9px,right 9px bottom 9px,0 0;
+  background-size:30px 30px,30px 30px,30px 30px,30px 30px,auto;
+  border:1px solid rgba(90,169,230,.5);border-radius:14px;
+  box-shadow:0 14px 34px rgba(42,84,128,.18),inset 0 0 30px rgba(150,205,245,.35)}
+html[data-game="ice"] .now-label{color:var(--text-mute)}
+html[data-game="ice"] .now-name{color:#0f2c45}
+html[data-game="ice"] .now-time{font-family:var(--gnum);color:#0d2942;letter-spacing:.02em;text-shadow:0 0 16px rgba(120,196,255,.4)}
+html[data-game="ice"] .now-sub{color:var(--text-dim)}
+html[data-game="ice"] .stat{background-image:url(data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20width%3D%2730%27%20height%3D%2730%27%20viewBox%3D%270%200%2030%2030%27%3E%3Cg%20fill%3D%27none%27%20stroke%3D%27%234b8fc9%27%20stroke-opacity%3D%27.74%27%20stroke-width%3D%271.4%27%20stroke-linecap%3D%27round%27%3E%3Cpath%20d%3D%27M2%2016%20V6.5%20Q2%202%206.5%202%20H16%27%2F%3E%3Cpath%20d%3D%27M2.5%202.5%20L14%2014%27%2F%3E%3C%2Fg%3E%3Ccircle%20cx%3D%2716.5%27%20cy%3D%2716.5%27%20r%3D%271.7%27%20fill%3D%27%238fc4ea%27%20fill-opacity%3D%27.9%27%2F%3E%3C%2Fsvg%3E),url(data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20width%3D%2730%27%20height%3D%2730%27%20viewBox%3D%270%200%2030%2030%27%3E%3Cg%20transform%3D%27translate%2830%2C0%29%20scale%28-1%2C1%29%27%3E%3Cg%20fill%3D%27none%27%20stroke%3D%27%234b8fc9%27%20stroke-opacity%3D%27.74%27%20stroke-width%3D%271.4%27%20stroke-linecap%3D%27round%27%3E%3Cpath%20d%3D%27M2%2016%20V6.5%20Q2%202%206.5%202%20H16%27%2F%3E%3Cpath%20d%3D%27M2.5%202.5%20L14%2014%27%2F%3E%3C%2Fg%3E%3Ccircle%20cx%3D%2716.5%27%20cy%3D%2716.5%27%20r%3D%271.7%27%20fill%3D%27%238fc4ea%27%20fill-opacity%3D%27.9%27%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E),url(data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20width%3D%2730%27%20height%3D%2730%27%20viewBox%3D%270%200%2030%2030%27%3E%3Cg%20transform%3D%27translate%280%2C30%29%20scale%281%2C-1%29%27%3E%3Cg%20fill%3D%27none%27%20stroke%3D%27%234b8fc9%27%20stroke-opacity%3D%27.74%27%20stroke-width%3D%271.4%27%20stroke-linecap%3D%27round%27%3E%3Cpath%20d%3D%27M2%2016%20V6.5%20Q2%202%206.5%202%20H16%27%2F%3E%3Cpath%20d%3D%27M2.5%202.5%20L14%2014%27%2F%3E%3C%2Fg%3E%3Ccircle%20cx%3D%2716.5%27%20cy%3D%2716.5%27%20r%3D%271.7%27%20fill%3D%27%238fc4ea%27%20fill-opacity%3D%27.9%27%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E),url(data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20width%3D%2730%27%20height%3D%2730%27%20viewBox%3D%270%200%2030%2030%27%3E%3Cg%20transform%3D%27translate%2830%2C30%29%20scale%28-1%2C-1%29%27%3E%3Cg%20fill%3D%27none%27%20stroke%3D%27%234b8fc9%27%20stroke-opacity%3D%27.74%27%20stroke-width%3D%271.4%27%20stroke-linecap%3D%27round%27%3E%3Cpath%20d%3D%27M2%2016%20V6.5%20Q2%202%206.5%202%20H16%27%2F%3E%3Cpath%20d%3D%27M2.5%202.5%20L14%2014%27%2F%3E%3C%2Fg%3E%3Ccircle%20cx%3D%2716.5%27%20cy%3D%2716.5%27%20r%3D%271.7%27%20fill%3D%27%238fc4ea%27%20fill-opacity%3D%27.9%27%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E),
+    linear-gradient(180deg,rgba(255,255,255,.95),rgba(231,241,251,.94));
+  background-repeat:no-repeat,no-repeat,no-repeat,no-repeat,no-repeat;
+  background-position:left 6px top 6px,right 6px top 6px,left 6px bottom 6px,right 6px bottom 6px,0 0;
+  background-size:22px 22px,22px 22px,22px 22px,22px 22px,auto;
+  border:1px solid var(--line);border-top:2px solid rgba(120,196,255,.75);border-radius:12px;
+  box-shadow:0 6px 18px rgba(42,84,128,.12)}
+html[data-game="ice"] .stat .label{color:var(--text-mute)}
+html[data-game="ice"] .stat .value{color:#10314e;font-family:var(--gnum)}
+html[data-game="ice"] .stat .sub{color:var(--text-dim)}
+html[data-game="ice"] .pill{border-color:var(--line);background:rgba(255,255,255,.78)}
+html[data-game="ice"] .hint{color:var(--text-mute)}
+html[data-game="ice"] .group-tabs button{color:var(--text-dim)}
+html[data-game="ice"] .sync-badge{color:var(--text-dim)}
+html[data-game="ice"] input,html[data-game="ice"] select,html[data-game="ice"] textarea{
+  background:rgba(255,255,255,.92);border:1px solid var(--line);border-radius:12px}
+/* ============ デザイン：華胥（理想郷・宝相華と瑞雲） ============ */
+html[data-game="huaxu"]{
+  --bg:#faf3e7;
+  --bg-elev:rgba(255,253,248,.93);
+  --bg-elev-2:#f5ebda;
+  --line:rgba(163,118,82,.30);
+  --line-strong:rgba(163,118,82,.52);
+  --text:#2b2320;
+  --text-dim:#5d4c42;
+  --text-mute:#8d7b6d;
+  --accent:#b5342b;
+  --accent-2:#c9a227;
+  --on-accent:#fffaf3;
+  --ok:#2f7d63;
+  --warn:#b8860b;
+  --bad:#b5342b;
+  --nav-bg:rgba(253,248,240,.96);
+  --accent-soft:rgba(181,52,43,.09);
+  --advice-bg:linear-gradient(135deg,rgba(181,52,43,.07),rgba(47,125,99,.08));
+  --advice-line:rgba(163,118,82,.28);
+  --danger-line:#e2b9b2;
+  --shadow:0 8px 22px rgba(94,66,44,.17);
+  --overlay:rgba(43,35,32,.44);
+  --unrec:#e9ddce;
+  --status-bg:#2b2320;
+  --radius:12px;
+  color-scheme:light;
+  --hx:#b5342b;--hx-hi:#f0cfc9;--jade:#2f7d63;--hx-gold:#c9a227;
+  --gnum:"SF Mono",ui-monospace,Menlo,monospace;
+}
+html[data-game="huaxu"] body{
+  background-color:#faf3e7;
+  background-image:url(data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20width%3D%27200%27%20height%3D%27200%27%20viewBox%3D%270%200%20200%20200%27%3E%3Cg%20transform%3D%27translate%28100%2C100%29%27%20fill%3D%27none%27%20stroke%3D%27%23b58b1c%27%20stroke-opacity%3D%27.34%27%20stroke-width%3D%271.15%27%3E%3Ccircle%20cx%3D%270%27%20cy%3D%270%27%20r%3D%276%27%2F%3E%3Ccircle%20cx%3D%270%27%20cy%3D%270%27%20r%3D%2715.5%27%2F%3E%3Cg%20transform%3D%27rotate%280%29%27%3E%3Cellipse%20cx%3D%270%27%20cy%3D%27-34%27%20rx%3D%279.5%27%20ry%3D%2721%27%2F%3E%3C%2Fg%3E%3Cg%20transform%3D%27rotate%2845%29%27%3E%3Cellipse%20cx%3D%270%27%20cy%3D%27-34%27%20rx%3D%279.5%27%20ry%3D%2721%27%2F%3E%3C%2Fg%3E%3Cg%20transform%3D%27rotate%2890%29%27%3E%3Cellipse%20cx%3D%270%27%20cy%3D%27-34%27%20rx%3D%279.5%27%20ry%3D%2721%27%2F%3E%3C%2Fg%3E%3Cg%20transform%3D%27rotate%28135%29%27%3E%3Cellipse%20cx%3D%270%27%20cy%3D%27-34%27%20rx%3D%279.5%27%20ry%3D%2721%27%2F%3E%3C%2Fg%3E%3Cg%20transform%3D%27rotate%28180%29%27%3E%3Cellipse%20cx%3D%270%27%20cy%3D%27-34%27%20rx%3D%279.5%27%20ry%3D%2721%27%2F%3E%3C%2Fg%3E%3Cg%20transform%3D%27rotate%28225%29%27%3E%3Cellipse%20cx%3D%270%27%20cy%3D%27-34%27%20rx%3D%279.5%27%20ry%3D%2721%27%2F%3E%3C%2Fg%3E%3Cg%20transform%3D%27rotate%28270%29%27%3E%3Cellipse%20cx%3D%270%27%20cy%3D%27-34%27%20rx%3D%279.5%27%20ry%3D%2721%27%2F%3E%3C%2Fg%3E%3Cg%20transform%3D%27rotate%28315%29%27%3E%3Cellipse%20cx%3D%270%27%20cy%3D%27-34%27%20rx%3D%279.5%27%20ry%3D%2721%27%2F%3E%3C%2Fg%3E%3Cg%20transform%3D%27rotate%2822%29%27%3E%3Cellipse%20cx%3D%270%27%20cy%3D%27-20%27%20rx%3D%276%27%20ry%3D%2712.5%27%2F%3E%3C%2Fg%3E%3Cg%20transform%3D%27rotate%2867%29%27%3E%3Cellipse%20cx%3D%270%27%20cy%3D%27-20%27%20rx%3D%276%27%20ry%3D%2712.5%27%2F%3E%3C%2Fg%3E%3Cg%20transform%3D%27rotate%28112%29%27%3E%3Cellipse%20cx%3D%270%27%20cy%3D%27-20%27%20rx%3D%276%27%20ry%3D%2712.5%27%2F%3E%3C%2Fg%3E%3Cg%20transform%3D%27rotate%28157%29%27%3E%3Cellipse%20cx%3D%270%27%20cy%3D%27-20%27%20rx%3D%276%27%20ry%3D%2712.5%27%2F%3E%3C%2Fg%3E%3Cg%20transform%3D%27rotate%28202%29%27%3E%3Cellipse%20cx%3D%270%27%20cy%3D%27-20%27%20rx%3D%276%27%20ry%3D%2712.5%27%2F%3E%3C%2Fg%3E%3Cg%20transform%3D%27rotate%28247%29%27%3E%3Cellipse%20cx%3D%270%27%20cy%3D%27-20%27%20rx%3D%276%27%20ry%3D%2712.5%27%2F%3E%3C%2Fg%3E%3Cg%20transform%3D%27rotate%28292%29%27%3E%3Cellipse%20cx%3D%270%27%20cy%3D%27-20%27%20rx%3D%276%27%20ry%3D%2712.5%27%2F%3E%3C%2Fg%3E%3Cg%20transform%3D%27rotate%28337%29%27%3E%3Cellipse%20cx%3D%270%27%20cy%3D%27-20%27%20rx%3D%276%27%20ry%3D%2712.5%27%2F%3E%3C%2Fg%3E%3Ccircle%20cx%3D%2752.0%27%20cy%3D%270.0%27%20r%3D%271.8%27%2F%3E%3Ccircle%20cx%3D%2745.0%27%20cy%3D%2726.0%27%20r%3D%271.8%27%2F%3E%3Ccircle%20cx%3D%2726.0%27%20cy%3D%2745.0%27%20r%3D%271.8%27%2F%3E%3Ccircle%20cx%3D%270.0%27%20cy%3D%2752.0%27%20r%3D%271.8%27%2F%3E%3Ccircle%20cx%3D%27-26.0%27%20cy%3D%2745.0%27%20r%3D%271.8%27%2F%3E%3Ccircle%20cx%3D%27-45.0%27%20cy%3D%2726.0%27%20r%3D%271.8%27%2F%3E%3Ccircle%20cx%3D%27-52.0%27%20cy%3D%270.0%27%20r%3D%271.8%27%2F%3E%3Ccircle%20cx%3D%27-45.0%27%20cy%3D%27-26.0%27%20r%3D%271.8%27%2F%3E%3Ccircle%20cx%3D%27-26.0%27%20cy%3D%27-45.0%27%20r%3D%271.8%27%2F%3E%3Ccircle%20cx%3D%27-0.0%27%20cy%3D%27-52.0%27%20r%3D%271.8%27%2F%3E%3Ccircle%20cx%3D%2726.0%27%20cy%3D%27-45.0%27%20r%3D%271.8%27%2F%3E%3Ccircle%20cx%3D%2745.0%27%20cy%3D%27-26.0%27%20r%3D%271.8%27%2F%3E%3Ccircle%20cx%3D%270%27%20cy%3D%270%27%20r%3D%2756%27%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E),url(data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20width%3D%27260%27%20height%3D%27150%27%20viewBox%3D%270%200%20260%20150%27%3E%3Cg%20fill%3D%27none%27%20stroke%3D%27%23b5342b%27%20stroke-opacity%3D%27.22%27%20stroke-width%3D%271.25%27%20stroke-linecap%3D%27round%27%3E%3Cg%20transform%3D%27translate%2828%2C26%29%20scale%281%29%27%3E%3Cpath%20d%3D%27M2%2026%20c%20-4%20-6%20-1%20-13%206%20-14%20c%201%20-8%209%20-13%2017%20-11%20c%205%20-7%2016%20-6%2020%202%20c%208%200%2013%206%2013%2012%20c%200%206%20-5%2011%20-11%2011%20z%27%2F%3E%3Cpath%20d%3D%27M15%2026%20c%200%20-5.5%204.5%20-10%2010%20-10%20c%204.5%200%208%203.5%208%207%20c%200%202.5%20-2%204.5%20-4.5%204.5%27%2F%3E%3Cpath%20d%3D%27M40%2026%20c%200%20-4%203%20-7.5%207.5%20-7.5%20c%203%200%205.5%202%205.5%204.5%27%2F%3E%3C%2Fg%3E%3Cg%20transform%3D%27translate%28148%2C92%29%20scale%28.8%29%27%3E%3Cpath%20d%3D%27M2%2026%20c%20-4%20-6%20-1%20-13%206%20-14%20c%201%20-8%209%20-13%2017%20-11%20c%205%20-7%2016%20-6%2020%202%20c%208%200%2013%206%2013%2012%20c%200%206%20-5%2011%20-11%2011%20z%27%2F%3E%3Cpath%20d%3D%27M15%2026%20c%200%20-5.5%204.5%20-10%2010%20-10%20c%204.5%200%208%203.5%208%207%20c%200%202.5%20-2%204.5%20-4.5%204.5%27%2F%3E%3Cpath%20d%3D%27M40%2026%20c%200%20-4%203%20-7.5%207.5%20-7.5%20c%203%200%205.5%202%205.5%204.5%27%2F%3E%3C%2Fg%3E%3Cg%20transform%3D%27translate%28-14%2C104%29%20scale%28.62%29%27%3E%3Cpath%20d%3D%27M2%2026%20c%20-4%20-6%20-1%20-13%206%20-14%20c%201%20-8%209%20-13%2017%20-11%20c%205%20-7%2016%20-6%2020%202%20c%208%200%2013%206%2013%2012%20c%200%206%20-5%2011%20-11%2011%20z%27%2F%3E%3Cpath%20d%3D%27M15%2026%20c%200%20-5.5%204.5%20-10%2010%20-10%20c%204.5%200%208%203.5%208%207%20c%200%202.5%20-2%204.5%20-4.5%204.5%27%2F%3E%3Cpath%20d%3D%27M40%2026%20c%200%20-4%203%20-7.5%207.5%20-7.5%20c%203%200%205.5%202%205.5%204.5%27%2F%3E%3C%2Fg%3E%3C%2Fg%3E%3C%2Fsvg%3E),
+    radial-gradient(90% 58% at 10% 0%, rgba(226,150,138,.34), transparent 64%),
+    radial-gradient(80% 50% at 94% 0%, rgba(120,178,150,.24), transparent 66%),
+    radial-gradient(130% 62% at 50% 100%, rgba(201,162,39,.20), transparent 72%),
+    linear-gradient(180deg,#fffbf4,#f8f0e3 44%,#f0e4d2);
+  background-repeat:repeat,repeat,no-repeat,no-repeat,no-repeat,no-repeat;
+  background-size:200px 200px,260px 150px,100% 900px,100% 760px,100% 900px,100% 100%;
+  background-position:16px 22px,120px 96px,0 0,100% 0,50% 100%,0 0;
+}
+html[data-game="huaxu"] .header{border-bottom:11px solid transparent;
+  border-image:url(data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20width%3D%2722%27%20height%3D%2711%27%20viewBox%3D%270%200%2022%2011%27%3E%3Cg%20fill%3D%27none%27%20stroke%3D%27%23b98d1f%27%20stroke-opacity%3D%27.62%27%20stroke-width%3D%271.15%27%3E%3Cpath%20d%3D%27M0%209.4%20H22%20V3%20H7%20V6.6%20H15%27%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E) 0 0 11 0 repeat;
+  background:linear-gradient(180deg,rgba(255,253,248,.96),rgba(248,238,224,.72));
+  box-shadow:0 6px 18px rgba(94,66,44,.10)}
+html[data-game="huaxu"] .header h1{background:linear-gradient(180deg,#3a2b25,#8d3327 64%,#b5342b);
+  -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;
+  text-shadow:0 0 16px rgba(226,150,138,.5)}
+html[data-game="huaxu"] .header .sub{color:var(--text-mute)}
+html[data-game="huaxu"] .card{background-image:url(data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20width%3D%2730%27%20height%3D%2730%27%20viewBox%3D%270%200%2030%2030%27%3E%3Cg%20fill%3D%27none%27%20stroke%3D%27%23c9a227%27%20stroke-opacity%3D%27.78%27%20stroke-width%3D%271.4%27%20stroke-linecap%3D%27round%27%3E%3Cpath%20d%3D%27M2%2015%20V5.5%20Q2%202%205.5%202%20H15%27%2F%3E%3Cpath%20d%3D%27M6.5%2017%20V9.5%20Q6.5%206.5%209.5%206.5%20H17%27%2F%3E%3C%2Fg%3E%3Ccircle%20cx%3D%2716%27%20cy%3D%2716%27%20r%3D%271.9%27%20fill%3D%27%23b5342b%27%20fill-opacity%3D%27.62%27%2F%3E%3C%2Fsvg%3E),url(data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20width%3D%2730%27%20height%3D%2730%27%20viewBox%3D%270%200%2030%2030%27%3E%3Cg%20transform%3D%27translate%2830%2C0%29%20scale%28-1%2C1%29%27%3E%3Cg%20fill%3D%27none%27%20stroke%3D%27%23c9a227%27%20stroke-opacity%3D%27.78%27%20stroke-width%3D%271.4%27%20stroke-linecap%3D%27round%27%3E%3Cpath%20d%3D%27M2%2015%20V5.5%20Q2%202%205.5%202%20H15%27%2F%3E%3Cpath%20d%3D%27M6.5%2017%20V9.5%20Q6.5%206.5%209.5%206.5%20H17%27%2F%3E%3C%2Fg%3E%3Ccircle%20cx%3D%2716%27%20cy%3D%2716%27%20r%3D%271.9%27%20fill%3D%27%23b5342b%27%20fill-opacity%3D%27.62%27%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E),url(data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20width%3D%2730%27%20height%3D%2730%27%20viewBox%3D%270%200%2030%2030%27%3E%3Cg%20transform%3D%27translate%280%2C30%29%20scale%281%2C-1%29%27%3E%3Cg%20fill%3D%27none%27%20stroke%3D%27%23c9a227%27%20stroke-opacity%3D%27.78%27%20stroke-width%3D%271.4%27%20stroke-linecap%3D%27round%27%3E%3Cpath%20d%3D%27M2%2015%20V5.5%20Q2%202%205.5%202%20H15%27%2F%3E%3Cpath%20d%3D%27M6.5%2017%20V9.5%20Q6.5%206.5%209.5%206.5%20H17%27%2F%3E%3C%2Fg%3E%3Ccircle%20cx%3D%2716%27%20cy%3D%2716%27%20r%3D%271.9%27%20fill%3D%27%23b5342b%27%20fill-opacity%3D%27.62%27%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E),url(data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20width%3D%2730%27%20height%3D%2730%27%20viewBox%3D%270%200%2030%2030%27%3E%3Cg%20transform%3D%27translate%2830%2C30%29%20scale%28-1%2C-1%29%27%3E%3Cg%20fill%3D%27none%27%20stroke%3D%27%23c9a227%27%20stroke-opacity%3D%27.78%27%20stroke-width%3D%271.4%27%20stroke-linecap%3D%27round%27%3E%3Cpath%20d%3D%27M2%2015%20V5.5%20Q2%202%205.5%202%20H15%27%2F%3E%3Cpath%20d%3D%27M6.5%2017%20V9.5%20Q6.5%206.5%209.5%206.5%20H17%27%2F%3E%3C%2Fg%3E%3Ccircle%20cx%3D%2716%27%20cy%3D%2716%27%20r%3D%271.9%27%20fill%3D%27%23b5342b%27%20fill-opacity%3D%27.62%27%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E),
+    linear-gradient(180deg,rgba(255,253,248,.96),rgba(250,243,232,.94));
+  background-repeat:no-repeat,no-repeat,no-repeat,no-repeat,no-repeat;
+  background-position:left 7px top 7px,right 7px top 7px,left 7px bottom 7px,right 7px bottom 7px,0 0;
+  background-size:28px 28px,28px 28px,28px 28px,28px 28px,auto;
+  border:1px solid var(--line);border-radius:12px;
+  box-shadow:0 8px 22px rgba(94,66,44,.14),inset 0 1px 0 rgba(255,255,255,.9),inset 0 0 22px rgba(226,180,120,.20);
+  -webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px)}
+html[data-game="huaxu"] .card h2{color:#3a2b25;padding-left:11px;position:relative}
+html[data-game="huaxu"] .card h2::before{content:'';position:absolute;left:0;top:.18em;bottom:.18em;width:2px;border-radius:2px;
+  background:linear-gradient(180deg,var(--hx),var(--hx-gold));box-shadow:0 0 8px rgba(181,52,43,.38)}
+html[data-game="huaxu"] .btn{background:linear-gradient(180deg,#fffdf9,#f1e6d4);border:1px solid var(--line);
+  color:#43322b;border-radius:10px;box-shadow:0 2px 6px rgba(94,66,44,.12)}
+html[data-game="huaxu"] .btn.primary{background:linear-gradient(180deg,#c8483c,#a52c24);border:1px solid rgba(201,162,39,.65);
+  color:#fffaf3;font-weight:700;box-shadow:0 6px 16px rgba(181,52,43,.30),inset 0 1px 0 rgba(255,255,255,.32)}
+html[data-game="huaxu"] .btn.danger{color:#a52c24;border-color:var(--danger-line);background:linear-gradient(180deg,#fffdf9,#fbeceb)}
+html[data-game="huaxu"] .btn.ghost{background:transparent;border-color:var(--line)}
+html[data-game="huaxu"] .chip{background:rgba(255,253,248,.8);border-color:var(--line);color:var(--text-dim)}
+html[data-game="huaxu"] .seg{background:#f4ead9;border:1px solid var(--line);border-radius:10px}
+html[data-game="huaxu"] .seg button{color:var(--text-dim);border-radius:8px}
+html[data-game="huaxu"] .seg button.on{background:#fffdf9;color:#8d3327;outline:1px solid var(--line-strong);box-shadow:0 2px 8px rgba(94,66,44,.16)}
+html[data-game="huaxu"] .nav{background:var(--nav-bg);border-top:1px solid var(--line);
+  box-shadow:0 -6px 22px rgba(94,66,44,.14);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px)}
+html[data-game="huaxu"] .nav button{color:var(--text-mute)}
+html[data-game="huaxu"] .nav button.active{color:var(--hx);text-shadow:0 0 10px rgba(181,52,43,.4)}
+html[data-game="huaxu"] .nav button.active svg{filter:drop-shadow(0 0 6px rgba(181,52,43,.45))}
+html[data-game="huaxu"] .now-card{background-image:url(data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20width%3D%2730%27%20height%3D%2730%27%20viewBox%3D%270%200%2030%2030%27%3E%3Cg%20fill%3D%27none%27%20stroke%3D%27%23c9a227%27%20stroke-opacity%3D%27.78%27%20stroke-width%3D%271.4%27%20stroke-linecap%3D%27round%27%3E%3Cpath%20d%3D%27M2%2015%20V5.5%20Q2%202%205.5%202%20H15%27%2F%3E%3Cpath%20d%3D%27M6.5%2017%20V9.5%20Q6.5%206.5%209.5%206.5%20H17%27%2F%3E%3C%2Fg%3E%3Ccircle%20cx%3D%2716%27%20cy%3D%2716%27%20r%3D%271.9%27%20fill%3D%27%23b5342b%27%20fill-opacity%3D%27.62%27%2F%3E%3C%2Fsvg%3E),url(data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20width%3D%2730%27%20height%3D%2730%27%20viewBox%3D%270%200%2030%2030%27%3E%3Cg%20transform%3D%27translate%2830%2C0%29%20scale%28-1%2C1%29%27%3E%3Cg%20fill%3D%27none%27%20stroke%3D%27%23c9a227%27%20stroke-opacity%3D%27.78%27%20stroke-width%3D%271.4%27%20stroke-linecap%3D%27round%27%3E%3Cpath%20d%3D%27M2%2015%20V5.5%20Q2%202%205.5%202%20H15%27%2F%3E%3Cpath%20d%3D%27M6.5%2017%20V9.5%20Q6.5%206.5%209.5%206.5%20H17%27%2F%3E%3C%2Fg%3E%3Ccircle%20cx%3D%2716%27%20cy%3D%2716%27%20r%3D%271.9%27%20fill%3D%27%23b5342b%27%20fill-opacity%3D%27.62%27%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E),url(data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20width%3D%2730%27%20height%3D%2730%27%20viewBox%3D%270%200%2030%2030%27%3E%3Cg%20transform%3D%27translate%280%2C30%29%20scale%281%2C-1%29%27%3E%3Cg%20fill%3D%27none%27%20stroke%3D%27%23c9a227%27%20stroke-opacity%3D%27.78%27%20stroke-width%3D%271.4%27%20stroke-linecap%3D%27round%27%3E%3Cpath%20d%3D%27M2%2015%20V5.5%20Q2%202%205.5%202%20H15%27%2F%3E%3Cpath%20d%3D%27M6.5%2017%20V9.5%20Q6.5%206.5%209.5%206.5%20H17%27%2F%3E%3C%2Fg%3E%3Ccircle%20cx%3D%2716%27%20cy%3D%2716%27%20r%3D%271.9%27%20fill%3D%27%23b5342b%27%20fill-opacity%3D%27.62%27%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E),url(data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20width%3D%2730%27%20height%3D%2730%27%20viewBox%3D%270%200%2030%2030%27%3E%3Cg%20transform%3D%27translate%2830%2C30%29%20scale%28-1%2C-1%29%27%3E%3Cg%20fill%3D%27none%27%20stroke%3D%27%23c9a227%27%20stroke-opacity%3D%27.78%27%20stroke-width%3D%271.4%27%20stroke-linecap%3D%27round%27%3E%3Cpath%20d%3D%27M2%2015%20V5.5%20Q2%202%205.5%202%20H15%27%2F%3E%3Cpath%20d%3D%27M6.5%2017%20V9.5%20Q6.5%206.5%209.5%206.5%20H17%27%2F%3E%3C%2Fg%3E%3Ccircle%20cx%3D%2716%27%20cy%3D%2716%27%20r%3D%271.9%27%20fill%3D%27%23b5342b%27%20fill-opacity%3D%27.62%27%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E),
+    linear-gradient(160deg,rgba(255,253,248,.97),rgba(247,238,225,.95));
+  background-repeat:no-repeat,no-repeat,no-repeat,no-repeat,no-repeat;
+  background-position:left 9px top 9px,right 9px top 9px,left 9px bottom 9px,right 9px bottom 9px,0 0;
+  background-size:30px 30px,30px 30px,30px 30px,30px 30px,auto;
+  border:1px solid rgba(201,162,39,.6);border-radius:12px;
+  box-shadow:0 14px 34px rgba(94,66,44,.18),inset 0 0 0 1px rgba(255,255,255,.85),inset 0 0 30px rgba(226,180,120,.28)}
+html[data-game="huaxu"] .now-label{color:var(--text-mute)}
+html[data-game="huaxu"] .now-name{color:#2b2320}
+html[data-game="huaxu"] .now-time{font-family:var(--gnum);color:#3a2b25;letter-spacing:.02em}
+html[data-game="huaxu"] .now-sub{color:var(--text-dim)}
+html[data-game="huaxu"] .stat{background-image:url(data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20width%3D%2730%27%20height%3D%2730%27%20viewBox%3D%270%200%2030%2030%27%3E%3Cg%20fill%3D%27none%27%20stroke%3D%27%23c9a227%27%20stroke-opacity%3D%27.78%27%20stroke-width%3D%271.4%27%20stroke-linecap%3D%27round%27%3E%3Cpath%20d%3D%27M2%2015%20V5.5%20Q2%202%205.5%202%20H15%27%2F%3E%3Cpath%20d%3D%27M6.5%2017%20V9.5%20Q6.5%206.5%209.5%206.5%20H17%27%2F%3E%3C%2Fg%3E%3Ccircle%20cx%3D%2716%27%20cy%3D%2716%27%20r%3D%271.9%27%20fill%3D%27%23b5342b%27%20fill-opacity%3D%27.62%27%2F%3E%3C%2Fsvg%3E),url(data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20width%3D%2730%27%20height%3D%2730%27%20viewBox%3D%270%200%2030%2030%27%3E%3Cg%20transform%3D%27translate%2830%2C0%29%20scale%28-1%2C1%29%27%3E%3Cg%20fill%3D%27none%27%20stroke%3D%27%23c9a227%27%20stroke-opacity%3D%27.78%27%20stroke-width%3D%271.4%27%20stroke-linecap%3D%27round%27%3E%3Cpath%20d%3D%27M2%2015%20V5.5%20Q2%202%205.5%202%20H15%27%2F%3E%3Cpath%20d%3D%27M6.5%2017%20V9.5%20Q6.5%206.5%209.5%206.5%20H17%27%2F%3E%3C%2Fg%3E%3Ccircle%20cx%3D%2716%27%20cy%3D%2716%27%20r%3D%271.9%27%20fill%3D%27%23b5342b%27%20fill-opacity%3D%27.62%27%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E),url(data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20width%3D%2730%27%20height%3D%2730%27%20viewBox%3D%270%200%2030%2030%27%3E%3Cg%20transform%3D%27translate%280%2C30%29%20scale%281%2C-1%29%27%3E%3Cg%20fill%3D%27none%27%20stroke%3D%27%23c9a227%27%20stroke-opacity%3D%27.78%27%20stroke-width%3D%271.4%27%20stroke-linecap%3D%27round%27%3E%3Cpath%20d%3D%27M2%2015%20V5.5%20Q2%202%205.5%202%20H15%27%2F%3E%3Cpath%20d%3D%27M6.5%2017%20V9.5%20Q6.5%206.5%209.5%206.5%20H17%27%2F%3E%3C%2Fg%3E%3Ccircle%20cx%3D%2716%27%20cy%3D%2716%27%20r%3D%271.9%27%20fill%3D%27%23b5342b%27%20fill-opacity%3D%27.62%27%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E),url(data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20width%3D%2730%27%20height%3D%2730%27%20viewBox%3D%270%200%2030%2030%27%3E%3Cg%20transform%3D%27translate%2830%2C30%29%20scale%28-1%2C-1%29%27%3E%3Cg%20fill%3D%27none%27%20stroke%3D%27%23c9a227%27%20stroke-opacity%3D%27.78%27%20stroke-width%3D%271.4%27%20stroke-linecap%3D%27round%27%3E%3Cpath%20d%3D%27M2%2015%20V5.5%20Q2%202%205.5%202%20H15%27%2F%3E%3Cpath%20d%3D%27M6.5%2017%20V9.5%20Q6.5%206.5%209.5%206.5%20H17%27%2F%3E%3C%2Fg%3E%3Ccircle%20cx%3D%2716%27%20cy%3D%2716%27%20r%3D%271.9%27%20fill%3D%27%23b5342b%27%20fill-opacity%3D%27.62%27%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E),
+    linear-gradient(180deg,rgba(255,253,248,.96),rgba(249,241,229,.95));
+  background-repeat:no-repeat,no-repeat,no-repeat,no-repeat,no-repeat;
+  background-position:left 6px top 6px,right 6px top 6px,left 6px bottom 6px,right 6px bottom 6px,0 0;
+  background-size:22px 22px,22px 22px,22px 22px,22px 22px,auto;
+  border:1px solid var(--line);border-top:2px solid rgba(201,162,39,.7);border-radius:10px;
+  box-shadow:0 6px 16px rgba(94,66,44,.12)}
+html[data-game="huaxu"] .stat .label{color:var(--text-mute)}
+html[data-game="huaxu"] .stat .value{color:#2b2320;font-family:var(--gnum)}
+html[data-game="huaxu"] .stat .sub{color:var(--text-dim)}
+html[data-game="huaxu"] .pill{border-color:var(--line);background:rgba(255,253,248,.78)}
+html[data-game="huaxu"] .hint{color:var(--text-mute)}
+html[data-game="huaxu"] .group-tabs button{color:var(--text-dim)}
+html[data-game="huaxu"] .sync-badge{color:var(--text-dim)}
+html[data-game="huaxu"] input,html[data-game="huaxu"] select,html[data-game="huaxu"] textarea{
+  background:rgba(255,253,248,.94);border:1px solid var(--line);border-radius:10px}
+</style>
 </body>
 </html>
