@@ -10,7 +10,7 @@
 <link rel="manifest" href="./manifest.webmanifest" />
 <link rel="apple-touch-icon" href="./apple-touch-icon.png" />
 <link rel="icon" type="image/png" sizes="64x64" href="./favicon-64.png" />
-<script>(function(){try{var s=(JSON.parse(localStorage.getItem("studytime.v1")||"{}").settings)||{};var t=s.theme||"dark";if(t==="grimoire"){t="dark";}var g=s.game||(s.theme==="grimoire"?"game":"none");if(g!=="none"&&g!=="game"){g="none";}document.documentElement.dataset.theme=t;document.documentElement.dataset.game=g;if(t==="light")document.querySelector("meta[name=theme-color]").content="#f4f6fb";}catch(e){}})();</script>
+<script>(function(){try{var s=(JSON.parse(localStorage.getItem("studytime.v1")||"{}").settings)||{};var d=s.design||((s.game==="game"||s.game==="ice")?s.game:((s.theme==="light"||s.theme==="auto")?s.theme:"dark"));var t=(d==="game")?"dark":(d==="ice")?"light":(d==="auto")?"auto":(d==="light"?"light":"dark");var g=(d==="game")?"game":(d==="ice")?"ice":"none";if(t==="auto")t=(window.matchMedia&&matchMedia("(prefers-color-scheme: light)").matches)?"light":"dark";document.documentElement.dataset.theme=t;document.documentElement.dataset.game=g;var m=document.querySelector("meta[name=theme-color]");if(m)m.content=(g==="ice")?"#eef4fb":(g==="game")?"#0e0c12":(t==="light")?"#f4f6fb":"#0b0d12";}catch(e){}})();</script>
 <title>StudyTime — 24時間・勉強管理</title>
 <style>
 :root{
@@ -450,103 +450,92 @@ html.fo-locked,html.fo-locked body{overscroll-behavior:none}
 .fo-ps{font-size:13px;opacity:.85;line-height:1.6}
 </style>
 <style id="gm-theme">
-/* ============ ゲームカラースキン v5 — レイアウトは元のまま、配色だけゲーム風 ============ */
-#theme-seg{grid-template-columns:repeat(3,1fr)}
-#game-seg{grid-template-columns:repeat(2,1fr)}
+/* ============ デザイン編集ページ ============ */
+.ds-swatch{width:46px;height:30px;border-radius:9px;border:1px solid var(--line);flex:0 0 auto}
+#design-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.dcard{position:relative;display:block;text-align:left;padding:0;border:1px solid var(--line);border-radius:16px;
+  background:var(--bg-elev);overflow:hidden;cursor:pointer;color:var(--text);box-shadow:var(--shadow)}
+.dcard .pv{position:relative;height:78px;border-bottom:1px solid var(--line)}
+.dcard .nm{padding:10px 12px 11px;font-size:13.5px;font-weight:700;letter-spacing:.02em}
+.dcard.on{border-color:var(--accent);box-shadow:0 0 0 2px var(--accent),var(--shadow)}
+.dcard.on .nm::after{content:'✓';float:right;color:var(--accent);font-weight:800}
+@media (min-width:560px){#design-grid{grid-template-columns:repeat(3,1fr)}}
+
+/* ============ ゲーム配色：デュエットナイトアビス ============ */
 html[data-game="game"]{
-  --bg:#0d0e11;
-  --bg-elev:#1a1d22;
-  --bg-elev-2:#22262b;
-  --line:rgba(255,255,255,.085);
-  --line-strong:rgba(255,255,255,.18);
-  --text:#ffffff;
-  --text-dim:#cdd2d8;
-  --text-mute:#8b9199;
-  --accent:#e6b450;
-  --accent-2:#8a6a2f;
-  --on-accent:#14161a;
-  --ok:#7fbf6a;
-  --warn:#e6b450;
-  --bad:#ee3f3f;
-  --nav-bg:rgba(16,18,21,.93);
-  --accent-soft:rgba(230,180,80,.10);
-  --advice-bg:linear-gradient(135deg,rgba(230,180,80,.07),rgba(238,63,63,.06));
-  --advice-line:rgba(255,255,255,.12);
-  --danger-line:#5b2222;
-  --shadow:0 10px 26px rgba(0,0,0,.52);
-  --overlay:rgba(6,7,9,.76);
-  --unrec:#262b31;
-  --status-bg:#0d0e11;
+  --bg:#0b0910;
+  --bg-elev:#1c1825;
+  --bg-elev-2:#282232;
+  --line:rgba(226,208,180,.16);
+  --line-strong:rgba(226,208,180,.32);
+  --text:#f8f5f5;
+  --text-dim:#cdc6cf;
+  --text-mute:#8f8a94;
+  --accent:#c9a15f;
+  --accent-2:#7d6234;
+  --on-accent:#16131a;
+  --ok:#7fb8a0;
+  --warn:#d9b06a;
+  --bad:#d9534f;
+  --nav-bg:rgba(14,12,18,.94);
+  --accent-soft:rgba(201,161,95,.12);
+  --advice-bg:linear-gradient(135deg,rgba(201,161,95,.10),rgba(88,160,188,.08));
+  --advice-line:rgba(226,208,180,.20);
+  --danger-line:#5a2a2c;
+  --shadow:0 12px 30px rgba(0,0,0,.55);
+  --overlay:rgba(8,7,11,.78);
+  --unrec:#2a2531;
+  --status-bg:#0b0910;
   --radius:12px;
   color-scheme:dark;
-  --gold:#e6b450; --gold-hi:#f6dda6; --gold-lo:#8a6a2f;
-  --gl:rgba(230,180,80,.30); --gl-hi:rgba(246,221,166,.44);
+  --gold:#c9a15f;--gold-hi:#f0e0c0;--gold-lo:#7d6234;
+  --teal:#58a0bc;--teal-hi:#a2d8e3;
+  --gl:rgba(201,161,95,.36);--gl-hi:rgba(240,224,192,.46);
   --gnum:"SF Mono",ui-monospace,Menlo,monospace;
 }
 html[data-game="game"] body{
   background:
-    radial-gradient(90% 42% at 22% -8%, rgba(230,180,80,.055), transparent 62%),
-    radial-gradient(70% 40% at 92% 4%, rgba(120,150,200,.05), transparent 66%),
-    linear-gradient(180deg,#15181d,#0d0e11 46%,#08090b);
+    radial-gradient(86% 40% at 16% -6%, rgba(88,160,188,.13), transparent 62%),
+    radial-gradient(72% 38% at 96% 0%, rgba(139,125,137,.14), transparent 66%),
+    radial-gradient(120% 58% at 50% 106%, rgba(201,161,95,.08), transparent 72%),
+    linear-gradient(180deg,#1a1622,#100e15 46%,#08070c);
   background-attachment:fixed;
 }
-html[data-game="game"] .header{border-bottom:1px solid var(--line)}
-html[data-game="game"] .header h1{
-  color:#fff;
-  background:linear-gradient(180deg,#ffffff,#d9dde2 70%,#aeb4bb);
-  -webkit-background-clip:text; background-clip:text;
-  -webkit-text-fill-color:transparent;
-}
+html[data-game="game"] .header{border-bottom:1px solid rgba(226,208,180,.18)}
+html[data-game="game"] .header h1{background:linear-gradient(180deg,#f6efe2,#e2cfae 62%,#b99a63);
+  -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
 html[data-game="game"] .header .sub{color:var(--text-mute)}
-html[data-game="game"] .card{
-  border:1px solid var(--line); border-radius:var(--radius);
-  background:linear-gradient(180deg,rgba(30,33,38,.92),rgba(20,23,27,.94));
-  box-shadow:0 10px 26px rgba(0,0,0,.45);
-}
-html[data-game="game"] .card h2{color:#e6e8ea}
-html[data-game="game"] .btn{
-  border:1px solid rgba(255,255,255,.15); border-radius:10px;
-  background:linear-gradient(180deg,rgba(48,53,60,.9),rgba(28,31,36,.92));
-  color:#eef0f2; box-shadow:inset 0 1px 0 rgba(255,255,255,.06);
-}
-html[data-game="game"] .btn.primary{
-  background:linear-gradient(180deg,rgba(58,63,70,.96),rgba(28,31,36,.96));
-  border:1px solid var(--gl); color:var(--gold-hi); font-weight:700;
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.08), 0 6px 16px rgba(0,0,0,.45);
-}
-html[data-game="game"] .btn.danger{color:#ff9d9d;border-color:var(--danger-line)}
+html[data-game="game"] .card{background:linear-gradient(180deg,rgba(38,33,48,.90),rgba(20,17,26,.94));
+  border:1px solid var(--line);border-radius:12px;
+  box-shadow:0 12px 30px rgba(0,0,0,.5),inset 0 1px 0 rgba(240,224,192,.06);
+  -webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px)}
+html[data-game="game"] .card h2{color:#efe7db;padding-left:11px;position:relative}
+html[data-game="game"] .card h2::before{content:'';position:absolute;left:0;top:.18em;bottom:.18em;width:2px;border-radius:2px;
+  background:linear-gradient(180deg,var(--gold-hi),var(--gold),rgba(201,161,95,.18));box-shadow:0 0 10px rgba(201,161,95,.5)}
+html[data-game="game"] .btn{background:linear-gradient(180deg,rgba(52,46,62,.92),rgba(28,24,36,.94));
+  border:1px solid var(--line);color:#eee9f0;border-radius:10px;box-shadow:inset 0 1px 0 rgba(240,224,192,.07)}
+html[data-game="game"] .btn.primary{background:linear-gradient(180deg,rgba(64,56,74,.96),rgba(30,26,38,.96));
+  border:1px solid var(--gl);color:var(--gold-hi);font-weight:700;
+  box-shadow:inset 0 1px 0 rgba(240,224,192,.12),0 8px 20px rgba(0,0,0,.5)}
+html[data-game="game"] .btn.danger{color:#f0a8a6;border-color:var(--danger-line)}
 html[data-game="game"] .btn.ghost{background:transparent;border-color:var(--line)}
 html[data-game="game"] .chip{background:rgba(255,255,255,.05);border-color:var(--line);color:var(--text-dim)}
-html[data-game="game"] .seg{
-  background:linear-gradient(180deg,#121519,#1a1e22);
-  border:1px solid var(--line); border-radius:10px;
-}
+html[data-game="game"] .seg{background:linear-gradient(180deg,#141119,#1e1a25);border:1px solid var(--line);border-radius:10px}
 html[data-game="game"] .seg button{color:var(--text-dim);border-radius:8px}
-html[data-game="game"] .seg button.on{
-  background:linear-gradient(180deg,rgba(255,255,255,.14),rgba(255,255,255,.04));
-  color:#fff; outline:1px solid rgba(246,221,166,.30); box-shadow:none;
-}
-html[data-game="game"] .nav{
-  background:var(--nav-bg); border-top:1px solid var(--line);
-}
+html[data-game="game"] .seg button.on{background:linear-gradient(180deg,rgba(240,224,192,.16),rgba(201,161,95,.06));
+  color:#f7f0e4;outline:1px solid rgba(240,224,192,.32);box-shadow:none}
+html[data-game="game"] .nav{background:var(--nav-bg);border-top:1px solid rgba(226,208,180,.16)}
 html[data-game="game"] .nav button{color:var(--text-mute)}
-html[data-game="game"] .nav button.active{
-  color:var(--gold-hi);
-  text-shadow:0 0 12px rgba(230,180,80,.45);
-}
-html[data-game="game"] .nav button.active svg{filter:drop-shadow(0 0 6px rgba(230,180,80,.45))}
-html[data-game="game"] .now-card{
-  border:1px solid var(--line); border-radius:var(--radius);
-  background:linear-gradient(180deg,rgba(30,33,38,.92),rgba(18,21,24,.94));
-}
+html[data-game="game"] .nav button.active{color:var(--gold-hi);text-shadow:0 0 12px rgba(201,161,95,.5)}
+html[data-game="game"] .nav button.active svg{filter:drop-shadow(0 0 6px rgba(201,161,95,.5))}
+html[data-game="game"] .now-card{background:linear-gradient(160deg,rgba(40,34,50,.94),rgba(19,16,25,.96));
+  border:1px solid var(--line);border-radius:12px;box-shadow:0 12px 30px rgba(0,0,0,.5)}
 html[data-game="game"] .now-label{color:var(--text-mute)}
 html[data-game="game"] .now-name{color:#fff}
-html[data-game="game"] .now-time{font-family:var(--gnum);color:#f4f6f8;letter-spacing:.02em}
+html[data-game="game"] .now-time{font-family:var(--gnum);color:#fbf7f1;letter-spacing:.02em}
 html[data-game="game"] .now-sub{color:var(--text-dim)}
-html[data-game="game"] .stat{
-  border:1px solid var(--line); border-radius:10px;
-  background:linear-gradient(180deg,rgba(32,35,40,.88),rgba(19,21,25,.92));
-}
+html[data-game="game"] .stat{background:linear-gradient(180deg,rgba(38,33,48,.90),rgba(19,16,25,.94));
+  border:1px solid var(--line);border-radius:12px}
 html[data-game="game"] .stat .label{color:var(--text-mute)}
 html[data-game="game"] .stat .value{color:#fff;font-family:var(--gnum)}
 html[data-game="game"] .stat .sub{color:var(--text-dim)}
@@ -554,6 +543,89 @@ html[data-game="game"] .pill{border-color:var(--line)}
 html[data-game="game"] .hint{color:var(--text-mute)}
 html[data-game="game"] .group-tabs button{color:var(--text-dim)}
 html[data-game="game"] .sync-badge{color:var(--text-dim)}
+html[data-game="game"] input,html[data-game="game"] select,html[data-game="game"] textarea{
+  background:rgba(12,10,16,.7);border:1px solid var(--line);border-radius:10px}
+
+/* ============ ゲーム配色：アイスレイク城 ============ */
+html[data-game="ice"]{
+  --bg:#eef4fb;
+  --bg-elev:rgba(255,255,255,.88);
+  --bg-elev-2:#e8f0f9;
+  --line:rgba(96,136,178,.28);
+  --line-strong:rgba(96,136,178,.46);
+  --text:#152a3e;
+  --text-dim:#3f5f7d;
+  --text-mute:#7891aa;
+  --accent:#3f7fb8;
+  --accent-2:#8fbde2;
+  --on-accent:#ffffff;
+  --ok:#3f9e7a;
+  --warn:#c98a2a;
+  --bad:#cf4a4a;
+  --nav-bg:rgba(255,255,255,.94);
+  --accent-soft:rgba(63,127,184,.10);
+  --advice-bg:linear-gradient(135deg,rgba(63,127,184,.12),rgba(255,255,255,.6));
+  --advice-line:rgba(96,136,178,.26);
+  --danger-line:#e7bcbc;
+  --shadow:0 10px 26px rgba(52,92,132,.16);
+  --overlay:rgba(18,40,62,.42);
+  --unrec:#cfdcea;
+  --status-bg:#16283a;
+  --radius:16px;
+  color-scheme:light;
+  --ice:#5aa9e6;--ice-hi:#c8e4f9;--ice-lo:#2c6a9e;
+  --gnum:"SF Mono",ui-monospace,Menlo,monospace;
+}
+html[data-game="ice"] body{
+  background:
+    radial-gradient(92% 44% at 18% -8%, rgba(146,203,255,.50), transparent 62%),
+    radial-gradient(78% 40% at 94% -2%, rgba(255,255,255,.9), transparent 60%),
+    linear-gradient(180deg,#f9fcff,#e7f0fa 44%,#d6e5f4);
+  background-attachment:fixed;
+}
+html[data-game="ice"] .header{border-bottom:1px solid var(--line)}
+html[data-game="ice"] .header h1{background:linear-gradient(180deg,#16334f,#3f7fb8 70%,#7db3dd);
+  -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+html[data-game="ice"] .header .sub{color:var(--text-mute)}
+html[data-game="ice"] .card{background:linear-gradient(180deg,rgba(255,255,255,.92),rgba(240,247,254,.90));
+  border:1px solid var(--line);border-radius:16px;
+  box-shadow:0 10px 26px rgba(52,92,132,.14),inset 0 1px 0 rgba(255,255,255,.9);
+  -webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px)}
+html[data-game="ice"] .card h2{color:#2c4f70;padding-left:11px;position:relative}
+html[data-game="ice"] .card h2::before{content:'';position:absolute;left:0;top:.18em;bottom:.18em;width:2px;border-radius:2px;
+  background:linear-gradient(180deg,var(--ice-hi),var(--ice),rgba(90,169,230,.2));box-shadow:0 0 9px rgba(90,169,230,.55)}
+html[data-game="ice"] .btn{background:linear-gradient(180deg,#ffffff,#eaf2fb);border:1px solid var(--line);
+  color:#22405c;border-radius:12px;box-shadow:0 2px 6px rgba(52,92,132,.10)}
+html[data-game="ice"] .btn.primary{background:linear-gradient(180deg,#6cb0e8,#3f7fb8);border:1px solid rgba(44,106,158,.5);
+  color:#fff;font-weight:700;box-shadow:0 6px 16px rgba(63,127,184,.32),inset 0 1px 0 rgba(255,255,255,.45)}
+html[data-game="ice"] .btn.danger{color:#b93b3b;border-color:var(--danger-line);background:linear-gradient(180deg,#fff,#fdeeee)}
+html[data-game="ice"] .btn.ghost{background:transparent;border-color:var(--line)}
+html[data-game="ice"] .chip{background:rgba(255,255,255,.7);border-color:var(--line);color:var(--text-dim)}
+html[data-game="ice"] .seg{background:#e8f0f9;border:1px solid var(--line);border-radius:12px}
+html[data-game="ice"] .seg button{color:var(--text-dim);border-radius:9px}
+html[data-game="ice"] .seg button.on{background:#fff;color:#1d3a56;outline:1px solid var(--line-strong);box-shadow:0 2px 8px rgba(52,92,132,.14)}
+html[data-game="ice"] .nav{background:var(--nav-bg);border-top:1px solid var(--line);
+  box-shadow:0 -8px 24px rgba(52,92,132,.12);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px)}
+html[data-game="ice"] .nav button{color:var(--text-mute)}
+html[data-game="ice"] .nav button.active{color:var(--accent);text-shadow:0 0 10px rgba(90,169,230,.55)}
+html[data-game="ice"] .nav button.active svg{filter:drop-shadow(0 0 6px rgba(90,169,230,.6))}
+html[data-game="ice"] .now-card{background:linear-gradient(160deg,rgba(255,255,255,.94),rgba(233,242,251,.92));
+  border:1px solid var(--line);border-radius:16px;box-shadow:0 12px 30px rgba(52,92,132,.16)}
+html[data-game="ice"] .now-label{color:var(--text-mute)}
+html[data-game="ice"] .now-name{color:#12293d}
+html[data-game="ice"] .now-time{font-family:var(--gnum);color:#0f2a41;letter-spacing:.02em}
+html[data-game="ice"] .now-sub{color:var(--text-dim)}
+html[data-game="ice"] .stat{background:linear-gradient(180deg,rgba(255,255,255,.92),rgba(234,243,251,.92));
+  border:1px solid var(--line);border-radius:14px;box-shadow:0 6px 18px rgba(52,92,132,.10)}
+html[data-game="ice"] .stat .label{color:var(--text-mute)}
+html[data-game="ice"] .stat .value{color:#12314c;font-family:var(--gnum)}
+html[data-game="ice"] .stat .sub{color:var(--text-dim)}
+html[data-game="ice"] .pill{border-color:var(--line);background:rgba(255,255,255,.75)}
+html[data-game="ice"] .hint{color:var(--text-mute)}
+html[data-game="ice"] .group-tabs button{color:var(--text-dim)}
+html[data-game="ice"] .sync-badge{color:var(--text-dim)}
+html[data-game="ice"] input,html[data-game="ice"] select,html[data-game="ice"] textarea{
+  background:rgba(255,255,255,.9);border:1px solid var(--line);border-radius:12px}
 
 </style>
 <script id="gm-loader">
@@ -766,22 +838,15 @@ function loadGameFont(){}
       <div><h1>設定</h1><div class="sub">活動・バックアップ・修正</div></div>
     </div>
 
-    <div class="card">
-      <h2>画面の色</h2>
-      <div class="seg" id="theme-seg">
-        <button data-t="light" onclick="setTheme('light')">ライト</button>
-        <button data-t="dark" onclick="setTheme('dark')">ダーク</button>
-        <button data-t="auto" onclick="setTheme('auto')">自動</button>
+    <div class="card" id="design-card" style="cursor:pointer" onclick="switchView('design')">
+      <div class="row">
+        <div style="flex:1">
+          <h2 style="margin:0">デザイン</h2>
+          <div id="design-current" style="font-size:14px;font-weight:700;margin-top:5px"></div>
+        </div>
+        <div id="design-swatch" class="ds-swatch"></div>
+        <div style="color:var(--text-mute);font-size:22px;line-height:1">&#8250;</div>
       </div>
-      <div class="hint" style="margin-top:8px">自動＝iPhone/iPadの外観設定（ライト/ダーク）に合わせます</div>
-
-      <h2 style="margin-top:20px">ゲーム形式</h2>
-      <div class="seg" id="game-seg">
-        <button data-g="none" onclick="setGame('none')">なし</button>
-        <button data-g="game" onclick="setGame('game')">ゲーム</button>
-      </div>
-      <div class="hint" style="margin-top:8px">ゲーム＝黒と金のゲーム画面ふう。画面の色（ライト/ダーク）とは別の設定です。今後、形式を増やせます。</div>
-      
     </div>
 
     <div class="card">
@@ -809,7 +874,7 @@ function loadGameFont(){}
         <button class="btn primary" onclick="abSync(true)">今すぐ同期</button>
         <button class="btn danger" onclick="abDisconnect()">接続を解除</button>
       </div>
-      <div class="hint">iPhoneとiPadに同じ3項目を設定すると、記録が自動で揃います。アプリを開いたとき・記録を変えた約3秒後・開いている間は15秒ごとに同期します。片方で活動を切り替えると、もう片方にも数秒〜十数秒で反映されます。<br>「進行中」は常に1つだけ。重なった記録は自動で切り詰めるので、二重に記録されません。画面の色は端末ごとの設定です。</div>
+      <div class="hint">iPhoneとiPadに同じ3項目を設定すると、記録が自動で揃います。アプリを開いたとき・記録を変えた約3秒後・開いている間は15秒ごとに同期します。片方で活動を切り替えると、もう片方にも数秒〜十数秒で反映されます。<br>「進行中」は常に1つだけ。重なった記録は自動で切り詰めるので、二重に記録されません。デザインは端末ごとの設定です。</div>
     </div>
 
 
@@ -820,6 +885,17 @@ function loadGameFont(){}
 <button class="btn" style="position:relative;width:100%;margin-top:20px;padding:18px 0 16px;border-radius:13px;border:1px solid #ff2f6b;background:radial-gradient(130% 180% at 50% 0%,#2a0713 0%,#12030a 58%,#080104 100%);color:#ffdbe4;font-size:15px;letter-spacing:.24em;font-weight:700;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;cursor:pointer;overflow:hidden;text-shadow:0 0 10px rgba(255,47,107,.85);box-shadow:0 0 0 1px rgba(255,47,107,.25);animation:neonPulse 2.4s ease-in-out infinite" onclick="location.href='over.html'"><span style="position:absolute;left:0;right:0;top:0;height:26%;pointer-events:none;background:repeating-linear-gradient(112deg,rgba(255,47,107,.10) 0 9px,transparent 9px 18px);animation:neonScan 3.6s linear infinite"></span><span style="display:block;font-size:9.5px;letter-spacing:.34em;color:#ff5c86;margin-bottom:6px;text-shadow:0 0 12px rgba(255,47,107,.9)">RESTRICTED MODE</span>STUDY OVER</button>
 
     <div class="hint" style="text-align:center;margin-top:16px">StudyTime v2.24 · ローカル保存＋GitHub自動バックアップ</div>
+  </div>
+
+  <!-- ================= DESIGN ================= -->
+  <div class="view" id="view-design">
+    <div class="header">
+      <div style="display:flex;align-items:center;gap:10px">
+        <button class="btn ghost sm" onclick="switchView('settings')">&#8249;</button>
+        <h1 style="margin:0">デザイン</h1>
+      </div>
+    </div>
+    <div id="design-grid"></div>
   </div>
 
 </div>
@@ -3329,6 +3405,7 @@ function switchView(name){
   document.querySelectorAll('.nav button').forEach(b=>b.classList.toggle('active', b.dataset.view===name));
   window.scrollTo(0,0);
   renderAll();
+  try{ renderDesignGrid(); }catch(e){}
 }
 
 /* ---------------- Utility ---------------- */
@@ -3343,19 +3420,62 @@ function toast(msg, ms){
 }
 
 /* ---------------- Render all ---------------- */
-function applyTheme(){
-  const pref=(state.settings&&state.settings.theme)||'dark';
-  const t = (pref==='auto') ? ((window.matchMedia&&matchMedia('(prefers-color-scheme: light)').matches)?'light':'dark') : (pref==='light'?'light':'dark');
-  document.documentElement.dataset.theme=t;
-  let g=(state.settings&&state.settings.game)||'none'; if(g!=='none'&&g!=='game') g='none';
-  document.documentElement.dataset.game=g;
-  if(g!=='none'){ try{loadGameFont()}catch(e){} }
-  try{ var m=document.querySelector('meta[name=theme-color]'); if(m) m.content=(g!=='none')?'#0e1013':(t==='light'?'#f4f6fb':'#0b0d12'); }catch(e){}
-  try{ document.querySelectorAll('#theme-seg button').forEach(function(b){b.classList.toggle('on', b.dataset.t===pref)}); }catch(e){}
-  try{ var gs=document.getElementById('game-seg'); if(gs) gs.querySelectorAll('button').forEach(function(b){b.classList.toggle('on', b.dataset.g===g)}); }catch(e){}
+const DESIGNS=[
+  {id:'light', name:'ライト', pv:{bg:'linear-gradient(180deg,#ffffff,#e9eef7)', panel:'#ffffff', line:'#dde2ec', acc:'#1f7ae0', txt:'#141821'}},
+  {id:'dark',  name:'ダーク', pv:{bg:'linear-gradient(180deg,#161a20,#0b0d12)', panel:'#1b1f26', line:'#2c333d', acc:'#7cc4ff', txt:'#e8ecf2'}},
+  {id:'auto',  name:'自動',   pv:{bg:'linear-gradient(115deg,#f6f8fc 0 50%,#0b0d12 50% 100%)', panel:'rgba(150,160,176,.6)', line:'rgba(255,255,255,.4)', acc:'#1f7ae0', txt:'#9aa3b2'}},
+  {id:'game',  name:'ゲーム', pv:{bg:'linear-gradient(180deg,#1d1926,#0b0910)', panel:'#262130', line:'rgba(226,208,180,.34)', acc:'#c9a15f', txt:'#f8f5f5'}},
+  {id:'ice',   name:'アイスレイク城', pv:{bg:'linear-gradient(180deg,#f8fcff,#d9e8f6)', panel:'#ffffff', line:'#a9c6e0', acc:'#3f7fb8', txt:'#16283a'}}
+];
+function designById(d){ for(var i=0;i<DESIGNS.length;i++){ if(DESIGNS[i].id===d) return DESIGNS[i] } return DESIGNS[1] }
+function currentDesign(){
+  const s=state.settings||{};
+  if(s.design) return s.design;
+  if(s.game==='game') return 'game';
+  if(s.game==='ice') return 'ice';
+  return (s.theme==='light'||s.theme==='auto')?s.theme:'dark';
 }
-function setTheme(t){ state.settings=state.settings||{}; state.settings.theme=t; saveState(); applyTheme(); renderAll(); }
-function setGame(g){ state.settings=state.settings||{}; state.settings.game=g; saveState(); applyTheme(); renderAll(); }
+function designSpec(d){
+  if(d==='game') return {theme:'dark', game:'game'};
+  if(d==='ice') return {theme:'light', game:'ice'};
+  if(d==='light') return {theme:'light', game:'none'};
+  if(d==='auto') return {theme:'auto', game:'none'};
+  return {theme:'dark', game:'none'};
+}
+function designPreview(d){
+  const p=designById(d).pv;
+  return '<div class="pv" style="background:'+p.bg+'">'
+    +'<div style="position:absolute;left:9px;right:9px;top:9px;height:24px;border-radius:6px;background:'+p.panel+';border:1px solid '+p.line+'"></div>'
+    +'<div style="position:absolute;left:9px;top:42px;width:30%;height:7px;border-radius:4px;background:'+p.acc+'"></div>'
+    +'<div style="position:absolute;left:45%;right:9px;top:42px;height:7px;border-radius:4px;background:'+p.txt+';opacity:.42"></div>'
+    +'</div>';
+}
+function renderDesignGrid(){
+  const el=document.getElementById('design-grid'); if(!el) return;
+  const cur=currentDesign();
+  el.innerHTML=DESIGNS.map(function(d){
+    return '<button class="dcard'+(d.id===cur?' on':'')+'" onclick="setDesign(\''+d.id+'\')">'+designPreview(d.id)+'<div class="nm">'+d.name+'</div></button>';
+  }).join('');
+}
+function setDesign(d){
+  state.settings=state.settings||{};
+  const sp=designSpec(d);
+  state.settings.design=d; state.settings.theme=sp.theme; state.settings.game=sp.game;
+  saveState(); applyTheme(); renderAll(); renderDesignGrid();
+}
+function applyTheme(){
+  const d=currentDesign(), sp=designSpec(d);
+  const t=(sp.theme==='auto')?((window.matchMedia&&matchMedia('(prefers-color-scheme: light)').matches)?'light':'dark'):sp.theme;
+  document.documentElement.dataset.theme=t;
+  document.documentElement.dataset.game=sp.game;
+  if(sp.game!=='none'){ try{loadGameFont()}catch(e){} }
+  try{ var m=document.querySelector('meta[name=theme-color]'); if(m) m.content=(sp.game==='ice')?'#eef4fb':(sp.game==='game')?'#0e0c12':(t==='light'?'#f4f6fb':'#0b0d12'); }catch(e){}
+  try{ var dc=document.getElementById('design-current'); if(dc) dc.textContent=designById(d).name; }catch(e){}
+  try{ var sw=document.getElementById('design-swatch'); if(sw){ var p=designById(d).pv; sw.style.background=p.bg; sw.style.borderColor=p.line; sw.style.boxShadow='inset 0 0 0 3px '+p.panel; } }catch(e){}
+  try{ renderDesignGrid(); }catch(e){}
+}
+function setTheme(t){ setDesign(t==='light'?'light':(t==='auto'?'auto':'dark')); }
+function setGame(g){ setDesign(g==='game'?'game':'dark'); }
 try{ matchMedia('(prefers-color-scheme: light)').addEventListener('change', ()=>{ if((state.settings||{}).theme==='auto'){ applyTheme(); renderAll(); } }); }catch(e){}
 
 /* ---------------- 超集中モード ---------------- */
