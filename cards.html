@@ -488,7 +488,7 @@ html[data-gm="huaxu"] .shopsign .bd i,html[data-gm="light"] .shopsign .bd i{colo
 <div id="app">
   <div class="topbar">
     <button onclick="location.href='index.html'" aria-label="StudyTimeへ戻る" style="flex:none;width:32px;height:32px;border-radius:10px;border:1px solid rgba(128,128,128,.45);background:rgba(255,255,255,.08);color:inherit;font-size:16px;line-height:1;cursor:pointer">‹</button>
-    <div class="tb-title">学府の絵札<small>STUDY EMPIRE · v3.05</small></div>
+    <div class="tb-title">学府の絵札<small>STUDY EMPIRE · v3.06</small></div>
     <div class="chip coin"><span>◉</span><span class="num" id="tbCoin">0</span></div>
     <div class="chip"><span class="num" id="tbScore">0</span></div>
   </div>
@@ -539,7 +539,7 @@ html[data-gm="huaxu"] .shopsign .bd i,html[data-gm="light"] .shopsign .bd i{colo
 <div id="modal"><div class="mbox" id="modalBox"></div></div>
 <div class="toast" id="toast"></div><script>
 /* =========================================================
-   学府の絵札 — data layer (v3.05 / 原作完全再現)
+   学府の絵札 — data layer (v3.06 / 原作完全再現)
    原作「運命の絵札」の特殊能力体系に準拠
    ========================================================= */
 const KEY='studytime.cards.v2';
@@ -551,6 +551,7 @@ const UP_BASE={1:5,2:9,3:14,4:20,5:27,6:0};
 const EARN_MIN=5;          /* 勉強5分 = 金貨1枚 */
 const SEED_COINS=40;
 const GOLD_MULT=1.6, GOLD_AB=1.5;
+const SAFE_SYS={n:'将',sj:'将',c1:'#5b6472',c2:'#2b313a',ac:'#c9d2e0',kanji:'将'};
 const SYS={
   wa:{n:'和',sj:'国語',c1:'#8f3229',c2:'#3a1310',ac:'#ff9c8a',kanji:'和'},
   yo:{n:'洋',sj:'英語',c1:'#2f5a86',c2:'#0f2033',ac:'#9fc9ef',kanji:'洋'},
@@ -567,7 +568,7 @@ const TOKEN={ id:'tk', n:'駒札', s:'tk', st:1, atk:1, hp:1, fx:[], token:true 
    barrier気盾 / drain奪取(n) / absorb吸収 / unique唯一 / link連携 / soul魂奪(n)
    発動端子: open戦闘開始時 / recruit募集終了時 / enter入場 / atkOn攻撃時
    summon陣没召喚 / dieBuff陣没強化 / sell販売時
-   v3.05追加: linkPlayed / summonWatch / wallLoss / dieSnipe / turnStart / linkStreak
+   v3.06追加: linkPlayed / summonWatch / wallLoss / dieSnipe / turnStart / linkStreak
    leftover / drainWatch / dblAttack / refire / michael / splash / fireDieOnAct
    killWatch / slashLoss / slashGain / summonBuff / dieWatch / copyLeft / fireDieAll
    playedWatch / enterWatch / atkUpWatch / gainWatch / spendWatch / rerollWatch
@@ -1097,7 +1098,7 @@ const NAMES=['鏡山 累','玖珂 宗一','淡海 佐和','冬木 廉','鈴代 �
 function placeDelta(p){ const m={1:28,2:16,3:7,4:2,5:-8,6:-8,7:-16,8:-16}; return m[p]!==undefined?m[p]:0; }
 function placeReward(p){ const m={1:14,2:9,3:6,4:2}; return m[p]||0; }
 /* =========================================================
-   学府の絵札 — engine (v3.05 / 原作完全再現・6v6)
+   学府の絵札 — engine (v3.06 / 原作完全再現・6v6)
    ========================================================= */
 const rnd=n=>Math.floor(Math.random()*n);
 const pick=a=>a[rnd(a.length)];
@@ -1156,6 +1157,7 @@ function load(){
   catch(e){ S=blank(); }
   if(!S.design) S.design='kintan';
   if(!S.golds) S.golds={};
+  if(S.poolVer!=='v305'){ S.tour=null; S.golds={}; S.seen={}; S.poolVer='v305'; }
 }
 function save(){ try{ localStorage.setItem(KEY,JSON.stringify(S)); }catch(e){} }
 function studyInfo(){ return readStudy(); }
@@ -1673,13 +1675,13 @@ function finishTournament(done,place){
   return {delta,rew,daily,place,done,prot};
 }
 /* =========================================================
-   学府の絵札 — UI layer (v3.05 / 6v6 / drag & drop / animated battle)
+   学府の絵札 — UI layer (v3.06 / 6v6 / drag & drop / animated battle)
    ========================================================= */
 const $=id=>document.getElementById(id);
 const esc=s=>String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
 /* ---------------- art ---------------- */
 function crest(sys){
-  const s=SYS[sys]||SYS.gu, a=s.ac;
+  const s=SYS[sys]||SAFE_SYS, a=s.ac;
   let motif='';
   if(sys==='ei') motif='<path d="M22 30 L54 62 M54 30 L22 62" stroke="'+a+'" stroke-width="3.4" stroke-linecap="round" fill="none" opacity=".55"/><path d="M20 28 l-4 4 M56 28 l4 4 M20 64 l-4-4 M56 64 l4-4" stroke="'+a+'" stroke-width="2.6" stroke-linecap="round"/>';
   else if(sys==='gu') motif='<path d="M38 30 v34 M38 30 c-8-4-16-4-22 0 v34 c6-4 14-4 22 0 M38 30 c8-4 16-4 22 0 v34 c-6-4-14-4-22 0" stroke="'+a+'" stroke-width="2.6" fill="none" opacity=".6"/>';
@@ -1713,7 +1715,7 @@ function kingArt(id){
 }
 /* ---------------- elements ---------------- */
 function unitHTML(u){
-  const sy=SYS[u.sys]||SYS.gu;
+  const sy=SYS[u.sys]||SAFE_SYS;
   return '<div class="u'+(u.gold?' gold':'')+(u.alive===false?' dim':'')+'" data-uid="'+u.uid+'" '+
     'style="--pc1:'+sy.c1+';--pc2:'+sy.c2+'">'+
     '<div class="rib">'+'<span class="dm">◆</span>'.repeat(u.star)+'</div>'+
@@ -1740,7 +1742,7 @@ function cardHTML(c,opt){
       '<div class="fxb">任意の将札に変わる</div>'+
       '<div class="foot"><span class="atk">宝</span><span class="ctr"><i></i></span><span class="hp2">札</span></div></div>';
   }
-  const b=BYID[c.id], sy=SYS[b.s];
+  const b=BYID[c.id]; if(!b) return '<div class="hcard"><div class="art"><div class="glyph">?</div></div></div>'; const sy=SYS[b.s]||SAFE_SYS;
   return '<div class="hcard'+(c.gold?' gold':'')+(opt.sel?' sel':'')+'" style="--pc1:'+sy.c1+';--pc2:'+sy.c2+'">'+
     '<div class="rib">'+'<span class="dm">◆</span>'.repeat(b.st)+'</div>'+
     '<div class="sysd"><b>'+sy.kanji+'</b></div>'+
@@ -2081,7 +2083,7 @@ function detailModal(c,kind,idx){
     '</div></div>',acts);
   setTimeout(()=>{ const d=$('mCard'); if(d){ d.innerHTML=cardHTML(c,{}); d.firstChild.style.width='76px'; d.firstChild.style.height='109px'; d.firstChild.style.flex='none'; } },0);
 }
-/* ===== v3.05 追加：商店段階フック群 ===== */
+/* ===== v3.06 追加：商店段階フック群 ===== */
 function buffCards(t,list,a,h){
   list.forEach(c=>{ c.atk+=a||0; c.hp+=h||0; });
   if((a||0)>0&&list.length){
