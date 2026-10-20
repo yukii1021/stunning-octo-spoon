@@ -488,7 +488,7 @@ html[data-gm="huaxu"] #battle .bgl{background:linear-gradient(180deg,rgba(8,10,1
 <div id="app">
   <div class="topbar">
     <button onclick="location.href='index.html'" aria-label="StudyTimeへ戻る" style="flex:none;width:32px;height:32px;border-radius:10px;border:1px solid rgba(128,128,128,.45);background:rgba(255,255,255,.08);color:inherit;font-size:16px;line-height:1;cursor:pointer">‹</button>
-    <div class="tb-title">学府の絵札<small>STUDY EMPIRE · v3.08</small></div>
+    <div class="tb-title">学府の絵札<small>STUDY EMPIRE · v3.09</small></div>
     <div class="chip coin"><span>◉</span><span class="num" id="tbCoin">0</span></div>
     <div class="chip"><span class="num" id="tbScore">0</span></div>
   </div>
@@ -539,7 +539,7 @@ html[data-gm="huaxu"] #battle .bgl{background:linear-gradient(180deg,rgba(8,10,1
 <div id="modal"><div class="mbox" id="modalBox"></div></div>
 <div class="toast" id="toast"></div><script>
 /* =========================================================
-   学府の絵札 — data layer (v3.08 / 原作完全再現)
+   学府の絵札 — data layer (v3.09 / 原作完全再現)
    原作「運命の絵札」の特殊能力体系に準拠
    ========================================================= */
 const KEY='studytime.cards.v2';
@@ -568,7 +568,7 @@ const TOKEN={ id:'tk', n:'駒札', s:'tk', st:1, atk:1, hp:1, fx:[], token:true 
    barrier気盾 / drain奪取(n) / absorb吸収 / unique唯一 / link連携 / soul魂奪(n)
    発動端子: open戦闘開始時 / recruit募集終了時 / enter入場 / atkOn攻撃時
    summon陣没召喚 / dieBuff陣没強化 / sell販売時
-   v3.08追加: linkPlayed / summonWatch / wallLoss / dieSnipe / turnStart / linkStreak
+   v3.09追加: linkPlayed / summonWatch / wallLoss / dieSnipe / turnStart / linkStreak
    leftover / drainWatch / dblAttack / refire / michael / splash / fireDieOnAct
    killWatch / slashLoss / slashGain / summonBuff / dieWatch / copyLeft / fireDieAll
    playedWatch / enterWatch / atkUpWatch / gainWatch / spendWatch / rerollWatch
@@ -1098,7 +1098,7 @@ const NAMES=['鏡山 累','玖珂 宗一','淡海 佐和','冬木 廉','鈴代 �
 function placeDelta(p){ const m={1:28,2:16,3:7,4:2,5:-8,6:-8,7:-16,8:-16}; return m[p]!==undefined?m[p]:0; }
 function placeReward(p){ const m={1:14,2:9,3:6,4:2}; return m[p]||0; }
 /* =========================================================
-   学府の絵札 — engine (v3.08 / 原作完全再現・6v6)
+   学府の絵札 — engine (v3.09 / 原作完全再現・6v6)
    ========================================================= */
 const rnd=n=>Math.floor(Math.random()*n);
 const pick=a=>a[rnd(a.length)];
@@ -1116,14 +1116,15 @@ function readStudy(){
     if(!st||typeof st!=='object') return null;
     const acts={};
     (st.activities||[]).forEach(a=>{ if(a&&a.id!=null) acts[a.id]=a; });
-    const d0=new Date(); d0.setHours(0,0,0,0);
+    const d0=new Date(); if(d0.getHours()<2) d0.setDate(d0.getDate()-1); d0.setHours(2,0,0,0);
     const dayS=d0.getTime(), dayE=dayS+24*3600*1000;
     let ms=0, msToday=0;
     (st.sessions||[]).forEach(s=>{
       if(!s) return;
       const a=acts[s.activityId];
       if(!a||!a.isStudy||a.isSleep) return;
-      const e=Number(s.end)||Date.now(), b=Number(s.start)||0;
+      if(!s.end) return; /* 計測中(未終了)のセッションは確定していないのでカウントしない */
+      const e=Number(s.end), b=Number(s.start)||0;
       let d=e-b;
       if(!(d>0)) return;
       if(d>24*3600*1000) d=24*3600*1000;
@@ -1161,7 +1162,7 @@ function load(){
 }
 function save(){ try{ localStorage.setItem(KEY,JSON.stringify(S)); }catch(e){} }
 function studyInfo(){ return readStudy(); }
-function dayKey(){ const d=new Date(); return d.getFullYear()+'-'+(d.getMonth()+1)+'-'+d.getDate(); }
+function dayKey(){ const d=new Date(); if(d.getHours()<2) d.setDate(d.getDate()-1); return d.getFullYear()+'-'+(d.getMonth()+1)+'-'+d.getDate(); } /* 1日は朝2時まで */
 function syncDay(){
   const t=dayKey();
   if(S.day===t) return;
@@ -1667,7 +1668,7 @@ function finishTournament(done,place){
   }
   S.score=Math.max(0,S.score+delta);
   let daily=false;
-  if(place<=4&&S.lastBonus!==today()){ S.lastBonus=today(); S.top4++; rew+=5; daily=true; }
+  if(place<=4&&S.lastBonus!==today()){ S.lastBonus=dayKey(); S.top4++; rew+=5; daily=true; }
   addCoins(rew);
   if(done==='champ'){ S.wins++; if(place<=(S.best||99)||!S.best) S.best=1; }
   if(!S.best||place<S.best) S.best=place;
@@ -1675,7 +1676,7 @@ function finishTournament(done,place){
   return {delta,rew,daily,place,done,prot};
 }
 /* =========================================================
-   学府の絵札 — UI layer (v3.08 / 6v6 / drag & drop / animated battle)
+   学府の絵札 — UI layer (v3.09 / 6v6 / drag & drop / animated battle)
    ========================================================= */
 const $=id=>document.getElementById(id);
 const esc=s=>String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
@@ -1950,14 +1951,14 @@ function renderHome(){
        '</div>';
   }
   const st=studyInfo(), earn=earnedToday();
-  h+='<div class="card tight"><h2>今日の金貨<span class="hint">毎日リセット</span></h2><div class="list">'+
+  h+='<div class="card tight"><h2>今日の金貨<span class="hint">朝2時にリセット</span></h2><div class="list">'+
      '<div class="li"><span class="k">今日の勉強時間</span><span class="v">'+(st?Math.floor(st.minToday)+' 分':'記録なし')+'</span></div>'+
      '<div class="li"><span class="k">連続日数ボーナス</span><span class="v">×'+multOf(st?st.streak:0).toFixed(2)+'</span></div>'+
      '<div class="li"><span class="k">今日の勉強で得た金貨（'+EARN_MIN+'分＝1枚）</span><span class="v">'+earn+'</span></div>'+
      '<div class="li"><span class="k">今日の対局報酬など</span><span class="v">+'+(S.dayBonus||0)+'</span></div>'+
      '<div class="li"><span class="k">今日の使用済み</span><span class="v">-'+(S.daySpend||0)+'</span></div>'+
      '<div class="li"><span class="k"><b>残り金貨</b></span><span class="v" style="color:var(--acc)">'+coins()+'</span></div>'+
-     '</div><div class="tip">金貨は<b>毎日リセット</b>。その日の勉強量で決まる（初期 '+DAILY_SEED+' ＋ 今日の勉強 '+(st?Math.floor(st.minToday):0)+' 分 ÷ '+EARN_MIN+' × 連続ボーナス）。</div></div>';
+     '</div><div class="tip">金貨は<b>朝2時にリセット</b>。計測を終えた勉強だけで決まる（初期 '+DAILY_SEED+' ＋ 今日の勉強 '+(st?Math.floor(st.minToday):0)+' 分 ÷ '+EARN_MIN+' × 連続ボーナス）。</div></div>';
   h+='<div class="card tight"><h2>戦績</h2><div class="stat-grid">'+
      '<div class="stat"><div class="k">優勝</div><div class="v">'+S.wins+'<small>回</small></div></div>'+
      '<div class="stat"><div class="k">出場</div><div class="v">'+S.plays+'<small>回</small></div></div>'+
@@ -2111,7 +2112,7 @@ function detailModal(c,kind,idx){
     '</div></div>',acts);
   setTimeout(()=>{ const d=$('mCard'); if(d){ d.innerHTML=cardHTML(c,{}); d.firstChild.style.width='76px'; d.firstChild.style.height='109px'; d.firstChild.style.flex='none'; } },0);
 }
-/* ===== v3.08 追加：商店段階フック群 ===== */
+/* ===== v3.09 追加：商店段階フック群 ===== */
 function buffCards(t,list,a,h){
   list.forEach(c=>{ c.atk+=a||0; c.hp+=h||0; });
   if((a||0)>0&&list.length){
@@ -2639,7 +2640,7 @@ function renderRec(){
      '<div class="stat"><div class="k">トップ4</div><div class="v">'+S.top4+'<small>回</small></div></div>'+
      '</div></div>';
   h+='<div class="card tight"><h2>黄金将札</h2><div class="sub">統合した黄金将札 '+Object.keys(S.golds).length+' 種</div><div class="grid-cards mt" id="gGold"></div></div>';
-  h+='<div class="card tight"><h2>今日の金貨<span class="hint">毎日リセット</span></h2><div class="list">'+
+  h+='<div class="card tight"><h2>今日の金貨<span class="hint">朝2時にリセット</span></h2><div class="list">'+
      '<div class="li"><span class="k">今日の勉強時間</span><span class="v">'+(st?Math.floor(st.minToday)+' 分':'記録なし')+'</span></div>'+
      '<div class="li"><span class="k">連続日数</span><span class="v">'+(st?st.streak+' 日':'—')+'</span></div>'+
      '<div class="li"><span class="k">今日の勉強で得た金貨（'+EARN_MIN+'分＝1枚）</span><span class="v">'+earnedToday()+'</span></div>'+
