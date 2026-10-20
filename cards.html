@@ -488,7 +488,7 @@ html[data-gm="huaxu"] #battle .bgl{background:linear-gradient(180deg,rgba(8,10,1
 <div id="app">
   <div class="topbar">
     <button onclick="location.href='index.html'" aria-label="StudyTimeへ戻る" style="flex:none;width:32px;height:32px;border-radius:10px;border:1px solid rgba(128,128,128,.45);background:rgba(255,255,255,.08);color:inherit;font-size:16px;line-height:1;cursor:pointer">‹</button>
-    <div class="tb-title">学府の絵札<small>STUDY EMPIRE · v3.07</small></div>
+    <div class="tb-title">学府の絵札<small>STUDY EMPIRE · v3.08</small></div>
     <div class="chip coin"><span>◉</span><span class="num" id="tbCoin">0</span></div>
     <div class="chip"><span class="num" id="tbScore">0</span></div>
   </div>
@@ -539,7 +539,7 @@ html[data-gm="huaxu"] #battle .bgl{background:linear-gradient(180deg,rgba(8,10,1
 <div id="modal"><div class="mbox" id="modalBox"></div></div>
 <div class="toast" id="toast"></div><script>
 /* =========================================================
-   学府の絵札 — data layer (v3.07 / 原作完全再現)
+   学府の絵札 — data layer (v3.08 / 原作完全再現)
    原作「運命の絵札」の特殊能力体系に準拠
    ========================================================= */
 const KEY='studytime.cards.v2';
@@ -553,12 +553,12 @@ const SEED_COINS=40;
 const GOLD_MULT=1.6, GOLD_AB=1.5;
 const SAFE_SYS={n:'将',sj:'将',c1:'#5b6472',c2:'#2b313a',ac:'#c9d2e0',kanji:'将'};
 const SYS={
-  wa:{n:'国語',sj:'国語',c1:'#8f3229',c2:'#3a1310',ac:'#ff9c8a',kanji:'和'},
-  yo:{n:'英語',sj:'英語',c1:'#2f5a86',c2:'#0f2033',ac:'#9fc9ef',kanji:'洋'},
-  vi:{n:'数学',sj:'数学',c1:'#9a7728',c2:'#3a2c0c',ac:'#ffe0a0',kanji:'魏'},
-  su:{n:'物理',sj:'物理',c1:'#5a4791',c2:'#221a3d',ac:'#c3b0f0',kanji:'蜀'},
-  qa:{n:'化学',sj:'化学',c1:'#2e6b52',c2:'#0f2a20',ac:'#9fdcbe',kanji:'群'},
-  jo:{n:'情報',sj:'情報',c1:'#1f6f6a',c2:'#0c2b29',ac:'#8fe3dc',kanji:'呉'}
+  wa:{n:'国語',sj:'国語',c1:'#8f3229',c2:'#3a1310',ac:'#ff9c8a',kanji:'国'},
+  yo:{n:'英語',sj:'英語',c1:'#2f5a86',c2:'#0f2033',ac:'#9fc9ef',kanji:'英'},
+  vi:{n:'数学',sj:'数学',c1:'#9a7728',c2:'#3a2c0c',ac:'#ffe0a0',kanji:'数'},
+  su:{n:'物理',sj:'物理',c1:'#5a4791',c2:'#221a3d',ac:'#c3b0f0',kanji:'物'},
+  qa:{n:'化学',sj:'化学',c1:'#2e6b52',c2:'#0f2a20',ac:'#9fdcbe',kanji:'化'},
+  jo:{n:'情報',sj:'情報',c1:'#1f6f6a',c2:'#0c2b29',ac:'#8fe3dc',kanji:'情'}
 };
 const SYS_ORDER=['wa','yo','vi','su','qa','jo'];
 /* 召喚される駒札（原作の「陣没：◯/◯の札を召喚する」に相当） */
@@ -568,7 +568,7 @@ const TOKEN={ id:'tk', n:'駒札', s:'tk', st:1, atk:1, hp:1, fx:[], token:true 
    barrier気盾 / drain奪取(n) / absorb吸収 / unique唯一 / link連携 / soul魂奪(n)
    発動端子: open戦闘開始時 / recruit募集終了時 / enter入場 / atkOn攻撃時
    summon陣没召喚 / dieBuff陣没強化 / sell販売時
-   v3.07追加: linkPlayed / summonWatch / wallLoss / dieSnipe / turnStart / linkStreak
+   v3.08追加: linkPlayed / summonWatch / wallLoss / dieSnipe / turnStart / linkStreak
    leftover / drainWatch / dblAttack / refire / michael / splash / fireDieOnAct
    killWatch / slashLoss / slashGain / summonBuff / dieWatch / copyLeft / fireDieAll
    playedWatch / enterWatch / atkUpWatch / gainWatch / spendWatch / rerollWatch
@@ -577,17 +577,17 @@ const POOL=[
  /* ---- 和（国語）21枚 ---- */
  {id:'wa01',n:'あはれ',   s:'wa',st:1,atk:2, hp:7, otxt:'連携能力を持つ将札を手札から使用した時、自身は＋1/＋1を得る(2回目から＋2/＋2になる)。',
    fx:[{t:'linkPlayed',a:1,h:1,a2:2,h2:2}]},
- {id:'wa02',n:'をかし',   s:'wa',st:1,atk:2, hp:8, otxt:'陣没：玉壁能力を持つ1/1の和札「助詞」を1枚召喚する。',
+ {id:'wa02',n:'をかし',   s:'wa',st:1,atk:2, hp:8, otxt:'陣没：玉壁能力を持つ1/1の国語札「助詞」を1枚召喚する。',
    fx:[{t:'summon',a:1,h:1,cnt:1,tn:'助詞',fx:[{t:'wall'}]}]},
  {id:'wa03',n:'枕詞',     s:'wa',st:1,atk:2, hp:9, otxt:'玉壁；嘲弄',
    fx:[{t:'wall'},{t:'taunt'}]},
- {id:'wa04',n:'挂詞',     s:'wa',st:2,atk:5, hp:12,otxt:'陣没：味方和札全ては+1/+1を得る。',
+ {id:'wa04',n:'挂詞',     s:'wa',st:2,atk:5, hp:12,otxt:'陣没：味方国語札全ては+1/+1を得る。',
    fx:[{t:'dieBuff',a:1,h:1}]},
- {id:'wa05',n:'縁語',     s:'wa',st:2,atk:4, hp:13,otxt:'玉壁；味方が和札を召喚する時、自身に玉壁がないと、玉壁能力と+2/+2を得る(全局有効)。',
+ {id:'wa05',n:'縁語',     s:'wa',st:2,atk:4, hp:13,otxt:'玉壁；味方が国語札を召喚する時、自身に玉壁がないと、玉壁能力と+2/+2を得る(全局有効)。',
    fx:[{t:'wall'},{t:'summonWatch',sys:'wa',a:2,h:2}]},
- {id:'wa06',n:'体言止め', s:'wa',st:2,atk:5, hp:11,otxt:'連携(和)・募集終了時：自身は+1/+1を得る。',
+ {id:'wa06',n:'体言止め', s:'wa',st:2,atk:5, hp:11,otxt:'連携(国語)・募集終了時：自身は+1/+1を得る。',
    fx:[{t:'link',sys:'wa'},{t:'recruit',a:1,h:1}]},
- {id:'wa07',n:'倒置法',   s:'wa',st:2,atk:5, hp:12,otxt:'連携(和)；陣没：1/1の和札「対句」を2枚召喚する。',
+ {id:'wa07',n:'倒置法',   s:'wa',st:2,atk:5, hp:12,otxt:'連携(国語)；陣没：1/1の国語札「対句」を2枚召喚する。',
    fx:[{t:'link',sys:'wa'},{t:'summon',a:1,h:1,cnt:2,tn:'対句'}]},
  {id:'wa08',n:'見立て',   s:'wa',st:3,atk:7, hp:24,otxt:'味方が玉壁能力を失う時、自身は相手ランダム1枚に1ダメージを与える(5回目から3ダメージになる)。',
    fx:[{t:'wallLoss',k:'snipe',v:1,v2:3}]},
@@ -595,9 +595,9 @@ const POOL=[
    fx:[{t:'slash'}]},
  {id:'wa10',n:'助動詞',   s:'wa',st:3,atk:6, hp:26,otxt:'募集終了時：連携を持つ将札1枚を手札に加える。',
    fx:[{t:'recruit',addLink:1}]},
- {id:'wa11',n:'係り結び', s:'wa',st:3,atk:6, hp:24,otxt:'連携(和)・ターン開始時、得る金貨+1。',
+ {id:'wa11',n:'係り結び', s:'wa',st:3,atk:6, hp:24,otxt:'連携(国語)・ターン開始時、得る金貨+1。',
    fx:[{t:'link',sys:'wa'},{t:'turnStart',coin:1}]},
- {id:'wa12',n:'敬語',     s:'wa',st:4,atk:9, hp:30,otxt:'連携(和)：嘲弄；玉壁',
+ {id:'wa12',n:'敬語',     s:'wa',st:4,atk:9, hp:30,otxt:'連携(国語)：嘲弄；玉壁',
    fx:[{t:'link',sys:'wa'},{t:'taunt'},{t:'wall'}]},
  {id:'wa13',n:'季語',     s:'wa',st:4,atk:10,hp:32,otxt:'陣没：攻撃が最も低い相手に10ダメージを与える。',
    fx:[{t:'dieSnipe',v:10}]},
@@ -607,15 +607,15 @@ const POOL=[
    fx:[{t:'wallLoss',k:'allUp',a:1,h:1,a2:2,h2:2}]},
  {id:'wa16',n:'万葉仮名', s:'wa',st:5,atk:14,hp:48,otxt:'入場：最後に使用した連携能力を持つ通常将札を手札に加える。',
    fx:[{t:'enter',k:'addLinkLast'}]},
- {id:'wa17',n:'変体仮名', s:'wa',st:5,atk:15,hp:46,otxt:'連携(和)：気盾：敵の攻撃で0より高いダメージを受けて撃破されなかった場合、被ダメージを生命が最も高い相手に転嫁する(1ターン1回)',
+ {id:'wa17',n:'変体仮名', s:'wa',st:5,atk:15,hp:46,otxt:'連携(国語)：気盾：敵の攻撃で0より高いダメージを受けて撃破されなかった場合、被ダメージを生命が最も高い相手に転嫁する(1ターン1回)',
    fx:[{t:'link',sys:'wa'},{t:'barrier',v:.5,hi:1}]},
  {id:'wa18',n:'訓読',     s:'wa',st:5,atk:16,hp:52,otxt:'自身を除く味方が連携を得る時、自身も同じ連携を得る。',
    fx:[{t:'linkEcho'}]},
- {id:'wa19',n:'漢文',     s:'wa',st:6,atk:20,hp:66,otxt:'味方和札が玉壁能力を失う時、攻撃の最も高い味方和札が即時に攻撃を1回行い、この攻撃は相手からのダメージを受けない。唯一。',
+ {id:'wa19',n:'漢文',     s:'wa',st:6,atk:20,hp:66,otxt:'味方国語札が玉壁能力を失う時、攻撃の最も高い味方国語札が即時に攻撃を1回行い、この攻撃は相手からのダメージを受けない。唯一。',
    fx:[{t:'unique'},{t:'wallLoss',k:'strike',sys:'wa'}]},
- {id:'wa20',n:'古今集',   s:'wa',st:6,atk:18,hp:70,otxt:'陣没：玉壁を持つ1/1の和札「全文訳」を5枚召喚する。',
+ {id:'wa20',n:'古今集',   s:'wa',st:6,atk:18,hp:70,otxt:'陣没：玉壁を持つ1/1の国語札「全文訳」を5枚召喚する。',
    fx:[{t:'summon',a:1,h:1,cnt:5,tn:'全文訳',fx:[{t:'wall'}]}]},
- {id:'wa21',n:'完訳',     s:'wa',st:6,atk:22,hp:72,otxt:'連携［和］(能力を付与しない)：連携能力を持つ将札を使用した連続ターン毎に、自身は＋15/＋15を得る(全局・全エリア有効、連続ターン中断時に初期状態に戻る)。',
+ {id:'wa21',n:'完訳',     s:'wa',st:6,atk:22,hp:72,otxt:'連携［国語］(能力を付与しない)：連携能力を持つ将札を使用した連続ターン毎に、自身は＋15/＋15を得る(全局・全エリア有効、連続ターン中断時に初期状態に戻る)。',
    fx:[{t:'link',sys:'wa',ng:1},{t:'linkStreak',v:15}]},
  /* ---- 洋（英語）20枚 ---- */
  {id:'yo01',n:'water',      s:'yo',st:1,atk:2, hp:8, otxt:'戦闘開始時：味方将札の奪取能力の合計数値の攻撃/生命を得る',
@@ -638,7 +638,7 @@ const POOL=[
    fx:[{t:'enter',k:'choose'}]},
  {id:'yo10',n:'sanctuary',  s:'yo',st:4,atk:11,hp:33,otxt:'奪取(4)；味方将札が奪取能力を発動する時、相手ランダム1枚の玉壁・嘲弄・復活能力のうちランダム1種を削除する。',
    fx:[{t:'drain',v:4},{t:'drainWatch',strip:1}]},
- {id:'yo11',n:'velocity',   s:'yo',st:4,atk:10,hp:36,otxt:'奪取(4)；味方将札が奪取能力を発動する時、味方洋札全ては商店Lvの生命を得る。全局有効。',
+ {id:'yo11',n:'velocity',   s:'yo',st:4,atk:10,hp:36,otxt:'奪取(4)；味方将札が奪取能力を発動する時、味方英語札全ては商店Lvの生命を得る。全局有効。',
    fx:[{t:'drain',v:4},{t:'drainWatch',hLv:1,sys:'yo'}]},
  {id:'yo12',n:'apocalypse', s:'yo',st:5,atk:13,hp:52,otxt:'味方将札全ての戦闘開始時能力を2回発動させる',
    fx:[{t:'refire',what:'open',times:2}]},
@@ -652,96 +652,96 @@ const POOL=[
    fx:[{t:'refire',what:'recruit',times:2}]},
  {id:'yo17',n:'phenomenon', s:'yo',st:6,atk:17,hp:62,otxt:'連携；霧中',
    fx:[{t:'link'},{t:'mist'}]},
- {id:'yo18',n:'cosmos',     s:'yo',st:6,atk:18,hp:66,otxt:'味方洋札を手札から使用した時、味方全ては+2/+2を得る。',
+ {id:'yo18',n:'cosmos',     s:'yo',st:6,atk:18,hp:66,otxt:'味方英語札を手札から使用した時、味方全ては+2/+2を得る。',
    fx:[{t:'playedWatch',sys:'yo',all:{a:2,h:2}}]},
  {id:'yo19',n:'obsidian',   s:'yo',st:6,atk:20,hp:64,otxt:'奪取(5)；自身が奪取能力を発動する時、追加で攻撃の最も高い相手将札から、味方将札の奪取能力の合計数値×1%の攻撃を奪う。',
    fx:[{t:'drain',v:5},{t:'drainWatch',apollo:1}]},
  {id:'yo20',n:'majesty',    s:'yo',st:6,atk:19,hp:70,otxt:'入場：特殊連携能力を持つ将札ランダム1枚を手札に加える。',
    fx:[{t:'enter',k:'addLink'}]},
  /* ---- 魏（数学）20枚 ---- */
- {id:'vi01',n:'素数',     s:'vi',st:1,atk:2, hp:8, otxt:'復活；陣没：3/1の魏札「補集合」を1枚召喚する。',
+ {id:'vi01',n:'素数',     s:'vi',st:1,atk:2, hp:8, otxt:'復活；陣没：3/1の数学札「補集合」を1枚召喚する。',
    fx:[{t:'revive'},{t:'summon',a:3,h:1,cnt:1,tn:'補集合'}]},
- {id:'vi02',n:'分数',     s:'vi',st:1,atk:2, hp:9, otxt:'陣没：嘲弄を持つ1/1の魏札「因数」を1枚召喚する。',
+ {id:'vi02',n:'分数',     s:'vi',st:1,atk:2, hp:9, otxt:'陣没：嘲弄を持つ1/1の数学札「因数」を1枚召喚する。',
    fx:[{t:'summon',a:1,h:1,cnt:1,tn:'因数',fx:[{t:'taunt'}]}]},
- {id:'vi03',n:'方程式',   s:'vi',st:2,atk:5, hp:12,otxt:'募集終了時：自身を除く味方魏札全ては攻撃+1をえる。',
+ {id:'vi03',n:'方程式',   s:'vi',st:2,atk:5, hp:12,otxt:'募集終了時：自身を除く味方数学札全ては攻撃+1をえる。',
    fx:[{t:'recruit',a:1,sys:'vi',skipSelf:1}]},
- {id:'vi04',n:'集合',     s:'vi',st:2,atk:4, hp:16,otxt:'相手将札が2枚撃破される毎に、味方魏札「因数」は攻撃+1を得る（次ターンで生命+1になる。相手将札が6枚撃破される毎に、攻撃+2になる）',
+ {id:'vi04',n:'集合',     s:'vi',st:2,atk:4, hp:16,otxt:'相手将札が2枚撃破される毎に、味方数学札「因数」は攻撃+1を得る（次ターンで生命+1になる。相手将札が6枚撃破される毎に、攻撃+2になる）',
    fx:[{t:'killWatch',per:2,a:1}]},
- {id:'vi05',n:'絶対値',   s:'vi',st:2,atk:5, hp:14,otxt:'入場：味方魏札「因数」は＋2/＋2を得る(全局有効)。',
+ {id:'vi05',n:'絶対値',   s:'vi',st:2,atk:5, hp:14,otxt:'入場：味方数学札「因数」は＋2/＋2を得る(全局有効)。',
    fx:[{t:'enter',k:'buffAll',sys:'vi',a:2,h:2}]},
- {id:'vi06',n:'因数分解', s:'vi',st:3,atk:7, hp:22,otxt:'陣没：味方魏札「因数」は＋3/＋3を得て、0/2の魏札「因数」を1枚召喚する(全局有効)。',
+ {id:'vi06',n:'因数分解', s:'vi',st:3,atk:7, hp:22,otxt:'陣没：味方数学札「因数」は＋3/＋3を得て、0/2の数学札「因数」を1枚召喚する(全局有効)。',
    fx:[{t:'summon',a:0,h:2,cnt:1,tn:'因数'},{t:'dieBuff',a:3,h:3}]},
- {id:'vi07',n:'虚数',     s:'vi',st:3,atk:7, hp:26,otxt:'入場：このターン中で味方魏札ランダム1枚に斬戮能力を付与する。',
+ {id:'vi07',n:'虚数',     s:'vi',st:3,atk:7, hp:26,otxt:'入場：このターン中で味方数学札ランダム1枚に斬戮能力を付与する。',
    fx:[{t:'enter',k:'grantSlash'}]},
  {id:'vi08',n:'極限',     s:'vi',st:3,atk:8, hp:24,otxt:'行動時、味方1枚の陣没を発動させる。',
    fx:[{t:'fireDieOnAct'}]},
- {id:'vi09',n:'微分',     s:'vi',st:3,atk:8, hp:25,otxt:'入場：将札選択を1回発動し、候補は全て魏札になる。',
+ {id:'vi09',n:'微分',     s:'vi',st:3,atk:8, hp:25,otxt:'入場：将札選択を1回発動し、候補は全て数学札になる。',
    fx:[{t:'enter',k:'choose',sys:'vi'}]},
  {id:'vi10',n:'階乗',     s:'vi',st:3,atk:7, hp:27,otxt:'陣没：次ターンで得る金貨+1。',
    fx:[{t:'dieNextCoin'}]},
- {id:'vi11',n:'固有値',   s:'vi',st:4,atk:11,hp:34,otxt:'味方が召喚する魏札は+4/+4を得る。',
+ {id:'vi11',n:'固有値',   s:'vi',st:4,atk:11,hp:34,otxt:'味方が召喚する数学札は+4/+4を得る。',
    fx:[{t:'summonBuff',a:4,h:4,sys:'vi'}]},
  {id:'vi12',n:'行列',     s:'vi',st:4,atk:10,hp:36,otxt:'嘲弄；陣没：自身の左1枚目の将札の入場能力を発動させる。',
    fx:[{t:'taunt'},{t:'fireEnterDie'}]},
- {id:'vi13',n:'ベクトル', s:'vi',st:4,atk:12,hp:30,otxt:'陣没：6/6の魏札を1枚召喚する。',
+ {id:'vi13',n:'ベクトル', s:'vi',st:4,atk:12,hp:30,otxt:'陣没：6/6の数学札を1枚召喚する。',
    fx:[{t:'summon',a:6,h:6,cnt:1,tn:'残差'}]},
- {id:'vi14',n:'対数',     s:'vi',st:4,atk:11,hp:33,otxt:'味方魏札が斬戮能力を失う時、同名札全ては＋10/＋10を得る(全局・全エリア有効)',
+ {id:'vi14',n:'対数',     s:'vi',st:4,atk:11,hp:33,otxt:'味方数学札が斬戮能力を失う時、同名札全ては＋10/＋10を得る(全局・全エリア有効)',
    fx:[{t:'slashLoss',a:10}]},
  {id:'vi15',n:'順列',     s:'vi',st:4,atk:12,hp:31,otxt:'味方が陣没を発動する時、自身は生命+2を得る(全局有効)。',
    fx:[{t:'dieWatch',h:2}]},
- {id:'vi16',n:'積分',     s:'vi',st:5,atk:14,hp:44,otxt:'陣没：味方魏札ランダム1枚に斬戮を付与する。',
+ {id:'vi16',n:'積分',     s:'vi',st:5,atk:14,hp:44,otxt:'陣没：味方数学札ランダム1枚に斬戮を付与する。',
    fx:[{t:'dieGrantSlash'}]},
- {id:'vi17',n:'超関数',   s:'vi',st:5,atk:15,hp:46,otxt:'戦闘開始時：自身の左隣1枚目の魏札の全能力をコピーする（戦闘開始時と全局・全エリア有効の自身が攻撃/生命を得る能力を除く）。同名札の枚数を問わず、同種能力は毎ターン最大2回発動できる。',
+ {id:'vi17',n:'超関数',   s:'vi',st:5,atk:15,hp:46,otxt:'戦闘開始時：自身の左隣1枚目の数学札の全能力をコピーする（戦闘開始時と全局・全エリア有効の自身が攻撃/生命を得る能力を除く）。同名札の枚数を問わず、同種能力は毎ターン最大2回発動できる。',
    fx:[{t:'open',k:'copyLeft'}]},
- {id:'vi18',n:'群論',     s:'vi',st:5,atk:13,hp:48,otxt:'陣没：陣没を持つ1/1の魏札「小数」を2枚召喚する(小数の陣没：1/1の魏札「約数」を3枚召喚する)。',
+ {id:'vi18',n:'群論',     s:'vi',st:5,atk:13,hp:48,otxt:'陣没：陣没を持つ1/1の数学札「小数」を2枚召喚する(小数の陣没：1/1の数学札「約数」を3枚召喚する)。',
    fx:[{t:'summon',a:1,h:1,cnt:2,tn:'小数',fx:[{t:'summon',a:1,h:1,cnt:3,tn:'約数'}]}]},
- {id:'vi19',n:'無限級数', s:'vi',st:6,atk:17,hp:60,otxt:'味方魏札が斬戮能力を得る時、味方魏札「因数」は＋6/＋6を得る(全局有効)。',
+ {id:'vi19',n:'無限級数', s:'vi',st:6,atk:17,hp:60,otxt:'味方数学札が斬戮能力を得る時、味方数学札「因数」は＋6/＋6を得る(全局有効)。',
    fx:[{t:'slashGain',a:6,h:6}]},
  {id:'vi20',n:'位相空間', s:'vi',st:6,atk:18,hp:64,otxt:'戦闘開始時：味方将札全ての陣没を1回発動させる。',
    fx:[{t:'open',k:'fireDieAll'}]},
  /* ---- 蜀（物理）19枚 ---- */
- {id:'su01',n:'速度',     s:'su',st:1,atk:2, hp:7, otxt:'販売した後、能力のない3/2の蜀札「粒子」1枚を手札に加える。',
+ {id:'su01',n:'速度',     s:'su',st:1,atk:2, hp:7, otxt:'販売した後、能力のない3/2の物理札「粒子」1枚を手札に加える。',
    fx:[{t:'soldAdd',a:3,h:2,tn:'粒子'}]},
  {id:'su02',n:'慣性',     s:'su',st:1,atk:2, hp:10,otxt:'入場：次回商店更新の消費は0金貨になる。',
    fx:[{t:'enter',k:'reroll0'}]},
  {id:'su03',n:'加速度',   s:'su',st:2,atk:5, hp:13,otxt:'嘲弄；商店を更新する毎に、攻撃+1を得る(次ターンで生命+1になる)。',
    fx:[{t:'taunt'},{t:'rerollWatch',a:1}]},
- {id:'su04',n:'摩擦',     s:'su',st:2,atk:4, hp:15,otxt:'陣没：商店の蜀札全ては+1/+1を得る。',
+ {id:'su04',n:'摩擦',     s:'su',st:2,atk:4, hp:15,otxt:'陣没：商店の物理札全ては+1/+1を得る。',
    fx:[{t:'dieShop',sys:'su',a:1,h:1}]},
- {id:'su05',n:'振幅',     s:'su',st:2,atk:5, hp:12,otxt:'味方蜀札を手札から使用した時、味方蜀札ランダム1枚は+1/+2を得る。',
+ {id:'su05',n:'振幅',     s:'su',st:2,atk:5, hp:12,otxt:'味方物理札を手札から使用した時、味方物理札ランダム1枚は+1/+2を得る。',
    fx:[{t:'playedWatch',sys:'su',rand:{a:1,h:2}}]},
- {id:'su06',n:'電流',     s:'su',st:2,atk:5, hp:14,otxt:'金貨を消費する度に、味方蜀札ランダム1枚は消費した金貨と同数の攻撃を得る(次ターンで生命になる)。',
+ {id:'su06',n:'電流',     s:'su',st:2,atk:5, hp:14,otxt:'金貨を消費する度に、味方物理札ランダム1枚は消費した金貨と同数の攻撃を得る(次ターンで生命になる)。',
    fx:[{t:'spendWatch',sys:'su',atkSpent:1}]},
  {id:'su07',n:'仕事',     s:'su',st:3,atk:7, hp:20,otxt:'1ターン中、金貨を10枚消費する毎に、金貨の上限+1',
    fx:[{t:'spendWatch',per:10,coin:1}]},
- {id:'su08',n:'波動',     s:'su',st:3,atk:8, hp:22,otxt:'入場：「将札選択」を1回でき、候補は全て蜀札になる。',
+ {id:'su08',n:'波動',     s:'su',st:3,atk:8, hp:22,otxt:'入場：「将札選択」を1回でき、候補は全て物理札になる。',
    fx:[{t:'enter',k:'choose',sys:'su'}]},
- {id:'su09',n:'剛体',     s:'su',st:3,atk:8, hp:21,otxt:'嘲弄；味方蜀札の攻撃が増える時、自身は生命+2を得る。',
+ {id:'su09',n:'剛体',     s:'su',st:3,atk:8, hp:21,otxt:'嘲弄；味方物理札の攻撃が増える時、自身は生命+2を得る。',
    fx:[{t:'taunt'},{t:'atkUpWatch',h:2,sys:'su'}]},
  {id:'su10',n:'電磁気',   s:'su',st:3,atk:9, hp:23,otxt:'入場：商店の将札全ては+2/+2を得る。',
    fx:[{t:'enter',k:'shopAll',a:2,h:2}]},
- {id:'su11',n:'光速',     s:'su',st:3,atk:10,hp:22,otxt:'入場：味方蜀札ランダム1枚は+5/+5を得る。1ターン中、商店を更新する毎に、追加で+1/+1を得る。',
+ {id:'su11',n:'光速',     s:'su',st:3,atk:10,hp:22,otxt:'入場：味方物理札ランダム1枚は+5/+5を得る。1ターン中、商店を更新する毎に、追加で+1/+1を得る。',
    fx:[{t:'enter',k:'buffRand',sys:'su',a:5,h:5},{t:'rerollWatch',a:1,h:1}]},
- {id:'su12',n:'熱量',     s:'su',st:3,atk:8, hp:24,otxt:'金貨を得る時、味方蜀札全ては+1/+1を得る。',
+ {id:'su12',n:'熱量',     s:'su',st:3,atk:8, hp:24,otxt:'金貨を得る時、味方物理札全ては+1/+1を得る。',
    fx:[{t:'gainWatch',sys:'su',a:1,h:1}]},
  {id:'su13',n:'量子',     s:'su',st:4,atk:11,hp:30,otxt:'商店を更新する度に、+1/+1を得る(全局・全エリア有効)。',
    fx:[{t:'rerollWatch',a:1,h:1}]},
- {id:'su14',n:'相対性',   s:'su',st:4,atk:10,hp:34,otxt:'募集終了時：残りの全金貨を消費し、味方蜀札全ては消費した金貨と同数の攻撃/生命を得る。',
+ {id:'su14',n:'相対性',   s:'su',st:4,atk:10,hp:34,otxt:'募集終了時：残りの全金貨を消費し、味方物理札全ては消費した金貨と同数の攻撃/生命を得る。',
    fx:[{t:'recruit',spendAll:'su'}]},
- {id:'su15',n:'ブラックホール',s:'su',st:5,atk:13,hp:50,otxt:'嘲弄；陣没：蜀札1枚を手札に加える。',
+ {id:'su15',n:'ブラックホール',s:'su',st:5,atk:13,hp:50,otxt:'嘲弄；陣没：物理札1枚を手札に加える。',
    fx:[{t:'taunt'},{t:'dieAddSys'}]},
- {id:'su16',n:'共振',     s:'su',st:5,atk:14,hp:48,otxt:'味方蜀札を手札から使用した後、次回商店更新の消費は0金貨になる。',
+ {id:'su16',n:'共振',     s:'su',st:5,atk:14,hp:48,otxt:'味方物理札を手札から使用した後、次回商店更新の消費は0金貨になる。',
    fx:[{t:'playedWatch',sys:'su',reroll0:1}]},
  {id:'su17',n:'電磁誘導', s:'su',st:5,atk:13,hp:52,otxt:'1ターン中、手動で商店を5回更新する毎に、金貨を1枚得る。',
    fx:[{t:'rerollWatch',per:5,coin:1}]},
- {id:'su18',n:'宇宙項',   s:'su',st:6,atk:16,hp:64,otxt:'玉壁；任意の蜀札2枚と「3枚統合」できる。',
+ {id:'su18',n:'宇宙項',   s:'su',st:6,atk:16,hp:64,otxt:'玉壁；任意の物理札2枚と「3枚統合」できる。',
    fx:[{t:'wall'},{t:'mergeSys',sys:'su'}]},
- {id:'su19',n:'超伝導',   s:'su',st:6,atk:18,hp:62,otxt:'商店を更新する度に、味方蜀札全ては+1/+1を得る(10回目から+2/+2になる)。',
+ {id:'su19',n:'超伝導',   s:'su',st:6,atk:18,hp:62,otxt:'商店を更新する度に、味方物理札全ては+1/+1を得る(10回目から+2/+2になる)。',
    fx:[{t:'rerollWatch',sys:'su',a:1,h:1,a2:2,h2:2,per:10}]},
  /* ---- 群（化学）21枚 ---- */
  {id:'qa01',n:'元素',     s:'qa',st:1,atk:2, hp:9, otxt:'募集終了時：＋1/＋1を得る。注力（3）募集終了時の効果は＋2/＋2になる。',
    fx:[{t:'recruit',a:1,h:1,focus:3,a2:2,h2:2}]},
- {id:'qa02',n:'分子',     s:'qa',st:1,atk:2, hp:10,otxt:'玉壁；陣没：1/1の群札「粒子」を1枚召喚する。',
+ {id:'qa02',n:'分子',     s:'qa',st:1,atk:2, hp:10,otxt:'玉壁；陣没：1/1の化学札「粒子」を1枚召喚する。',
    fx:[{t:'wall'},{t:'summon',a:1,h:1,cnt:1,tn:'粒子'}]},
  {id:'qa03',n:'原子',     s:'qa',st:1,atk:3, hp:8, otxt:'募集終了時：攻撃+2を得る。',
    fx:[{t:'recruit',a:2}]},
@@ -749,33 +749,33 @@ const POOL=[
    fx:[{t:'enterWatch',a:2,h:1}]},
  {id:'qa05',n:'触媒',     s:'qa',st:2,atk:4, hp:18,otxt:'嘲弄；攻撃できない。販売された時、味方将札全ては+1/+1を得る(注力(2)：効果は+2/+2になる)',
    fx:[{t:'taunt'},{t:'noAtk'},{t:'sell',a:1,h:1,focus:2,a2:2,h2:2}]},
- {id:'qa06',n:'酸化',     s:'qa',st:2,atk:5, hp:13,otxt:'自身を除く味方群札の攻撃が増えた時、同時に生命+2を得る。',
+ {id:'qa06',n:'酸化',     s:'qa',st:2,atk:5, hp:13,otxt:'自身を除く味方化学札の攻撃が増えた時、同時に生命+2を得る。',
    fx:[{t:'atkUpWatch',h:2,sys:'qa',skipSelf:1}]},
- {id:'qa07',n:'還元',     s:'qa',st:2,atk:6, hp:14,otxt:'入場：自身を除く味方群札ランダム1枚は+3/+2を得る。',
+ {id:'qa07',n:'還元',     s:'qa',st:2,atk:6, hp:14,otxt:'入場：自身を除く味方化学札ランダム1枚は+3/+2を得る。',
    fx:[{t:'enter',k:'buffRand',sys:'qa',a:3,h:2,skipSelf:1}]},
  {id:'qa08',n:'モル',     s:'qa',st:3,atk:7, hp:18,otxt:'味方将札が注力能力を発動する度に、味方将札ランダム1枚に下記能力を付与する。募集終了時：＋3/＋2を得る。',
    fx:[{t:'focusWatch',a:3,h:2}]},
- {id:'qa09',n:'中和',     s:'qa',st:3,atk:8, hp:20,otxt:'味方が入場を発動する時、群札全ては+2/+2を得る。',
+ {id:'qa09',n:'中和',     s:'qa',st:3,atk:8, hp:20,otxt:'味方が入場を発動する時、化学札全ては+2/+2を得る。',
    fx:[{t:'enterWatch',sys:'qa',a:2,h:2}]},
- {id:'qa10',n:'溶解',     s:'qa',st:3,atk:7, hp:22,otxt:'募集終了時：味方群札全ては攻撃+1を得る。注力能力を持つ味方将札が1枚多い毎に、1回重ねる。',
+ {id:'qa10',n:'溶解',     s:'qa',st:3,atk:7, hp:22,otxt:'募集終了時：味方化学札全ては攻撃+1を得る。注力能力を持つ味方将札が1枚多い毎に、1回重ねる。',
    fx:[{t:'recruit',a:1,sys:'qa',stackPer:'focusHolders'}]},
- {id:'qa11',n:'蒸留',     s:'qa',st:3,atk:8, hp:21,otxt:'入場：味方群札全ては+3/+3を得る。',
+ {id:'qa11',n:'蒸留',     s:'qa',st:3,atk:8, hp:21,otxt:'入場：味方化学札全ては+3/+3を得る。',
    fx:[{t:'enter',k:'buffAll',sys:'qa',a:3,h:3}]},
  {id:'qa12',n:'燃焼',     s:'qa',st:3,atk:7, hp:25,otxt:'注力(3)：味方将札ランダム1枚に玉壁を付与する。',
    fx:[{t:'focus',n:3,grant:'wall'}]},
  {id:'qa13',n:'共有結合', s:'qa',st:4,atk:12,hp:28,otxt:'行動時、同時に攻撃対象とその左隣1枚目の将札にダメージを与える。',
    fx:[{t:'splash'}]},
- {id:'qa14',n:'イオン結合',s:'qa',st:4,atk:11,hp:30,otxt:'募集終了時：味方群札全ては+1/+1を得る。募集終了時能力を持つ味方将札が1枚多い毎に、1回重ねる。注力(4)：募集終了時の効果は+2/+2になる。',
+ {id:'qa14',n:'イオン結合',s:'qa',st:4,atk:11,hp:30,otxt:'募集終了時：味方化学札全ては+1/+1を得る。募集終了時能力を持つ味方将札が1枚多い毎に、1回重ねる。注力(4)：募集終了時の効果は+2/+2になる。',
    fx:[{t:'recruit',a:1,h:1,sys:'qa',stackPer:'recruitHolders',focus:4,a2:2,h2:2}]},
  {id:'qa15',n:'平衡移動', s:'qa',st:4,atk:10,hp:32,otxt:'募集終了時：味方将札全ての注力のカウントを1減らせる。',
    fx:[{t:'recruit',focusDown:1}]},
- {id:'qa16',n:'放射線',   s:'qa',st:4,atk:12,hp:26,otxt:'連携(群)：連撃。',
+ {id:'qa16',n:'放射線',   s:'qa',st:4,atk:12,hp:26,otxt:'連携(化学)：連撃。',
    fx:[{t:'link',sys:'qa'},{t:'combo'}]},
- {id:'qa17',n:'重合',     s:'qa',st:4,atk:10,hp:33,otxt:'募集終了時：入場を持つ1/5の群札「水素」1枚を手札に加える(水素の入場：味方群札1枚は攻撃+5を得る)。',
+ {id:'qa17',n:'重合',     s:'qa',st:4,atk:10,hp:33,otxt:'募集終了時：入場を持つ1/5の化学札「水素」1枚を手札に加える(水素の入場：味方化学札1枚は攻撃+5を得る)。',
    fx:[{t:'recruit',addToken:{tn:'水素',a:1,h:5,fx:[{t:'enter',k:'buffRand',sys:'qa',a:5}]}}]},
  {id:'qa18',n:'芳香族',   s:'qa',st:5,atk:12,hp:40,otxt:'注力能力のカウントが減る時、自身の左隣1枚目の将札の募集終了時能力を発動させる。',
    fx:[{t:'focusDownWatch'}]},
- {id:'qa19',n:'錯体',     s:'qa',st:5,atk:13,hp:42,otxt:'募集終了時：+2/+4を得る。味方群札が1枚多い毎に、1回重ねる。',
+ {id:'qa19',n:'錯体',     s:'qa',st:5,atk:13,hp:42,otxt:'募集終了時：+2/+4を得る。味方化学札が1枚多い毎に、1回重ねる。',
    fx:[{t:'recruit',a:2,h:4,stackPer:'sysCount',sys:'qa'}]},
  {id:'qa20',n:'異性体',   s:'qa',st:5,atk:14,hp:40,otxt:'入場：前の対局相手の初期状態の場内将札1枚を手札に加える。',
    fx:[{t:'enter',k:'copyPrev'}]},
@@ -784,9 +784,9 @@ const POOL=[
  /* ---- 呉（情報）20枚 ---- */
  {id:'jo01',n:'変数',     s:'jo',st:1,atk:2, hp:9, otxt:'入場：商店の将札ランダム1枚の攻撃/生命を得る。',
    fx:[{t:'enter',k:'stealShop',n:1}]},
- {id:'jo02',n:'定数',     s:'jo',st:1,atk:3, hp:8, otxt:'陣没：2/2の呉札「バイト」を1枚召喚する。',
+ {id:'jo02',n:'定数',     s:'jo',st:1,atk:3, hp:8, otxt:'陣没：2/2の情報札「バイト」を1枚召喚する。',
    fx:[{t:'summon',a:2,h:2,cnt:1,tn:'バイト'}]},
- {id:'jo03',n:'二進数',   s:'jo',st:1,atk:3, hp:7, otxt:'味方呉札を手札から使用した時、王札の生命−1、自身は+1/+2を得る。',
+ {id:'jo03',n:'二進数',   s:'jo',st:1,atk:3, hp:7, otxt:'味方情報札を手札から使用した時、王札の生命−1、自身は+1/+2を得る。',
    fx:[{t:'playedWatch',sys:'jo',self:{a:1,h:2},kingDmg:1}]},
  {id:'jo04',n:'配列',     s:'jo',st:2,atk:4, hp:13,otxt:'陣没：募集終了時の自身の生命を味方ランダム1枚に付与する。',
    fx:[{t:'diePassLife'}]},
@@ -794,9 +794,9 @@ const POOL=[
    fx:[{t:'selfDmgWatch',a:1,h:1}]},
  {id:'jo06',n:'ループ',   s:'jo',st:2,atk:5, hp:12,otxt:'入場：商店の将札全ては+2/+1を得る。',
    fx:[{t:'enter',k:'shopAll',a:2,h:1}]},
- {id:'jo07',n:'キュー',   s:'jo',st:2,atk:4, hp:16,otxt:'陣没：商店の呉札全ては+2/+2を得る。',
+ {id:'jo07',n:'キュー',   s:'jo',st:2,atk:4, hp:16,otxt:'陣没：商店の情報札全ては+2/+2を得る。',
    fx:[{t:'dieShop',sys:'jo',a:2,h:2}]},
- {id:'jo08',n:'スタック', s:'jo',st:3,atk:7, hp:18,otxt:'入場：1/1の呉札「サブルーチン」1枚を手札に加える。',
+ {id:'jo08',n:'スタック', s:'jo',st:3,atk:7, hp:18,otxt:'入場：1/1の情報札「サブルーチン」1枚を手札に加える。',
    fx:[{t:'enter',k:'addTokenHand',tn:'サブルーチン',a:1,h:1}]},
  {id:'jo09',n:'ポインタ', s:'jo',st:3,atk:8, hp:17,otxt:'販売された時、金貨を1枚得て、得た金貨の数値と同じ回数の1ダメージの自傷能力を発動する。(追加販売2枚につき得る金貨+1、全局・全エリア有効)',
    fx:[{t:'sellGain'}]},
@@ -810,17 +810,17 @@ const POOL=[
    fx:[{t:'rerollGift',n:2}]},
  {id:'jo14',n:'ハッシュ', s:'jo',st:4,atk:10,hp:26,otxt:'入場：商店を更新し、更新後の将札全ての攻撃/生命は元の3倍になる。',
    fx:[{t:'enter',k:'rerollX3'}]},
- {id:'jo15',n:'キャッシュ',s:'jo',st:5,atk:12,hp:44,otxt:'嘲弄；味方呉札を手札から使用した時、自身は商店の将札ランダム1枚の攻撃/生命を得る。',
+ {id:'jo15',n:'キャッシュ',s:'jo',st:5,atk:12,hp:44,otxt:'嘲弄；味方情報札を手札から使用した時、自身は商店の将札ランダム1枚の攻撃/生命を得る。',
    fx:[{t:'taunt'},{t:'playedWatch',sys:'jo',selfShop:1}]},
- {id:'jo16',n:'プロトコル',s:'jo',st:5,atk:13,hp:42,otxt:'入場：「将札選択」を1回でき、候補は全て呉札になる。選択後、味方王札の生命はその星ランク分減る。',
+ {id:'jo16',n:'プロトコル',s:'jo',st:5,atk:13,hp:42,otxt:'入場：「将札選択」を1回でき、候補は全て情報札になる。選択後、味方王札の生命はその星ランク分減る。',
    fx:[{t:'enter',k:'choose',sys:'jo',kingCost:1}]},
- {id:'jo17',n:'アドレス', s:'jo',st:5,atk:12,hp:46,otxt:'味方王札の生命が自傷能力により減った場合、呉札全ては+1/+1を得る。(4回目から+2/+2になる)。',
+ {id:'jo17',n:'アドレス', s:'jo',st:5,atk:12,hp:46,otxt:'味方王札の生命が自傷能力により減った場合、情報札全ては+1/+1を得る。(4回目から+2/+2になる)。',
    fx:[{t:'selfDmgWatch',sys:'jo',a:1,h:1,a2:2,h2:2,from:4}]},
  {id:'jo18',n:'コンパイラ',s:'jo',st:5,atk:11,hp:48,otxt:'注力(3)：「ポインタ」2枚を手札に加える。',
    fx:[{t:'recruit',focus:3,addSys:'jo',cnt:2,addId:'jo09'}]},
- {id:'jo19',n:'アルゴリズム',s:'jo',st:6,atk:15,hp:58,otxt:'霧中；陣没：同名札を除く最初に撃破された味方呉札を召喚する。',
+ {id:'jo19',n:'アルゴリズム',s:'jo',st:6,atk:15,hp:58,otxt:'霧中；陣没：同名札を除く最初に撃破された味方情報札を召喚する。',
    fx:[{t:'mist'},{t:'dieSummonFirst'}]},
- {id:'jo20',n:'人工知能', s:'jo',st:6,atk:17,hp:60,otxt:'募集終了時：味方呉札それぞれが商店の将札ランダム1枚の攻撃/生命を得る。',
+ {id:'jo20',n:'人工知能', s:'jo',st:6,atk:17,hp:60,otxt:'募集終了時：味方情報札それぞれが商店の将札ランダム1枚の攻撃/生命を得る。',
    fx:[{t:'recruit',eachSteal:'jo'}]}
 ];
 const BYID={}; POOL.forEach(c=>BYID[c.id]=c);
@@ -943,7 +943,7 @@ function fxText(fx,sys){
         if(f.coin) parts.push('金貨＋'+f.coin+'を得る');
         if(f.spendAll) parts.push('残りの全金貨を消費し、味方'+sysName(f.spendAll)+'札全ては消費した金貨と同数の攻撃/生命を得る');
         if(f.addLink) parts.push('連携を持つ将札1枚を手札に加える');
-        if(f.addToken) parts.push('入場を持つ'+f.addToken.a+'/'+f.addToken.h+'の群札「'+f.addToken.tn+'」1枚を手札に加える');
+        if(f.addToken) parts.push('入場を持つ'+f.addToken.a+'/'+f.addToken.h+'の化学札「'+f.addToken.tn+'」1枚を手札に加える');
         if(f.addSys) parts.push(sysFull(f.addSys).split('（')[0]+'札を'+(f.cnt||1)+'枚手札に加える');
         if(f.kingDmg) parts.push('味方王札の生命−'+f.kingDmg);
         if(f.nextCoin) parts.push('次ターンで得る金貨+'+f.nextCoin);
@@ -1098,7 +1098,7 @@ const NAMES=['鏡山 累','玖珂 宗一','淡海 佐和','冬木 廉','鈴代 �
 function placeDelta(p){ const m={1:28,2:16,3:7,4:2,5:-8,6:-8,7:-16,8:-16}; return m[p]!==undefined?m[p]:0; }
 function placeReward(p){ const m={1:14,2:9,3:6,4:2}; return m[p]||0; }
 /* =========================================================
-   学府の絵札 — engine (v3.07 / 原作完全再現・6v6)
+   学府の絵札 — engine (v3.08 / 原作完全再現・6v6)
    ========================================================= */
 const rnd=n=>Math.floor(Math.random()*n);
 const pick=a=>a[rnd(a.length)];
@@ -1675,7 +1675,7 @@ function finishTournament(done,place){
   return {delta,rew,daily,place,done,prot};
 }
 /* =========================================================
-   学府の絵札 — UI layer (v3.07 / 6v6 / drag & drop / animated battle)
+   学府の絵札 — UI layer (v3.08 / 6v6 / drag & drop / animated battle)
    ========================================================= */
 const $=id=>document.getElementById(id);
 const esc=s=>String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
@@ -2111,7 +2111,7 @@ function detailModal(c,kind,idx){
     '</div></div>',acts);
   setTimeout(()=>{ const d=$('mCard'); if(d){ d.innerHTML=cardHTML(c,{}); d.firstChild.style.width='76px'; d.firstChild.style.height='109px'; d.firstChild.style.flex='none'; } },0);
 }
-/* ===== v3.07 追加：商店段階フック群 ===== */
+/* ===== v3.08 追加：商店段階フック群 ===== */
 function buffCards(t,list,a,h){
   list.forEach(c=>{ c.atk+=a||0; c.hp+=h||0; });
   if((a||0)>0&&list.length){
