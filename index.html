@@ -853,7 +853,7 @@ function loadGameFont(){}
 
     <button class="btn" style="position:relative;width:100%;margin-top:12px;padding:16px 0 14px;border-radius:13px;border:1px solid #c9a24a;background:radial-gradient(130% 180% at 50% 0%,#2a2213 0%,#14100a 58%,#0a0806 100%);color:#f3e3bd;font-size:15px;letter-spacing:.24em;font-weight:700;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;cursor:pointer;box-shadow:0 0 0 1px rgba(201,162,74,.25),inset 0 0 18px rgba(201,162,74,.07)" onclick="location.href='cards.html'"><span style="display:block;font-size:9.5px;letter-spacing:.34em;color:#c9a24a;margin-bottom:6px">CARD BATTLE</span>学府の絵札</button>
 
-    <div class="hint" style="text-align:center;margin-top:16px">StudyTime v3.09 · ローカル保存＋GitHub自動バックアップ</div>
+    <div class="hint" style="text-align:center;margin-top:16px">StudyTime v3.10 · ローカル保存＋GitHub自動バックアップ</div>
   </div>
 
   <!-- ================= DESIGN ================= -->
@@ -2453,13 +2453,14 @@ function dailyPick(sid){
   return weak[dn % weak.length];
 }
 function shuffle(a){ for(let i=a.length-1;i>0;i--){ const j = Math.floor(Math.random()*(i+1)); const t=a[i]; a[i]=a[j]; a[j]=t } return a }
-function deckSortOf(k){ return deckSorts[k]||'add' }
+function deckSortOf(k){ const v=deckSorts[k]||'add'; return v==='add'?'add_asc':v }
 function shuffleKey(kind){ return deckSid+'|'+kind }
 function newShuffle(kind){ const a = subjCards(deckSid, kind).map(c=>c.id); shuffle(a); deckShuffle[shuffleKey(kind)] = a; return a }
 function setDeckSort(k,v){ if(v==='rand') newShuffle(k); deckSorts[k]=v; renderDeck() }
 function sortCards(cs, kind){
   const m = deckSortOf(kind), a = cs.slice();
-  if(m==='kana') a.sort((x,y)=>String(x.f||'').localeCompare(String(y.f||''),'ja'));
+  if(m==='add_desc') a.reverse();
+  else if(m==='kana') a.sort((x,y)=>String(x.f||'').localeCompare(String(y.f||''),'ja'));
   else if(m==='tag') a.sort((x,y)=>String(x.tag||'').localeCompare(String(y.tag||''),'ja') || String(x.f||'').localeCompare(String(y.f||''),'ja'));
   else if(m==='rand'){
     const k = shuffleKey(kind), ord = (deckShuffle[k]&&deckShuffle[k].length) ? deckShuffle[k] : newShuffle(kind);
@@ -2646,8 +2647,8 @@ function startWeakSession(sid){
 }
 function sortOpts(kind){
   return kind==='prob'
-    ? [['add','追加順'],['kana','五十音順'],['tag','分野順'],['rand','ランダム']]
-    : [['add','追加順'],['kana','五十音順'],['rand','ランダム']];
+    ? [['add_asc','追加順 ↑'],['add_desc','追加順 ↓'],['kana','五十音順'],['tag','分野順'],['rand','ランダム']]
+    : [['add_asc','追加順 ↑'],['add_desc','追加順 ↓'],['kana','五十音順'],['rand','ランダム']];
 }
 var deckPick = null;
 function pickEnter(){ deckPick = new Set(); renderDeck() }
@@ -2674,7 +2675,7 @@ function deckList(kind){
   </div>`
     : `<div class="deck-bar">
     <input id="deck-search" placeholder="検索" />
-    <button class="sort-btn${cur[0]==='add'?'':' on'}" onclick="openSortSheet('${kind}')"><span>${cur[1]}</span><span class="cv">▼</span></button>
+    <button class="sort-btn${cur[0]==='add_asc'?'':' on'}" onclick="openSortSheet('${kind}')"><span>${cur[1]}</span><span class="cv">▼</span></button>
     <button class="btn sm sel-toggle" onclick="pickEnter()">選択</button>
   </div>`;
   return bar + `<div id="deck-list">${listRows('', kind)}</div>`;
@@ -2890,9 +2891,7 @@ function memQueue(sid, n){
   const all = subjCards(sid,'card').filter(memMatch);
   if(!all.length) return [];
   if(memOrderOf(sid)==='add'){
-    const t = todayKey();
-    const due = all.filter(c=>(c.due||'0000-01-01')<=t);
-    const ids = (due.length?due:all).map(c=>c.id);
+    const ids = all.map(c=>c.id);
     return ids.slice(0,n);
   }
   const known = shuffle(all.filter(c=>(c.box||0)>=1).map(c=>c.id));
@@ -2991,7 +2990,7 @@ function startMemorize(sid){
   if(!all.length){ toast('カードがありません'); return }
   const pool = all.filter(memMatch);
   if(!pool.length){ toast(memFilterName()+'のカードがありません'); return }
-  const n = Math.min(30, pool.length);
+  const n = pool.length;
   let q = memQueue(sid, n);
   if(!q.length){ toast('カードがありません'); return }
   if(memOrderOf(sid)!=='add'){
