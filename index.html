@@ -337,7 +337,6 @@ a{color:var(--accent)}
 .ff{font-size:28px;font-weight:700;line-height:1.4;word-break:break-word}
 .fb{font-size:23px;font-weight:600;line-height:1.5;word-break:break-word}
 .q-choices{display:grid;gap:8px;margin-top:14px}
-ight:700;text-align:right;max-width:58%;word-break:break-all}
 .q-choice{min-height:52px;border-radius:12px;border:1px solid var(--line);background:var(--bg-elev);color:var(--text);font-size:15px;font-weight:600;padding:10px 12px;text-align:left}
 .q-choice.good{background:#16a34a;border-color:#16a34a;color:#fff}
 .q-choice.bad{background:#dc2626;border-color:#dc2626;color:#fff}
@@ -854,7 +853,7 @@ function loadGameFont(){}
 
     <button class="btn" style="position:relative;width:100%;margin-top:12px;padding:16px 0 14px;border-radius:13px;border:1px solid #c9a24a;background:radial-gradient(130% 180% at 50% 0%,#2a2213 0%,#14100a 58%,#0a0806 100%);color:#f3e3bd;font-size:15px;letter-spacing:.24em;font-weight:700;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;cursor:pointer;box-shadow:0 0 0 1px rgba(201,162,74,.25),inset 0 0 18px rgba(201,162,74,.07)" onclick="location.href='cards.html'"><span style="display:block;font-size:9.5px;letter-spacing:.34em;color:#c9a24a;margin-bottom:6px">CARD BATTLE</span>学府の絵札</button>
 
-    <div class="hint" style="text-align:center;margin-top:16px">StudyTime v3.18 · ローカル保存＋GitHub自動バックアップ</div>
+    <div class="hint" style="text-align:center;margin-top:16px">StudyTime v3.19 · ローカル保存＋GitHub自動バックアップ</div>
   </div>
 
   <!-- ================= DESIGN ================= -->
@@ -4215,7 +4214,7 @@ html[data-game="ice"] .group-tab,html[data-game="huaxu"] .group-tab{border-radiu
   html[data-game="ice"] .bgfx{background-position:center,center,50% 50%}
   html[data-game="huaxu"] .bgfx{background-position:center,center,50% 38%}
 }
-.q-choice{background:var(--bg-elev)!important;border:1px solid var(--line)!important;color:var(--text)!important;font-weight:600!important;text-align:left!important;box-shadow:none!important}
+.q-choice{display:block!important;width:100%!important;min-height:52px!important;border-radius:12px!important;padding:10px 12px!important;background:var(--bg-elev)!important;border:1px solid var(--line)!important;color:var(--text)!important;font-size:15px!important;font-weight:600!important;text-align:left!important;box-sizing:border-box!important;white-space:normal!important;line-height:1.5!important;opacity:1!important;-webkit-appearance:none!important;appearance:none!important;box-shadow:none!important}
 .q-choice.good{background:#16a34a!important;border-color:#16a34a!important;color:#fff!important}
 .q-choice.bad{background:#dc2626!important;border-color:#dc2626!important;color:#fff!important}
 </style>
