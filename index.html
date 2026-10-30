@@ -853,7 +853,7 @@ function loadGameFont(){}
 
     <button class="btn" style="position:relative;width:100%;margin-top:12px;padding:16px 0 14px;border-radius:13px;border:1px solid #c9a24a;background:radial-gradient(130% 180% at 50% 0%,#2a2213 0%,#14100a 58%,#0a0806 100%);color:#f3e3bd;font-size:15px;letter-spacing:.24em;font-weight:700;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;cursor:pointer;box-shadow:0 0 0 1px rgba(201,162,74,.25),inset 0 0 18px rgba(201,162,74,.07)" onclick="location.href='cards.html'"><span style="display:block;font-size:9.5px;letter-spacing:.34em;color:#c9a24a;margin-bottom:6px">CARD BATTLE</span>学府の絵札</button>
 
-    <div class="hint" style="text-align:center;margin-top:16px">StudyTime v3.19 · ローカル保存＋GitHub自動バックアップ</div>
+    <div class="hint" style="text-align:center;margin-top:16px">StudyTime v3.20 · ローカル保存＋GitHub自動バックアップ</div>
   </div>
 
   <!-- ================= DESIGN ================= -->
@@ -1976,15 +1976,15 @@ function renderSubjects(){
   } else {
     el.innerHTML = state.subjects.map(s=>{
       const isNote = deckKinds(s).indexOf('note')>=0;
-      const nc = subjCards(s.id,'card').length, np = subjCards(s.id,'prob').length;
-      const d = dueCards(s.id,'card').length + (np && !probDoneToday(s.id) ? 1 : 0);
+      const nc = subjCards(s.id,'card').length, np = subjCards(s.id,'prob').length, nj = subjCards(s.id,'juk').length;
+      const d = dueCards(s.id,'card').length + dueCards(s.id,'juk').length + (np && !probDoneToday(s.id) ? 1 : 0);
       const pill = isNote ? '<span class="pill">ノート</span>' : ((nc||np) ? (d>0 ? `<span class="pill hot">今日 ${d}</span>` : `<span class="pill">✓</span>`) : '');
       return `
       <div class="subj-row" onclick="openDeck('${s.id}')">
         <span class="dot" style="background:${s.color}"></span>
         <div style="flex:1;min-width:0">
           <div class="name">${escapeHtml(s.name)}</div>
-          <div class="meta">1日 ${s.daily?fmtHM(s.daily):'—'} · 週 ${s.weekly?fmtHM(s.weekly):'—'}${s.weak?' · 苦手':''}${s.focus?' · 重点':''}${isNote?' · ノート':((nc||np)?' · 単語'+nc+'件'+(np?' · 問題'+np+'件':''):'')}</div>
+          <div class="meta">1日 ${s.daily?fmtHM(s.daily):'—'} · 週 ${s.weekly?fmtHM(s.weekly):'—'}${s.weak?' · 苦手':''}${s.focus?' · 重点':''}${isNote?' · ノート':((nc||np||nj)?' · 単語'+nc+'件'+(nj?' · 熟語'+nj+'件':'')+(np?' · 問題'+np+'件':''):'')}</div>
         </div>
         ${pill}
         <button class="icon-btn" onclick="event.stopPropagation();openSubjectModal('${s.id}')">✎</button>
@@ -2278,7 +2278,7 @@ function reviewCounts(){
   const t = todayKey(), tm = addDaysKey(1);
   let soon=0, todayN=0, tom=0;
   (state.subjects||[]).forEach(function(sj){
-    ['card','prob'].forEach(function(k){
+    ['card','juk','prob'].forEach(function(k){
       subjCards(sj.id,k).forEach(function(c){
         if((c.n||0)>0 && (c.box||0)===0) soon++;
         const due = c.due||'0000-01-01';
@@ -2393,23 +2393,22 @@ function setMemOrder(sid, v){
 const DECK_KIND_RULES = [
   [/化学/, ['note']],
   [/数学|算数|物理/, ['prob']],
-  [/地理|英語|英単語|国語|古文|漢文|現代文/, ['card','prob']],
-  [/世界史|日本史|社会|生物|地学|公民|倫理|政治|経済/, ['card']]
+  [/地理|英語|英単語|国語|古文|漢文|現代文/, ['card','juk','prob']],
+  [/世界史|日本史|社会|生物|地学|公民|倫理|政治|経済/, ['card','juk']]
 ];
-function deckKinds(s){ const n = (s&&s.name)||''; for(const r of DECK_KIND_RULES){ if(r[0].test(n)) return r[1].slice() } return ['card','prob'] }
-function kindLabel(k){ return k==='card' ? '単語カード' : k==='note' ? 'ノート' : '問題' }
+function deckKinds(s){ const n = (s&&s.name)||''; for(const r of DECK_KIND_RULES){ if(r[0].test(n)) return r[1].slice() } return ['card','juk','prob'] }
+function kindLabel(k){ return k==='card' ? '単語カード' : k==='juk' ? '熟語カード' : k==='note' ? 'ノート' : '問題' }
 
 function todayKey(d){ const x = d?new Date(d):new Date(); return x.getFullYear()+'-'+pad2(x.getMonth()+1)+'-'+pad2(x.getDate()) }
 function addDaysKey(n){ const x = new Date(); x.setDate(x.getDate()+n); return todayKey(x) }
 function mdShort(d){ if(!d) return '—'; const p = String(d).split('-'); return p.length>2 ? p[1]+'/'+p[2] : String(d) }
-function cardKind(c){ return (c && c.kind==='card') ? 'card' : 'prob' }
+function cardKind(c){ return (c && c.kind==='card') ? 'card' : (c && c.kind==='juk') ? 'juk' : 'prob' }
 function subjCards(sid, kind){ const a = (state.cards||[]).filter(c=>c.sid===sid); return kind ? a.filter(c=>cardKind(c)===kind) : a }
 function dueCards(sid, kind){ const t = todayKey(); return subjCards(sid, kind).filter(c=>(c.due||'0000-01-01')<=t) }
 function probDoneToday(sid){ const t = todayKey(); return subjCards(sid,'prob').some(c=>c.last===t) }
 function cardStats(sid, kind){ const cs = subjCards(sid, kind);
   return { total:cs.length, learned:cs.filter(c=>(c.box||0)>=1).length, due:dueCards(sid, kind).length,
            weak:cs.filter(c=>(c.n||0)>0 && (c.box||0)===0).length } }
-function weakCards(sid, kind){ return subjCards(sid, kind||'prob').filter(c=>(c.n||0)>0 && (c.box||0)===0) }
 function streakDays(sid){ const st = (state.streak||{})[sid]; if(!st||!st.d) return 0;
   const t = todayKey(); return (st.d===t || st.d===addDaysKey(-1)) ? (st.n||0) : 0 }
 function bumpStreak(sid){ state.streak = state.streak||{}; const t = todayKey();
@@ -2525,8 +2524,8 @@ function deckTabsHTML(s){
   const ks = deckKinds(s);
   if(ks.indexOf('note')>=0) return `<button data-t="note" class="${deckTab==='note'?'on':''}" onclick="setDeckTab('note')">ノート</button>`;
   const t = [['today','今日']];
-  if(ks.indexOf('card')>=0) t.push(['card','単語']);
-  if(ks.indexOf('prob')>=0){ t.push(['prob','問題']); t.push(['weak','要復習']); }
+  if(ks.indexOf('card')>=0){ t.push(['card','単語']); t.push(['juk','熟語']); }
+  if(ks.indexOf('prob')>=0) t.push(['prob','問題']);
   t.push(['add','追加']);
   return t.map(x=>`<button data-t="${x[0]}" class="${deckTab===x[0]?'on':''}" onclick="setDeckTab('${x[0]}')">${x[1]}</button>`).join('');
 }
@@ -2538,14 +2537,15 @@ function renderDeck(){
   if(ks.indexOf(addKind)<0) addKind = ks[0];
   if(ks.indexOf('note')>=0){ renderNoteDeck(s); return }
   const two = ks.indexOf('card')>=0 && ks.indexOf('prob')>=0;
-  const stc = cardStats(deckSid,'card'), stp = cardStats(deckSid,'prob');
-  const todo = stc.due + (stp.total && !probDoneToday(deckSid) ? 1 : 0);
-  const counts = two ? `単語 ${stc.total}件 · 問題 ${stp.total}件`
-    : (ks.indexOf('card')>=0 ? `単語カード · 全${stc.total}件` : `問題 · 全${stp.total}件`);
+  const stc = cardStats(deckSid,'card'), stp = cardStats(deckSid,'prob'), stj = cardStats(deckSid,'juk');
+  const todo = stc.due + stj.due + (stp.total && !probDoneToday(deckSid) ? 1 : 0);
+  const jk = ks.indexOf('juk')>=0;
+  const counts = two ? `単語 ${stc.total}件${jk?` · 熟語 ${stj.total}件`:''} · 問題 ${stp.total}件`
+    : (ks.indexOf('card')>=0 ? `単語 ${stc.total}件${jk?` · 熟語 ${stj.total}件`:''}` : `問題 · 全${stp.total}件`);
   const prog = ks.indexOf('card')>=0 ? (stc.total?Math.round(stc.learned/stc.total*100):0)
                                      : (stp.total?Math.round(stp.learned/stp.total*100):0);
-  const pline = two ? `単語 覚えた ${stc.learned}/${stc.total} · 問題 解けた ${stp.learned}/${stp.total} · 今日の分 ${todo}件`
-    : (ks.indexOf('card')>=0 ? `覚えた ${stc.learned} / ${stc.total} · 今日の分 ${stc.due}件`
+  const pline = two ? `単語 覚えた ${stc.learned}/${stc.total}${jk?` · 熟語 覚えた ${stj.learned}/${stj.total}`:''} · 問題 解けた ${stp.learned}/${stp.total} · 今日の分 ${todo}件`
+    : (ks.indexOf('card')>=0 ? `覚えた ${stc.learned+stj.learned} / ${stc.total+stj.total} · 今日の分 ${stc.due+stj.due}件`
                              : `解けた ${stp.learned} / ${stp.total} · 今日の分 ${stp.due}件`);
   document.getElementById('deck-title').textContent = s.name;
   document.getElementById('deck-head').innerHTML = `
@@ -2563,27 +2563,23 @@ function renderDeck(){
   const pane = document.getElementById('deck-pane');
   pane.innerHTML = deckTab==='add' ? deckAdd()
     : deckTab==='card' ? deckList('card')
+    : deckTab==='juk' ? deckList('juk')
     : deckTab==='prob' ? deckList('prob')
-    : deckTab==='weak' ? deckWeak()
     : deckToday();
-  if(deckTab==='card' || deckTab==='prob'){
+  if(deckTab==='card' || deckTab==='juk' || deckTab==='prob'){
     const q = document.getElementById('deck-search');
     if(q) q.oninput = ()=>{ const el = document.getElementById('deck-list'); if(el) el.innerHTML = listRows(q.value, deckTab) };
   }
 }
 function sect(t){ return `<div class="sect">${t}<i></i></div>` }
-function deckToday(){
-  const s = findSubject(deckSid); if(!s) return '';
-  const ks = deckKinds(s), two = ks.length>1, out = [];
-  if(ks.indexOf('card')>=0){
-    const st = cardStats(deckSid,'card');
-    if(two) out.push(sect('単語カード'));
-    if(st.total===0){
-      out.push(`<div class="empty">まだ単語カードがありません。</div>
-        <button class="btn block" style="margin-top:10px" onclick="setDeckTab('add')">単語カードを追加する</button>`);
-    } else {
-      const n = st.due;
-      out.push(`<div class="deck-box"><div class="deck-big">${n}</div>
+function todayMemSection(kind, title, two){
+  const st = cardStats(deckSid, kind), head = two ? sect(title) : '';
+  if(st.total===0){
+    return head + `<div class="empty">まだ${title}がありません。</div>
+        <button class="btn block" style="margin-top:10px" onclick="setDeckTab('add')">${title}を追加する</button>`;
+  }
+  const n = st.due;
+  return head + `<div class="deck-box"><div class="deck-big">${n}</div>
         <div class="hint" style="text-align:center">今日の分（${mdShort(todayKey())}）</div></div>
       <div class="hint" style="margin-top:14px">暗記モードの出題順</div>
       <div class="seg" style="grid-template-columns:repeat(2,1fr);margin-top:6px">
@@ -2592,12 +2588,16 @@ function deckToday(){
       </div>
       <div class="hint" style="margin-top:14px">出す範囲</div>
       <div class="mchips" style="margin-top:6px">${MEM_FILTERS.map(f=>`<button class="mchip${memFilter===f.id?' on':''}" onclick="setMemFilter('${f.id}')">${f.name}</button>`).join('')}</div>
-      <button class="btn primary block" style="margin-top:10px" onclick="startMemorize('${deckSid}')">暗記モード</button>
-      <button class="btn block" style="margin-top:8px" ${st.total>=4?'':'disabled'} onclick="startQuiz('${deckSid}')">テストモード</button>
+      <button class="btn primary block" style="margin-top:10px" onclick="startMemorize('${deckSid}','${kind}')">暗記モード</button>
+      <button class="btn block" style="margin-top:8px" ${st.total>=4?'':'disabled'} onclick="startQuiz('${deckSid}','${kind}')">テストモード</button>
       ${st.total>=4?'':'<div class="hint" style="text-align:center;margin-top:8px">テストモードはカードが4件以上で使えます</div>'}
-      ${n?'':'<div class="hint" style="text-align:center;margin-top:8px">今日の分は終わりです</div>'}`);
-    }
-  }
+      ${n?'':'<div class="hint" style="text-align:center;margin-top:8px">今日の分は終わりです</div>'}`;
+}
+function deckToday(){
+  const s = findSubject(deckSid); if(!s) return '';
+  const ks = deckKinds(s), two = ks.length>1, out = [];
+  if(ks.indexOf('card')>=0) out.push(todayMemSection('card','単語カード',two));
+  if(ks.indexOf('juk')>=0) out.push(todayMemSection('juk','熟語',two));
   if(ks.indexOf('prob')>=0){
     const st = cardStats(deckSid,'prob'), d = dailyPick(deckSid);
     if(two) out.push(sect('問題'));
@@ -2612,38 +2612,12 @@ function deckToday(){
     <div class="row" style="gap:8px;margin-top:14px">
       <div class="mini"><b>${st.total}</b><span>問題</span></div>
       <div class="mini"><b>${st.learned}</b><span>解けた</span></div>
-      <button class="mini${st.weak?' tap':''}" onclick="openWeak('${deckSid}')"><b>${st.weak}</b><span>要復習</span></button>
     </div>
     <button class="btn primary block" style="margin-top:14px" onclick="startProbSession('${deckSid}')">ランダム演習</button>
     <button class="btn block" style="margin-top:8px" onclick="setDeckTab('prob')">自由演習</button>`);
     }
   }
   return out.join(two ? '<div style="height:16px"></div>' : '');
-}
-function openWeak(sid){
-  const n = weakCards(sid,'prob').length;
-  if(!n){ toast('要復習の問題はまだありません'); return }
-  deckTab = 'weak'; renderDeck();
-}
-function deckWeak(){
-  const cs = weakCards(deckSid,'prob');
-  if(!cs.length) return `<div class="empty">要復習の問題はありません。<br>まちがえた問題がここにたまります。</div>`;
-  return `<div class="hint">まちがえた問題 <b>${cs.length}件</b></div>
-  <button class="btn primary block" style="margin-top:10px" onclick="startWeakSession('${deckSid}')">まとめて挑戦（${Math.min(20,cs.length)}問）</button>
-  <div style="height:12px"></div>` + cs.map(c=>`<div class="crow">
-    <div style="flex:1;min-width:0">
-      <div class="cf">${escapeHtml(c.f)}</div>
-      <div class="cb">${escapeHtml(c.b||'')}</div>
-      <div class="ct">${c.tag?escapeHtml(c.tag)+' · ':''}まちがえ ${c.n||0}回${(c.retry||0)>0?' · 練習'+c.retry+'回':''}</div>
-    </div>
-    <button class="icon-btn" onclick="startCard2('${c.id}',true)" title="挑戦">▶</button>
-  </div>`).join('');
-}
-function startWeakSession(sid){
-  const cs = weakCards(sid,'prob');
-  if(!cs.length){ toast('要復習の問題がありません'); return }
-  sess = { mode:'prob', sid, q:shuffle(cs.map(c=>c.id)).slice(0,20), i:0, revealed:false, ok:0, retry:true };
-  openSess();
 }
 function sortOpts(kind){
   return kind==='prob'
@@ -2682,7 +2656,7 @@ function deckList(kind){
 }
 function openSortSheet(kind){
   const cur = deckSortOf(kind);
-  document.getElementById('sort-title').textContent = (kind==='prob'?'問題':'単語カード')+'の並び替え';
+  document.getElementById('sort-title').textContent = (kind==='prob'?'問題':kind==='juk'?'熟語カード':'単語カード')+'の並び替え';
   document.getElementById('sort-list').innerHTML = sortOpts(kind).map(o=>
     `<div class="sort-row${cur===o[0]?' on':''}" onclick="setDeckSort('${kind}','${o[0]}');closeModal('modal-sort')">
       <div style="flex:1"><div class="nm">${o[1]}</div></div>
@@ -2695,7 +2669,7 @@ function listRows(q, kind){
   const t = todayKey();
   let cs = subjCards(deckSid, kind);
   if(q){ const qq = q.toLowerCase(); cs = cs.filter(c=>((c.f||'')+(c.b||'')+(c.tag||'')).toLowerCase().includes(qq)) }
-  if(!cs.length) return `<div class="empty">該当する${kind==='card'?'カード':'問題'}がありません</div>`;
+  if(!cs.length) return `<div class="empty">該当する${kind==='card'?'カード':kind==='juk'?'熟語':'問題'}がありません</div>`;
   cs = sortCards(cs, kind);
   const meta = c=>(c.w&&c.w.length?'4択 · ':'')+(c.tag?escapeHtml(c.tag)+' · ':'')+((c.due||'0000')<=t?'<span style="color:var(--bad)">今日</span>':'次回 '+mdShort(c.due))+((c.n||0)>0?' · '+(c.n||0)+'回':' · 未挑戦')+(c.warn?' · <span style="color:var(--warn)">要注意</span>':'')+((c.box||0)>=SRS_MASTER?' · <span style="color:var(--ok)">固定'+srsFix().d+'日おき</span>':'');
   if(deckPick) return cs.map(c=>{
@@ -2721,22 +2695,25 @@ function listRows(q, kind){
 function deckAdd(){
   const s = findSubject(deckSid); if(!s) return '';
   const ks = deckKinds(s), two = ks.length>1, kind = addKind;
-  const hint = kind==='card'
-    ? '1行に1件、「表 | 裏 | 基本アングル | 入試アングル」の形で貼り付けてください（うしろ2つは省略できます）。<br>例：apple | りんご<br>例：あく | ①十分満足する ②飽きる | 「あかず」は「飽きない」 | 「あかで」「あかなくに」も頻出'
-    : '1行に1問「問題 | 答え | 解説 | 分野」で貼り付けます。解説と分野は省略できます。<br>長い問題は、空行で区切って「---」の行をはさむ形でも登録できます。<br>4択にしたいときは、うしろに「|」で区切って、まちがいの選択肢を3つまで足します。「/」で区切って書きます。<br><b>整序（語句をならべかえる問題）</b>は、分野を「整序」で始め、答えを「/」で区切って語句ごとに書きます。下に出た語句をタップして並べる練習になります。';
-  const ph = kind==='card' ? 'apple | りんご\nbook | 本' : '2x+3=11 | x=4 | 3を移項して 2x=8 | 一次方程式';
+  const hint = kind==='prob'
+    ? '1行に1問「問題 | 答え | 解説 | 分野」で貼り付けます。解説と分野は省略できます。<br>長い問題は、空行で区切って「---」の行をはさむ形でも登録できます。<br>4択にしたいときは、うしろに「|」で区切って、まちがいの選択肢を3つまで足します。「/」で区切って書きます。<br><b>整序（語句をならべかえる問題）</b>は、分野を「整序」で始め、答えを「/」で区切って語句ごとに書きます。下に出た語句をタップして並べる練習になります。'
+    : '1行に1件、「表 | 裏 | 基本アングル | 入試アングル」の形で貼り付けてください（うしろ2つは省略できます）。<br>' + (kind==='juk'
+      ? '例：虚心坦懐 | うそ偽りなく、心におごり高ぶるところがないこと<br>例：彫虫 | 小さな手細工。彫虫小技'
+      : '例：apple | りんご<br>例：あく | ①十分満足する ②飽きる | 「あかず」は「飽きない」 | 「あかで」「あかなくに」も頻出');
+  const ph = kind==='prob' ? '2x+3=11 | x=4 | 3を移項して 2x=8 | 一次方程式' : (kind==='juk' ? '虚心坦懐 | うそ偽りなく、心におごり高ぶるところがないこと' : 'apple | りんご\nbook | 本');
   return `${two?`<div class="card" style="margin-bottom:12px">
       <div class="hint">追加する種類</div>
       <div class="seg" style="margin-top:6px">
         <button data-k="card" class="${kind==='card'?'on':''}" onclick="setDeckKind('card')">単語カード</button>
+        ${ks.indexOf('juk')>=0?`<button data-k="juk" class="${kind==='juk'?'on':''}" onclick="setDeckKind('juk')">熟語</button>`:''}
         <button data-k="prob" class="${kind==='prob'?'on':''}" onclick="setDeckKind('prob')">問題</button>
       </div>
     </div>`:''}
     <div class="card" style="margin-bottom:12px">
       <h2>1件ずつ追加</h2>
-      <div class="field"><label>${kind==='card'?'表':'問題'}</label><textarea id="nc-f" rows="2" placeholder="${kind==='card'?'例：apple':'例：2x+3=11 のとき x を求めよ'}"></textarea></div>
-      <div class="field"><label>${kind==='card'?'裏':'答え'}</label><textarea id="nc-b" rows="2" placeholder="${kind==='card'?'例：りんご':'例：x=4'}"></textarea></div>
-      ${kind==='card'?`<div class="field"><label>基本アングル</label><textarea id="nc-x" rows="2"></textarea></div>
+      <div class="field"><label>${kind==='prob'?'問題':'表'}</label><textarea id="nc-f" rows="2" placeholder="${kind==='prob'?'例：2x+3=11 のとき x を求めよ':'例：apple'}"></textarea></div>
+      <div class="field"><label>${kind==='prob'?'答え':'裏'}</label><textarea id="nc-b" rows="2" placeholder="${kind==='prob'?'例：x=4':'例：りんご'}"></textarea></div>
+      ${kind!=='prob'?`<div class="field"><label>基本アングル</label><textarea id="nc-x" rows="2"></textarea></div>
       <div class="field"><label>入試アングル</label><textarea id="nc-y" rows="2"></textarea></div>`:''}
       ${kind==='prob'?`<div class="field"><label>解説</label><textarea id="nc-x" rows="2"></textarea></div>
       <div class="field"><label>分野</label><input type="text" id="nc-tag" placeholder="例：無機 / 二次関数" /></div>
@@ -2758,7 +2735,7 @@ function addCardManual(){
   const f = document.getElementById('nc-f').value.trim(); if(!f){ toast('内容を入力してください'); return }
   const kind = addKind;
   const c = newCard({ f, b:(document.getElementById('nc-b').value||'').trim() });
-  if(kind==='card'){
+  if(kind!=='prob'){
     const xEl = document.getElementById('nc-x'), yEl = document.getElementById('nc-y');
     c.x = xEl ? xEl.value.trim() : ''; c.y = yEl ? yEl.value.trim() : '';
   }
@@ -2824,17 +2801,17 @@ function editCard(id){
   const c = (state.cards||[]).find(x=>x.id===id); if(!c) return;
   cardEditId = id;
   const kind = cardKind(c);
-  document.getElementById('card-modal-title').textContent = (kind==='card'?'単語カードを編集':'問題を編集');
-  document.getElementById('cf-label').textContent = kind==='card'?'表（古語）':'問題';
-  document.getElementById('cb-label').textContent = kind==='card'?'裏（意味）':'答え';
-  document.getElementById('cx-label').textContent = kind==='card'?'基本アングル':'解説';
+  document.getElementById('card-modal-title').textContent = (kindLabel(kind)+'を編集');
+  document.getElementById('cf-label').textContent = kind==='prob'?'問題':'表（古語）';
+  document.getElementById('cb-label').textContent = kind==='prob'?'答え':'裏（意味）';
+  document.getElementById('cx-label').textContent = kind==='prob'?'解説':'基本アングル';
   document.getElementById('c-f').value = c.f||'';
   document.getElementById('c-b').value = c.b||'';
   document.getElementById('c-x').value = c.x||'';
   document.getElementById('c-tag').value = c.tag||'';
   document.getElementById('c-w').value = (c.w||[]).join('\n');
   document.getElementById('cw-wrap').style.display = kind==='prob'?'block':'none';
-  document.getElementById('cy-wrap').style.display = kind==='card'?'block':'none';
+  document.getElementById('cy-wrap').style.display = kind!=='prob'?'block':'none';
   document.getElementById('c-y').value = c.y||'';
   document.getElementById('cx-wrap').style.display = 'block';
   document.getElementById('ctag-wrap').style.display = kind==='prob'?'block':'none';
@@ -2847,7 +2824,7 @@ function saveCard(){
   c.f = f; c.b = document.getElementById('c-b').value.trim();
   c.x = document.getElementById('c-x').value.trim();
   c.tag = document.getElementById('c-tag').value.trim();
-  const cyEl = document.getElementById('c-y'); if(cyEl && cardKind(c)==='card') c.y = cyEl.value.trim();
+  const cyEl = document.getElementById('c-y'); if(cyEl && cardKind(c)!=='prob') c.y = cyEl.value.trim();
   if(cardKind(c)==='prob'){ const wEl = document.getElementById('c-w'); if(wEl) c.w = splitWrongs(wEl.value) }
   u_mark(c);
   saveState(); closeModal('modal-card'); renderDeck(); toast('保存しました');
@@ -2867,15 +2844,15 @@ function deleteCard(id){
   saveState(); renderDeck(); toast('削除しました');
 }
 /* ---- 学習セッション ---- */
-function memorizePickOrdered(sid, n){   // 追加順: state.cards の並び（＝登録順）を保つ
-  const all = subjCards(sid,'card'), t = todayKey();
+function memorizePickOrdered(sid, n, kind){   // 追加順: state.cards の並び（＝登録順）を保つ
+  const all = subjCards(sid, kind||'card'), t = todayKey();
   const due = all.filter(c=>(c.due||'0000-01-01')<=t);
   const ids = (due.length?due:all).map(c=>c.id);
   if(ids.length < n) all.forEach(c=>{ if(ids.length<n && ids.indexOf(c.id)<0) ids.push(c.id) });
   return ids.slice(0,n);
 }
-function memorizePick(sid, n){          // ランダム: 覚えた半分・新規半分を混ぜて並べ替え
-  const all = subjCards(sid,'card');
+function memorizePick(sid, n, kind){          // ランダム: 覚えた半分・新規半分を混ぜて並べ替え
+  const all = subjCards(sid, kind||'card');
   const learned = shuffle(all.filter(c=>(c.box||0)>=1).map(c=>c.id));
   const fresh = shuffle(all.filter(c=>(c.box||0)<1).map(c=>c.id));
   const a = Math.ceil(n/2), b = n - a;
@@ -2886,9 +2863,9 @@ function memorizePick(sid, n){          // ランダム: 覚えた半分・新�
   }
   return shuffle(picked);
 }
-function memQueue(sid, n){
+function memQueue(sid, n, kind){
   if(!n || n<1) return [];
-  const all = subjCards(sid,'card').filter(memMatch);
+  const all = subjCards(sid, kind||'card').filter(memMatch);
   if(!all.length) return [];
   if(memOrderOf(sid)==='add'){
     const ids = all.map(c=>c.id);
@@ -2913,8 +2890,8 @@ function setMemFilter(f){
   try{ localStorage.setItem('studytime.memfilter', memFilter) }catch(e){}
   if(sess && sess.mode==='memorize'){
     const curId = sess.q[sess.i];
-    const pool = subjCards(sess.sid,'card').filter(memMatch);
-    const q = memQueue(sess.sid, Math.min(30, pool.length));
+    const pool = subjCards(sess.sid, sess.k||'card').filter(memMatch);
+    const q = memQueue(sess.sid, Math.min(30, pool.length), sess.k||'card');
     if(!q.length){ toast(memFilterName()+'のカードがありません'); sess.q = []; sess.i = 0; sess.flip = false; renderSess(); return }
     sess.q = q;
     const j = q.indexOf(curId);
@@ -2985,33 +2962,35 @@ function memNext(){ if(!sess) return;
   if(sess.i >= sess.q.length-1){ sess.i = sess.q.length; sess.flip = false; renderSess(); return }
   sess.i++; sess.flip = false; renderSess();
 }
-function startMemorize(sid){
-  const all = subjCards(sid,'card');
+function startMemorize(sid, kind){
+  kind = kind||'card';
+  const all = subjCards(sid, kind);
   if(!all.length){ toast('カードがありません'); return }
   const pool = all.filter(memMatch);
   if(!pool.length){ toast(memFilterName()+'のカードがありません'); return }
   const n = pool.length;
-  let q = memQueue(sid, n);
+  let q = memQueue(sid, n, kind);
   if(!q.length){ toast('カードがありません'); return }
   if(memOrderOf(sid)!=='add'){
-    for(let k=0; k<8 && lastMemOrder && q.join(',')===lastMemOrder; k++) q = memQueue(sid, n);
+    for(let k=0; k<8 && lastMemOrder && q.join(',')===lastMemOrder; k++) q = memQueue(sid, n, kind);
   }
   lastMemOrder = q.join(',');
-  sess = { mode:'memorize', sid, q, i:0, flip:false, ok:0, order:memOrderOf(sid) };
+  sess = { mode:'memorize', sid, k:kind, q, i:0, flip:false, ok:0, order:memOrderOf(sid) };
   openSess();
 }
 function againSess(){
   if(!sess) return;
   const md = sess.mode, sid = sess.sid;
-  if(md==='memorize') startMemorize(sid);
-  else if(md==='quiz') startQuiz(sid);
+  if(md==='memorize') startMemorize(sid, sess.k);
+  else if(md==='quiz') startQuiz(sid, sess.k);
   else startProbSession(sid, null);
 }
-function startQuiz(sid){
-  const cs = subjCards(sid,'card');
+function startQuiz(sid, kind){
+  kind = kind||'card';
+  const cs = subjCards(sid, kind);
   if(cs.length<4){ toast('カードが4件以上必要です'); return }
-  const due = dueCards(sid,'card').map(c=>c.id);
-  sess = { mode:'quiz', sid, q:shuffle(due.length?due.slice():cs.map(c=>c.id)).slice(0,20), i:0, ok:0, picked:null, choices:null };
+  const due = dueCards(sid, kind).map(c=>c.id);
+  sess = { mode:'quiz', sid, k:kind, q:shuffle(due.length?due.slice():cs.map(c=>c.id)).slice(0,20), i:0, ok:0, picked:null, choices:null };
   openSess();
 }
 function startProbSession(sid, ids){
