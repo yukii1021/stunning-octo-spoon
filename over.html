@@ -502,6 +502,7 @@ body.dw .drawer{transform:none}
           科目を選ぶ
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h13M13 6l6 6-6 6"/></svg>
         </button>
+        <button class="btnr" onclick="openManual()">点数を入力する <span aria-hidden="true">＋</span></button>
       </div>
 
       <!-- 点数の推移 -->
@@ -641,10 +642,52 @@ body.dw .drawer{transform:none}
     <div class="stat"><span class="k">収録</span><span class="v">2024–2026</span><span class="k">年度</span></div>
   </div>
   <div class="body">
+    <button class="exBtn" onclick="openManual()" style="margin-bottom:16px">紙で解いた点数を入力する</button>
     <div class="yrbar" id="yrbar"></div>
     <div class="yrbar" id="exbar"></div>
     <div class="sgrid" id="sgrid"></div>
   </div>
+</section>
+
+<style>
+#scManual .body{overflow:auto;padding-bottom:48px}
+.manual-wrap{max-width:880px;margin:auto}
+.manual-top{display:flex;gap:12px;flex-wrap:wrap;margin:16px 0 22px}
+.manual-top label{flex:1;min-width:140px;color:var(--dim);font-size:13px;display:grid;gap:7px}
+#scManual input,#scManual select{font:inherit;color:var(--text);background:var(--card3);border:1px solid var(--line2);border-radius:9px;padding:11px;width:100%;box-sizing:border-box;min-width:0;color-scheme:inherit}
+#scManual input:focus-visible,#scManual select:focus-visible{outline:2px solid var(--acc);outline-offset:2px}
+.manual-score{display:grid;grid-template-columns:minmax(0,1fr) 100px 20px 90px;align-items:center;gap:9px;border-top:1px solid var(--line);padding:12px 0}
+.manual-score label{font-size:14px;overflow-wrap:anywhere}
+.manual-score span{color:var(--mute);text-align:center}
+.manual-head{display:grid;grid-template-columns:minmax(0,1fr) 100px 20px 90px;gap:9px;font-size:11px;color:var(--mute);padding-bottom:8px}
+.manual-actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:20px}
+#manualMsg{min-height:24px;margin-top:12px;color:var(--acc);font-size:13px}
+.manual-record{display:flex;gap:12px;align-items:center;border-top:1px solid var(--line);padding:14px 0;flex-wrap:wrap}
+.manual-record .detail{flex:1;min-width:180px;font-size:13px;line-height:1.8}
+.manual-record small{display:block;color:var(--dim)}
+.manual-record .tools{display:flex;gap:8px}
+@media(max-width:480px){.manual-score,.manual-head{grid-template-columns:minmax(0,1fr) 70px 12px 65px;gap:5px}#scManual input,#scManual select{padding:10px 6px}.manual-score label{font-size:12px}}
+</style>
+<section class="scr so" id="scManual">
+  <div class="fx"></div>
+  <div class="ovhud"><button onclick="go('scHome');renderHome()">‹ 戻る</button><div class="lg" style="margin-left:6px">点数の記録</div><div class="sp"></div></div>
+  <div class="body"><div class="manual-wrap">
+    <div class="card">
+      <div class="lbl" id="manualTitle">紙で解いた点数を入力</div>
+      <form id="manualForm" novalidate>
+        <div class="manual-top">
+          <label>問題の年度<input id="manualYear" type="number" min="2000" max="2100" step="1" inputmode="numeric" required></label>
+          <label>試験<select id="manualExam"><option value="main">本試験</option><option value="follow">追試</option></select></label>
+          <label>解いた日<input id="manualDate" type="date" required></label>
+        </div>
+        <div class="manual-head"><span>科目（空欄は記録しません）</span><span>得点</span><span></span><span>満点</span></div>
+        <div id="manualRows"></div>
+        <div class="manual-actions"><button class="exBtn" type="submit" id="manualSave">点数を記録する</button><button class="exBtn gh" type="button" onclick="openManual()">入力をリセット</button></div>
+        <div id="manualMsg" role="status" aria-live="polite"></div>
+      </form>
+    </div>
+    <div class="card" style="margin-top:18px"><div class="lbl">手入力した記録</div><div id="manualHistory"></div></div>
+  </div></div>
 </section>
 
 <!-- ================= 6. 演習 ================= -->
@@ -795,7 +838,7 @@ document.getElementById('scBoot').addEventListener('click', function(){
 var SO_KEY='so_runs_v1', YRS=['2021','2022','2023','2024','2025','2026'];
 var SUBJM={
   Japanese:{n:'国語'}, Math_IA:{n:'数学ⅠＡ'}, Math_IIBC:{n:'数学ⅡＢＣ'}, Math_III:{n:'数学Ⅲ'},
-  English_Reading:{n:'英語Ｒ'}, Information_I:{n:'情報Ⅰ'},
+  English_Reading:{n:'英語Ｒ'}, English_Listening:{n:'英語リスニング'}, Information_I:{n:'情報Ⅰ'},
   Physics:{n:'物理'}, Chemistry:{n:'化学'}, GeographyIntegrated_Geography:{n:'地理総合，地理探究'}
 };
 var XUNIT={ English_Reading:['文法・語法','熟語・語い・会話表現'], Chemistry:['カルボン酸とエステル','ヨードホルム反応'] };
@@ -833,10 +876,11 @@ function soAgg(){
   return {runs:runs,latest:latest,units:units,byYear:byYear,iaYear:iaYear,days:days,nOk:nOk};
 }
 function soEstimate(A){
-  var ks=Object.keys(A.latest);
-  if(!ks.length) return null;
-  var s=0; ks.forEach(function(k){ s+=soRate(A.latest[k]); });
-  return {est:Math.round(s/ks.length*1000), cov:ks.length};
+  var weights={Japanese:200,Math_IA:100,Math_IIBC:100,English_Reading:100,English_Listening:100,Information_I:100,Physics:100,Chemistry:100,GeographyIntegrated_Geography:100};
+  var sum=0, total=0, cov=0;
+  Object.keys(weights).forEach(function(k){var r=A.latest[k];if(r&&r.total>0){sum+=soRate(r)*weights[k];total+=weights[k];cov++;}});
+  if(!total)return null;
+  return {est:Math.round(sum/total*1000),cov:cov};
 }
 function soStreak(A){
   var d=new Date(), n=0;
@@ -938,7 +982,7 @@ function renderHome(){
 
   /* 記録の状況 */
   var ri=document.getElementById('recInfo');
-  if(ri) ri.textContent = A.runs.length? ('採点 '+A.runs.length+' 件 ／ '+Object.keys(A.latest).length+' 科目を記録') : '記録はまだありません';
+  if(ri) ri.textContent = A.runs.length? ('記録 '+A.runs.length+' 件 ／ '+Object.keys(A.latest).length+' 科目を記録') : '記録はまだありません';
 
   /* カウントダウン */
   var d=Math.ceil((new Date('2027-01-16T00:00:00+09:00')-new Date())/86400000);
@@ -1670,7 +1714,7 @@ _on('wuList','click',function(e){ var r=e.target.closest('.wcard'); if(!r) retur
 var hvIdx=0;
 function sittingsOf(){
   var out=[], seen={};
-  (MAN||[]).forEach(function(p){ var k=p.y+'|'+p.exam; if(!seen[k]){ seen[k]=1; out.push({y:p.y,exam:p.exam}); } });
+  (MAN||[]).concat(soRuns()).forEach(function(p){ var k=p.y+'|'+p.exam; if(!seen[k]){ seen[k]=1; out.push({y:p.y,exam:p.exam}); } });
   out.sort(function(a,b){ return (a.y-b.y)||((a.exam==='main'?0:1)-(b.exam==='main'?0:1)); });
   return out;
 }
@@ -1684,7 +1728,9 @@ function renderSubjList(A){
   var pb=document.getElementById('ynPrev'); if(pb) pb.disabled=(hvIdx>=S.length-1);
   var nb=document.getElementById('ynNext'); if(nb) nb.disabled=(hvIdx<=0);
   var sj='';
-  Object.keys(SUBJM).forEach(function(k){
+  var subjects=Object.keys(SUBJM);
+  A.runs.forEach(function(r){ if(subjects.indexOf(r.subj)<0) subjects.push(r.subj); });
+  subjects.forEach(function(k){
     var r=null;
     A.runs.forEach(function(x){ if(x.y===cur.y&&x.exam===cur.exam&&x.subj===k){ if(!r||x.t>=r.t) r=x; } });
     var p2=r?Math.round(r.got/r.total*100):null;
@@ -1787,17 +1833,19 @@ function renderWeek(){
 function renderChart2(A){
   var el=document.getElementById('chart'); if(!el) return;
   var lg=document.getElementById('chartLgd');
-  var YRS2=[], y;
-  for(y=2024;y<=2028;y++) YRS2.push(y);
-  var W=660,H=176,pl=44,pr=14,pt=14,pb=26,mn=30,mx=100;
+  var YRS2=[], y, years=(MAN||[]).concat((A&&A.runs)||[]).map(function(r){return Number(r.y);}).filter(function(v){return Number.isFinite(v);});
+  var ymin=years.length?Math.min.apply(null,years):2024, ymax=years.length?Math.max.apply(null,years):2026;
+  if(ymin===ymax){ymin--;ymax++;}
+  for(y=ymin;y<=ymax;y++) YRS2.push(y);
+  var W=660,H=176,pl=44,pr=14,pt=14,pb=26,mn=0,mx=100;
   function X(i){ return pl+(W-pl-pr)*i/(YRS2.length-1); }
   function Yv(v){ return pt+(H-pt-pb)*(1-(v-mn)/(mx-mn)); }
   var s='';
-  for(var g=30;g<=100;g+=10){
+  for(var g=0;g<=100;g+=20){
     s+='<line x1="'+pl+'" y1="'+Yv(g)+'" x2="'+(W-pr)+'" y2="'+Yv(g)+'" stroke="var(--line2)" stroke-width="1"/>';
     s+='<text x="'+(pl-9)+'" y="'+(Yv(g)+4)+'" fill="var(--mute)" font-size="10" font-family="monospace" text-anchor="end">'+g+'</text>';
   }
-  for(var i=0;i<YRS2.length;i++) s+='<text x="'+X(i)+'" y="'+(H-7)+'" fill="var(--mute)" font-size="10" font-family="monospace" text-anchor="middle">'+YRS2[i]+'</text>';
+  for(var i=0;i<YRS2.length;i++){ if(YRS2.length>8 && i%Math.ceil(YRS2.length/8)!==0 && i!==YRS2.length-1) continue; s+='<text x="'+X(i)+'" y="'+(H-7)+'" fill="var(--mute)" font-size="10" font-family="monospace" text-anchor="middle">'+YRS2[i]+'</text>'; }
   s+='<line x1="'+pl+'" y1="'+Yv(80)+'" x2="'+(W-pr)+'" y2="'+Yv(80)+'" stroke="var(--acc2)" stroke-width="1.4" stroke-dasharray="6 5"/>';
   var runs=(A&&A.runs)||[], subs=[];
   runs.forEach(function(r){ if(r&&r.subj&&subs.indexOf(r.subj)<0) subs.push(r.subj); });
@@ -1826,6 +1874,97 @@ function renderChart2(A){
 }
 
 var UNITMAP={"2025_main_Chemistry":{"1":"理論化学","2":"理論化学","3":"無機化学","4":"有機化学","5":"高分子","6":"高分子"},"2025_main_English_Reading":{"1":"情報検索","2":"図表読解","3":"長文読解","4":"論理展開","5":"情報検索","6":"長文読解","7":"長文読解","8":"長文読解"},"2025_main_GeographyIntegrated_Geography":{"1":"現代世界の諸課題","2":"地誌","3":"自然環境","4":"産業と人口","5":"産業と人口","6":"地誌"},"2025_main_Information_I":{"1":"情報社会","2":"データの活用","3":"プログラミング","4":"データの活用"},"2025_main_Japanese":{"1":"評論","2":"小説","3":"実用文","4":"古文","5":"漢文"},"2025_main_Math_IA":{"1":"数と式","2":"2次関数","3":"図形の性質","4":"場合の数と確率"},"2025_main_Math_IIBC":{"1":"三角関数","2":"指数関数と対数関数","3":"微分法と積分法","4":"数列","5":"統計的な推測","6":"ベクトル","7":"複素数平面"},"2025_main_Physics":{"1":"力学","2":"単振動","3":"熱","4":"電磁気"},"2026_follow_Chemistry":{"1":"理論化学","2":"理論化学","3":"無機化学","4":"有機化学","5":"高分子"},"2026_follow_English_Reading":{"1":"情報検索","2":"情報検索","3":"長文読解","4":"論理展開","5":"長文読解","6":"長文読解","7":"長文読解","8":"情報検索"},"2026_follow_GeographyIntegrated_Geography":{"1":"現代世界の諸課題","2":"地誌","3":"産業と人口","4":"産業と人口","5":"産業と人口","6":"地誌"},"2026_follow_Information_I":{"1":"情報デザイン","2":"情報デザイン","3":"プログラミング","4":"データの活用"},"2026_follow_Japanese":{"1":"評論","2":"小説","3":"実用文","4":"古文","5":"漢文"},"2026_follow_Math_IA":{"1":"数と式","2":"2次関数","3":"図形の性質","4":"場合の数と確率"},"2026_follow_Math_IIBC":{"1":"三角関数","2":"指数関数と対数関数","3":"微分法と積分法","4":"数列","5":"統計的な推測","6":"ベクトル","7":"複素数平面"},"2026_follow_Physics":{"1":"力学","2":"力学","3":"熱","4":"電磁気"},"2026_main_Chemistry":{"1":"理論化学","2":"理論化学","3":"無機化学","4":"有機化学","5":"高分子"},"2026_main_English_Reading":{"1":"情報検索","2":"情報検索","3":"長文読解","4":"情報検索","5":"情報検索","6":"長文読解","7":"長文読解","8":"情報検索"},"2026_main_GeographyIntegrated_Geography":{"1":"地誌","2":"地誌","3":"自然環境","4":"産業と人口","5":"産業と人口","6":"地誌"},"2026_main_Information_I":{"1":"情報社会","2":"情報デザイン","3":"プログラミング","4":"データの活用"},"2026_main_Japanese":{"1":"評論","2":"小説","3":"実用文","4":"古文","5":"漢文"},"2026_main_Math_IA":{"1":"図形と計量","2":"2次関数","3":"図形の性質","4":"場合の数と確率"},"2026_main_Math_IIBC":{"1":"三角関数","2":"三角関数","3":"微分法と積分法","4":"数列","5":"統計的な推測","6":"ベクトル","7":"複素数平面"},"2026_main_Physics":{"1":"力学","2":"力学","3":"熱","4":"電磁気"},"2024_follow_Chemistry":{"1":"理論化学","2":"理論化学","3":"無機化学","4":"有機化学","5":"高分子"},"2024_follow_English_Reading":{"1":"情報検索","2":"情報検索","3":"長文読解","4":"論理展開","5":"長文読解","6":"長文読解"},"2024_follow_Geography_B":{"1":"現代世界の諸課題","2":"地誌","3":"自然環境","4":"産業と人口","5":"産業と人口"},"2024_follow_Japanese":{"1":"評論","2":"小説","3":"古文","4":"漢文"},"2024_follow_Math_IA":{"1":"数と式","2":"2次関数","3":"場合の数と確率","4":"整数の性質","5":"図形の性質"},"2024_follow_Math_IIB":{"1":"三角関数","2":"微分法と積分法","3":"数列","4":"統計的な推測","5":"ベクトル"},"2024_follow_Physics":{"1":"力学","2":"単振動","3":"熱","4":"電磁気"},"2024_main_Chemistry":{"1":"理論化学","2":"理論化学","3":"無機化学","4":"有機化学","5":"高分子"},"2024_main_English_Reading":{"1":"情報検索","2":"情報検索","3":"長文読解","4":"論理展開","5":"長文読解","6":"長文読解"},"2024_main_Geography_B":{"1":"現代世界の諸課題","2":"地誌","3":"自然環境","4":"産業と人口","5":"産業と人口"},"2024_main_Japanese":{"1":"評論","2":"小説","3":"古文","4":"漢文"},"2024_main_Math_IA":{"1":"数と式","2":"2次関数","3":"場合の数と確率","4":"整数の性質","5":"図形の性質"},"2024_main_Math_IIB":{"1":"三角関数","2":"微分法と積分法","3":"数列","4":"統計的な推測","5":"ベクトル"},"2024_main_Physics":{"1":"力学","2":"単振動","3":"熱","4":"電磁気"},"2025_follow_Chemistry":{"1":"理論化学","2":"理論化学","3":"無機化学","4":"有機化学","5":"高分子","6":"高分子"},"2025_follow_English_Reading":{"1":"情報検索","2":"情報検索","3":"長文読解","4":"論理展開","5":"長文読解","6":"長文読解","7":"長文読解","8":"情報検索"},"2025_follow_GeographyIntegrated_Geography":{"1":"現代世界の諸課題","2":"地誌","3":"自然環境","4":"産業と人口","5":"産業と人口","6":"地誌"},"2025_follow_Information_I":{"1":"情報社会","2":"データの活用","3":"プログラミング","4":"データの活用"},"2025_follow_Japanese":{"1":"評論","2":"小説","3":"実用文","4":"古文","5":"漢文"},"2025_follow_Math_IA":{"1":"数と式","2":"2次関数","3":"図形の性質","4":"場合の数と確率"},"2025_follow_Math_IIBC":{"1":"三角関数","2":"指数関数と対数関数","3":"微分法と積分法","4":"数列","5":"統計的な推測","6":"ベクトル","7":"複素数平面"},"2025_follow_Physics":{"1":"力学","2":"単振動","3":"熱","4":"電磁気"}};
+
+/* 紙で解いた結果の手入力 */
+var manualEditId=null;
+function manualSubjects(){
+  var out=[];
+  (MAN||[]).forEach(function(p){if(p.subj&&out.indexOf(p.subj)<0)out.push(p.subj);});
+  Object.keys(SUBJM).forEach(function(k){if(k!=='Math_III'&&out.indexOf(k)<0)out.push(k);});
+  out.sort(function(a,b){var order=Object.keys(SUBJM),ia=order.indexOf(a),ib=order.indexOf(b);return (ia<0?99:ia)-(ib<0?99:ib);});
+  return out;
+}
+function manualPaper(sk){
+  var y=Number(document.getElementById('manualYear').value), e=document.getElementById('manualExam').value;
+  return (MAN||[]).filter(function(p){return Number(p.y)===y&&p.exam===e&&p.subj===sk;})[0];
+}
+function manualRenderRows(preserve){
+  var old={};
+  if(preserve) document.querySelectorAll('.manual-score').forEach(function(row){old[row.dataset.subj]=row.querySelector('.manualGot').value;});
+  document.getElementById('manualRows').innerHTML=manualSubjects().map(function(sk,i){
+    var p=manualPaper(sk), other=(MAN||[]).filter(function(x){return x.subj===sk;})[0], total=Number((p&&(p.score||p.total))||(other&&(other.score||other.total))||(sk==='Japanese'?200:100));
+    var name=soName(sk,(p||other||{}).name||sk);
+    return '<div class="manual-score" data-subj="'+esc(sk)+'"><label for="mg'+i+'">'+esc(name)+'</label><input class="manualGot" id="mg'+i+'" type="number" min="0" step="1" inputmode="numeric" aria-label="'+esc(name)+'の得点" value="'+esc(old[sk]||'')+'"><span>/</span><input class="manualTotal" type="number" min="1" step="1" inputmode="numeric" aria-label="'+esc(name)+'の満点" value="'+total+'"></div>';
+  }).join('');
+}
+function openManual(){
+  manualEditId=null;
+  document.getElementById('manualYear').value=selY||new Date().getFullYear();
+  document.getElementById('manualExam').value=selExam||'main';
+  document.getElementById('manualDate').value=soDayKey(new Date());
+  document.getElementById('manualDate').max=soDayKey(new Date());
+  document.getElementById('manualTitle').textContent='紙で解いた点数を入力';
+  document.getElementById('manualSave').textContent='点数を記録する';
+  document.getElementById('manualMsg').textContent='';
+  manualRenderRows(false);manualHistory();go('scManual');
+}
+function manualHistory(){
+  var rows=soRuns().filter(function(r){return r.source==='manual';}).sort(function(a,b){return b.t-a.t;});
+  document.getElementById('manualHistory').innerHTML=rows.length?rows.map(function(r){
+    return '<div class="manual-record"><div class="detail">'+esc(r.y+'年度 '+examLabel(r.exam)+' ／ '+soName(r.subj,r.name))+'<small>'+esc(soDayKey(new Date(r.t)))+' ／ '+r.got+' / '+r.total+'点</small></div><div class="tools"><button class="exBtn gh" type="button" onclick="manualEdit(\''+esc(r.id)+'\')">修正</button><button class="exBtn gh" type="button" onclick="manualDelete(\''+esc(r.id)+'\')">削除</button></div></div>';
+  }).join(''):'<div class="desc">手入力した記録はまだありません。</div>';
+}
+function manualWrite(runs){
+  try{localStorage.setItem(SO_KEY,JSON.stringify(runs));return true;}
+  catch(e){document.getElementById('manualMsg').textContent='保存できませんでした。端末の保存容量やブラウザの設定を確認してください。';return false;}
+}
+function manualSave(event){
+  event.preventDefault();
+  var msg=document.getElementById('manualMsg'), yv=document.getElementById('manualYear').value, y=Number(yv), date=document.getElementById('manualDate').value;
+  var dt=new Date(date+'T12:00:00'), exam=document.getElementById('manualExam').value;
+  if(!yv||!Number.isInteger(y)||y<2000||y>2100){msg.textContent='年度を2000〜2100の整数で入力してください。';return;}
+  if(!/^\d{4}-\d{2}-\d{2}$/.test(date)||!Number.isFinite(dt.getTime())||soDayKey(dt)!==date||date>soDayKey(new Date())){msg.textContent='解いた日を今日以前の日付で入力してください。';return;}
+  var entries=[], error='', rows=document.querySelectorAll('.manual-score');
+  rows.forEach(function(row){
+    var input=row.querySelector('.manualGot'), str=input.value, totalEl=row.querySelector('.manualTotal'), sk=row.dataset.subj;
+    if(input.validity&&input.validity.badInput){error='得点を整数で入力してください。';return;}
+    if(str==='')return;
+    var got=Number(str), total=Number(totalEl.value), p=manualPaper(sk), name=soName(sk,(p||{}).name||sk);
+    if(!Number.isInteger(got)||!Number.isInteger(total)||total<=0||got<0||got>total){error=name+'は0点以上、満点以下の整数で入力してください。';return;}
+    entries.push({id:manualEditId||('m'+Date.now().toString(36)+Math.random().toString(36).slice(2)),source:'manual',t:dt.getTime(),addedAt:Date.now(),key:p?p.key:y+'_'+exam+'_'+sk,y:y,exam:exam,subj:sk,name:name,got:got,total:total,ok:1,secs:[],units:{}});
+  });
+  if(error){msg.textContent=error;return;}
+  if(!entries.length){msg.textContent='記録する科目の得点を入力してください（0点も記録できます）。';return;}
+  if(manualEditId&&entries.length!==1){msg.textContent='修正する1科目だけ入力してください。';return;}
+  var runs=soRuns();
+  if(manualEditId){
+    var idx=runs.findIndex(function(r){return r.id===manualEditId&&r.source==='manual';});
+    if(idx<0){msg.textContent='修正する記録が見つかりません。画面を開き直してください。';return;}
+    runs[idx]=entries[0];
+  }else runs=runs.concat(entries);
+  if(!manualWrite(runs))return;
+  var edited=!!manualEditId;openManual();renderHome();
+  document.getElementById('manualMsg').textContent=edited?'記録を修正しました。':entries.length+'科目の点数を記録しました。';
+}
+function manualEdit(id){
+  var r=soRuns().find(function(r){return r.id===id&&r.source==='manual';});if(!r)return;
+  openManual();manualEditId=id;
+  document.getElementById('manualYear').value=r.y;document.getElementById('manualExam').value=r.exam;document.getElementById('manualDate').value=soDayKey(new Date(r.t));
+  manualRenderRows(false);
+  document.querySelectorAll('.manual-score').forEach(function(row){if(row.dataset.subj===r.subj){row.querySelector('.manualGot').value=r.got;row.querySelector('.manualTotal').value=r.total;}});
+  document.getElementById('manualTitle').textContent='点数の記録を修正';document.getElementById('manualSave').textContent='修正を保存する';
+  document.querySelector('#scManual .body').scrollTop=0;
+}
+function manualDelete(id){
+  if(!confirm('この手入力の記録を削除しますか？'))return;
+  if(!manualWrite(soRuns().filter(function(r){return !(r.source==='manual'&&r.id===id);})))return;
+  if(manualEditId===id)openManual();else manualHistory();renderHome();
+  document.getElementById('manualMsg').textContent='記録を削除しました。';
+}
+_on('manualForm','submit',manualSave);
+_on('manualYear','change',function(){manualRenderRows(true);});
+_on('manualExam','change',function(){manualRenderRows(true);});
+
 /* ================= テーマ ================= */
 var THEMES=[
   {id:'light',nm:'ライト',ds:'白 × 水色',c:['#f2f6fb','#ffffff','#2b8fe0']},
@@ -1869,7 +2008,7 @@ var PAGESALT=[]; function soWebp(f){ return String(f).replace(/\.jpe?g$/i,'.webp
 function loadJSON(paths,cb){ var i=0; (function t(){ if(i>=paths.length){ cb(null); return; }
   fetch(paths[i++]).then(function(r){ if(!r.ok) throw 0; return r.json(); }).then(function(d){ cb(d); }, function(){ t(); }); })(); }
 /* ================= 初期化 ================= */
-loadJSON(['data/manifest.json','manifest.json'],function(m){ if(!m) return; MAN=m; renderList(); });
+loadJSON(['data/manifest.json','manifest.json'],function(m){ if(!m) return; MAN=m; renderList(); if(document.getElementById('scManual').classList.contains('on')&&!manualEditId) manualRenderRows(true); });
 renderList();
 document.getElementById('app').className='th-'+curTheme; document.documentElement.className='th-'+curTheme;
 renderThemes();
