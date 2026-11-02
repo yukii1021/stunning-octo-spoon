@@ -853,7 +853,7 @@ function loadGameFont(){}
 
     <button class="btn" style="position:relative;width:100%;margin-top:12px;padding:16px 0 14px;border-radius:13px;border:1px solid #c9a24a;background:radial-gradient(130% 180% at 50% 0%,#2a2213 0%,#14100a 58%,#0a0806 100%);color:#f3e3bd;font-size:15px;letter-spacing:.24em;font-weight:700;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;cursor:pointer;box-shadow:0 0 0 1px rgba(201,162,74,.25),inset 0 0 18px rgba(201,162,74,.07)" onclick="location.href='cards.html'"><span style="display:block;font-size:9.5px;letter-spacing:.34em;color:#c9a24a;margin-bottom:6px">CARD BATTLE</span>学府の絵札</button>
 
-    <div class="hint" style="text-align:center;margin-top:16px">StudyTime v3.20 · ローカル保存＋GitHub自動バックアップ</div>
+    <div class="hint" style="text-align:center;margin-top:16px">StudyTime v3.21 · ローカル保存＋GitHub自動バックアップ</div>
   </div>
 
   <!-- ================= DESIGN ================= -->
@@ -3072,6 +3072,18 @@ function makeChoices(cur){
   shuffle(list);
   return { i:sess.i, list };
 }
+function quizChoiceWord(choice, cur){
+  if(choice.ok) return cur.f||'';
+  if(choice.m) return choice.m;
+  const matches = subjCards(cur.sid, cardKind(cur)).filter(c=>c.id!==cur.id && (c.b||'').trim()===(choice.text||'').trim());
+  return [...new Set(matches.map(c=>c.f).filter(Boolean))].join(' / ');
+}
+function wrongListHTML(){
+  if(sess.mode==='memorize') return '';
+  const wrong = sess.wrong||[];
+  if(!wrong.length) return '<div class="hint" style="margin-top:20px;text-align:center">間違えた問題はありません</div>';
+  return `<section class="quiz-review" aria-label="間違えた問題"><h2>間違えた問題 <span class="hint">${wrong.length}件</span></h2><ol class="quiz-review-list">${wrong.map(r=>`<li><div class="quiz-review-front">${escapeHtml(r.f)}</div><div class="quiz-review-answer">正解：${escapeHtml(r.b||'—')}</div>${r.answer?`<div class="hint quiz-review-picked">自分の回答：${escapeHtml(r.answer)}</div>`:''}${r.x?`<div class="hint quiz-review-explanation">${escapeHtml(r.x)}</div>`:''}</li>`).join('')}</ol></section>`;
+}
 function renderSess(){
   if(!sess) return;
   const body = document.getElementById('sess-body'), cnt = document.getElementById('sess-count');
@@ -3082,6 +3094,7 @@ function renderSess(){
     body.innerHTML = `<div class="deck-prob" style="text-align:center">
         <div class="deck-big">${sess.ok} / ${sess.q.length}</div>
         <div class="hint">${md==='memorize'?'おぼえた':'正解'}</div></div>
+      ${wrongListHTML()}
       <button class="btn primary block" style="margin-top:16px" onclick="againSess()">もう一度</button>
       <button class="btn block" style="margin-top:8px" onclick="closeSess()">終わる</button>`;
     return;
@@ -3145,7 +3158,9 @@ function renderSess(){
       <div class="q-choices">${L.map((c,n)=>{
         let cls = '';
         if(sess.picked!=null){ if(c.ok) cls='good'; else if(sess.picked===n) cls='bad' }
-        return `<button class="q-choice ${cls}" ${sess.picked!=null?'disabled':''} onclick="pickChoice(${n})">${escapeHtml(c.text)}</button>` }).join('')}</div>
+        const showWord = sess.mode==='quiz' && sess.picked!=null && !L[sess.picked].ok && sess.picked===n;
+        const word = showWord ? quizChoiceWord(c,cur) : '';
+        return `<button class="q-choice ${cls}" ${sess.picked!=null?'disabled':''} onclick="pickChoice(${n})">${escapeHtml(c.text)}${word?`<span class="q-choice-word">${escapeHtml(word)}</span>`:''}</button>` }).join('')}</div>
       ${sess.picked!=null?`<button class="btn primary block" style="margin-top:14px" onclick="gradeSession(${L[sess.picked].ok?'\'ok\'':'\'no\''})">次へ</button>`:''}`;
     return;
   }
@@ -3239,6 +3254,13 @@ function gradeSession(g){
   if(!sess) return;
   const cur = (state.cards||[]).find(c=>c.id===sess.q[sess.i]); if(!cur) return;
   const ok = (g===true || g==='ok');
+  if(!ok && sess.mode!=='memorize'){
+    let answer = '';
+    if(sess.choices && sess.picked!=null){const choice=sess.choices.list[sess.picked];if(choice)answer=choice.text;}
+    else if(sess.ordSlots) answer=sess.ordSlots.map(ordText).join(' ');
+    else answer='解けなかった';
+    (sess.wrong||(sess.wrong=[])).push({id:cur.id,f:cur.f||'',b:(cur.ord&&cur.ord.length>1)?cur.ord.join(' '):cur.b||'',answer,x:cur.x||''});
+  }
   gradeCard(cur, ok ? (sess.retry ? 'retry' : 'ok') : 'no');
   if(ok) sess.ok = (sess.ok||0)+1;
   sess.i++; sess.flip = false; sess.picked = null; sess.choices = null; sess.revealed = false; sess.exp = false;
@@ -4196,6 +4218,14 @@ html[data-game="ice"] .group-tab,html[data-game="huaxu"] .group-tab{border-radiu
 .q-choice{display:block!important;width:100%!important;min-height:52px!important;border-radius:12px!important;padding:10px 12px!important;background:var(--bg-elev)!important;border:1px solid var(--line)!important;color:var(--text)!important;font-size:15px!important;font-weight:600!important;text-align:left!important;box-sizing:border-box!important;white-space:normal!important;line-height:1.5!important;opacity:1!important;-webkit-appearance:none!important;appearance:none!important;box-shadow:none!important}
 .q-choice.good{background:#16a34a!important;border-color:#16a34a!important;color:#fff!important}
 .q-choice.bad{background:#dc2626!important;border-color:#dc2626!important;color:#fff!important}
+.q-choice .q-choice-word{display:block!important;margin-top:4px!important;font-size:13px!important;font-weight:500!important;line-height:1.5!important;color:inherit!important;overflow-wrap:anywhere!important}
+.quiz-review{margin-top:24px;text-align:left}
+.quiz-review h2{font-size:16px;margin:0 0 12px}
+.quiz-review-list{padding-left:24px;margin:0}
+.quiz-review-list li{padding:12px 0;border-bottom:1px solid var(--line);overflow-wrap:anywhere}
+.quiz-review-front{font-size:16px;font-weight:600;white-space:pre-wrap}
+.quiz-review-answer{margin-top:6px;white-space:pre-wrap}
+.quiz-review-picked,.quiz-review-explanation{margin-top:6px;white-space:pre-wrap}
 </style>
 
 </body>
