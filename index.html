@@ -274,7 +274,7 @@ a{color:var(--accent)}
 .cp-tones .t .u{position:absolute;right:4px;top:4px;width:6px;height:6px;border-radius:50%;background:currentColor;opacity:.7}
 
 
-/* ================= 教科ノート（v2.09） ================= */
+/* ================= 教科学習 ================= */
 .modal-bg{z-index:120}
 #toast{z-index:200}
 .deck{position:fixed;inset:0;background:var(--bg);z-index:80;display:none;flex-direction:column}
@@ -319,17 +319,6 @@ a{color:var(--accent)}
 .ang b{display:block;font-size:11.5px;color:var(--accent);margin-bottom:4px;letter-spacing:.04em}
 .ang + .ang{margin-top:8px}
 .deck-prob{background:var(--bg-elev);border:1px solid var(--line);border-radius:14px;padding:14px}
-.note-card{background:var(--bg-elev);border:1px solid var(--line);border-radius:14px;padding:16px;margin-bottom:12px}
-.note-tt{font-size:16px;font-weight:800;margin-bottom:10px}
-.note-tt span{font-size:11px;font-weight:600;color:var(--text-mute);border:1px solid var(--line);border-radius:999px;padding:2px 8px;margin-left:8px;vertical-align:middle}
-.note-h{font-size:13.5px;font-weight:700;color:var(--accent);margin:14px 0 6px}
-.note-t{font-size:14px;line-height:1.9;color:var(--text)}
-.note-l{margin:6px 0 0 18px;font-size:14px;line-height:1.9}
-.note-fig{margin:10px 0;overflow-x:auto}
-.note-fig svg{max-width:100%;height:auto}
-.note-tb{width:100%;border-collapse:collapse;margin:10px 0;font-size:13px}
-.note-tb th,.note-tb td{border:1px solid var(--line);padding:6px 9px;text-align:left}
-.note-tb th{background:var(--bg-elev-2);font-weight:700}
 .pq{font-size:16px;line-height:1.65;margin:8px 0;white-space:pre-wrap;word-break:break-word}
 .ans{font-size:17px;font-weight:700;white-space:pre-wrap;word-break:break-word}
 .flip{background:var(--bg-elev);border:1px solid var(--line);border-radius:18px;min-height:42vh;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;padding:22px;cursor:pointer;text-align:center}
@@ -571,6 +560,24 @@ html[data-game="game"] .sync-badge{color:var(--text-dim)}
 <script id="gm-loader">
 function loadGameFont(){}
 </script>
+<style>
+.chem-lab{--chem-accent:#62c8cb;--chem-soft:rgba(98,200,203,.12);padding-bottom:24px;font-family:inherit}
+.chem-intro{font-size:19px;font-weight:750;margin:12px 0 22px;letter-spacing:.02em}
+.chem-caption{font-size:12px;font-weight:700;color:var(--text-mute);margin:16px 0 9px}.chem-caption span{font-weight:400}
+.chem-cards{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.chem-cards.reagents{grid-template-columns:repeat(3,minmax(0,1fr))}
+.chem-card{font:inherit;text-align:left;min-height:76px;padding:12px 10px;border:1px solid var(--line);border-radius:12px;background:var(--bg-elev);color:var(--text);cursor:pointer;min-width:0;overflow-wrap:anywhere}
+.chem-card b{display:block;font-size:23px;letter-spacing:.025em;font-family:ui-monospace,monospace;margin-bottom:6px}.chem-card span{display:block;font-size:11px;line-height:1.5}.chem-card.selected{border-color:var(--chem-accent);background:var(--chem-soft);box-shadow:inset 0 0 0 1px var(--chem-accent)}
+.chem-card:disabled{opacity:.35;cursor:default}.chem-lab button:focus-visible,.chem-lab input:focus-visible,.chem-lab select:focus-visible{outline:2px solid var(--chem-accent);outline-offset:3px}
+.chem-amount{display:flex;align-items:center;gap:8px;margin:16px 0}.chem-amount>span{font-size:12px;margin-right:auto;color:var(--text-mute)}
+.chem-bench{background:var(--bg-elev);border:1px solid var(--line);border-radius:18px;padding:2px 16px 18px}.chem-bench>.chem-caption{text-align:center;font-family:ui-monospace,monospace;font-size:14px}
+.chem-observe{display:grid;grid-template-columns:1fr 28px 1fr;align-items:center;gap:4px;margin:18px 0}.chem-vessel-wrap{display:flex;flex-direction:column;align-items:center;gap:10px;text-align:center;min-width:0}.chem-vessel-wrap>span{font-size:11px;line-height:1.5;min-height:33px;color:var(--text-mute)}
+.chem-vessel{position:relative;width:80px;height:126px;border:2px solid #8dabb6;border-top:0;border-radius:0 0 25px 25px;background:rgba(180,218,235,.05);overflow:hidden}.chem-vessel:before{content:'';position:absolute;top:2px;bottom:18px;left:7px;width:3px;background:rgba(255,255,255,.3);border-radius:6px;z-index:2}.chem-liquid{position:absolute;bottom:0;left:0;right:0;height:78%;border-top:2px solid rgba(255,255,255,.45);transition:background .35s}.chem-solid{position:absolute;bottom:0;left:0;right:0;height:27%;border-radius:45% 25% 0 0;box-shadow:0 -8px 14px -5px currentColor;animation:chem-settle .45s ease-out}.chem-vessel>i{position:absolute;right:0;top:28px;width:12px;border-top:1px solid #8dabb6}.chem-vessel>i:nth-last-child(2){top:48px}.chem-vessel>i:last-child{top:68px}.chem-change{color:var(--text-mute);font-size:24px;text-align:center}
+.chem-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}.chem-actions .btn{flex:1;min-width:100px;white-space:normal}.chem-result{margin-top:14px;padding:18px 16px;border-left:3px solid var(--chem-accent);background:var(--chem-soft);border-radius:0 12px 12px 0}.chem-result h3{font-size:18px;line-height:1.5;margin:0 0 6px}.chem-product{font-size:13px;color:var(--text-mute)}.chem-equation{font-family:ui-monospace,monospace;font-size:14px;line-height:1.8;margin:16px 0;overflow-wrap:anywhere}.chem-facts{display:grid;gap:7px;font-size:12px}.chem-facts i{display:inline-block;width:13px;height:13px;border:1px solid #8dabb6;border-radius:50%;vertical-align:-2px;margin-right:7px}.chem-result p{font-size:12px;line-height:1.8;margin:12px 0}.chem-result a,.chem-disclaimer a{font-size:11px;color:var(--text-mute);text-decoration:underline}.chem-disclaimer{font-size:11px;color:var(--text-mute);line-height:1.8;margin:20px 0 0}
+.chem-route-toolbar{display:flex;gap:10px;align-items:flex-end;margin:16px 0}.chem-route-toolbar label{flex:1;min-width:0;font-size:12px;color:var(--text-mute)}.chem-route-toolbar select{display:block;width:100%;margin-top:7px;background:var(--bg-elev);color:var(--text);border:1px solid var(--line);border-radius:10px;padding:10px;font:inherit}.chem-route-title{font-size:18px;margin:24px 0 12px}.chem-route-scroll{overflow-x:auto;border:1px solid var(--line);border-radius:14px;background:var(--bg-elev);margin-bottom:12px;padding:30px 16px;overscroll-behavior-x:contain}.chem-chain{display:flex;align-items:center;width:max-content;min-height:110px}.chem-node{width:116px;flex-shrink:0;min-height:64px;display:flex;align-items:center;justify-content:center;border:1px solid var(--line);border-radius:12px;text-align:center;font-size:14px;font-weight:700;line-height:1.7;padding:12px;overflow-wrap:anywhere}.chem-arrow{display:flex;flex-direction:column;align-items:center;justify-content:center;width:146px;flex-shrink:0;padding:0 9px;position:relative;align-self:stretch}.chem-arrow span{font-size:12px;color:var(--chem-accent);text-align:center;overflow-wrap:anywhere}.chem-arrow b{font-size:34px;font-weight:400;line-height:1.2}.chem-arrow small{display:block;font-size:10px;text-align:center;color:var(--text-mute);line-height:1.7;overflow-wrap:anywhere;max-width:100%}
+.chem-editor label{display:block;font-size:12px;color:var(--text-mute);margin:12px 0}.chem-editor input{display:block;width:100%;box-sizing:border-box;border:1px solid var(--line);border-radius:10px;background:var(--bg-elev);color:var(--text);padding:12px;margin-top:6px;font:inherit;font-size:14px}.chem-edit-arrow{border-left:2px solid var(--chem-accent);padding:0 0 0 18px;margin:20px 0}.chem-editor-arrow{font-size:23px;color:var(--chem-accent);margin:-10px 0}.chem-practice-picked{border:1px dashed var(--chem-accent);border-radius:12px;padding:16px;font-size:14px;line-height:2;min-height:68px;margin:12px 0;overflow-wrap:anywhere}.chem-feedback{margin:16px 0 8px;font-size:18px;font-weight:700;color:var(--chem-accent)}
+@keyframes chem-settle{from{transform:translateY(-8px);opacity:.25}to{transform:translateY(0);opacity:1}}@media(prefers-reduced-motion:reduce){.chem-solid{animation:none}.chem-liquid{transition:none}}@media(min-width:600px){.chem-cards{grid-template-columns:repeat(4,minmax(0,1fr))}.chem-cards.reagents{grid-template-columns:repeat(5,minmax(0,1fr))}.chem-vessel{width:94px;height:148px}}[data-theme="light"] .chem-lab{--chem-accent:#16787d;--chem-soft:rgba(22,120,125,.08)}
+
+</style>
 </head>
 <body>
 <div class="bgfx" aria-hidden="true"></div>
@@ -847,7 +854,7 @@ function loadGameFont(){}
 
     <button class="btn" style="position:relative;width:100%;margin-top:12px;padding:16px 0 14px;border-radius:13px;border:1px solid #c9a24a;background:radial-gradient(130% 180% at 50% 0%,#2a2213 0%,#14100a 58%,#0a0806 100%);color:#f3e3bd;font-size:15px;letter-spacing:.24em;font-weight:700;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;cursor:pointer;box-shadow:0 0 0 1px rgba(201,162,74,.25),inset 0 0 18px rgba(201,162,74,.07)" onclick="location.href='cards.html'"><span style="display:block;font-size:9.5px;letter-spacing:.34em;color:#c9a24a;margin-bottom:6px">CARD BATTLE</span>学府の絵札</button>
 
-    <div class="hint" style="text-align:center;margin-top:16px">StudyTime v3.24 · ローカル保存＋GitHub自動バックアップ</div>
+    <div class="hint" style="text-align:center;margin-top:16px">StudyTime v3.25 · ローカル保存＋GitHub自動バックアップ</div>
   </div>
 
   <!-- ================= DESIGN ================= -->
@@ -863,7 +870,7 @@ function loadGameFont(){}
 
 </div>
 
-<!-- ============ 教科ノート（v2.0） ============ -->
+<!-- ============ 教科学習 ============ -->
 <div class="deck" id="deck-view">
   <div class="deck-top">
     <button class="btn ghost sm" onclick="closeDeck()">‹ 戻る</button>
@@ -1136,6 +1143,7 @@ let state = {
   exams:    [], // {id,name,date}
   cards:    [], // {id,sid,kind,f,b,x,tag,box,n,due}
   diary:    [], // {id,date,text,u}
+  chemRoutes: [], // {id,sid,title,nodes,edges,u}
   streak:   {}, // {sid:{n,d}}
   goals:      { daily:360, weekly:2520 },
   settings:   { theme:'dark' },
@@ -1182,6 +1190,7 @@ function normalizeSessionsIn(st){
 function normalizeState(){
   state.cards = (state.cards||[]).filter(c=>c.sid && (state.subjects||[]).some(x=>x.id===c.sid));
   state.cards = state.cards||[];
+  state.chemRoutes = Array.isArray(state.chemRoutes)?state.chemRoutes:[];
   state.streak = state.streak||{};
   state.deleted = state.deleted||{};
   state.subjects = state.subjects||[];
@@ -2010,16 +2019,16 @@ function renderSubjects(){
     el.innerHTML='<div class="empty">教科を追加してください</div>';
   } else {
     el.innerHTML = state.subjects.map(s=>{
-      const isNote = deckKinds(s).indexOf('note')>=0;
+      const isLab = deckKinds(s).indexOf('lab')>=0;
       const nc = subjCards(s.id,'card').length, np = subjCards(s.id,'prob').length, nj = subjCards(s.id,'juk').length;
       const d = dueCards(s.id,'card').length + dueCards(s.id,'juk').length + (np && !probDoneToday(s.id) ? 1 : 0);
-      const pill = isNote ? '<span class="pill">ノート</span>' : ((nc||np) ? (d>0 ? `<span class="pill hot">今日 ${d}</span>` : `<span class="pill">✓</span>`) : '');
+      const pill = isLab ? '<span class="pill">ラボ</span>' : ((nc||np) ? (d>0 ? `<span class="pill hot">今日 ${d}</span>` : `<span class="pill">✓</span>`) : '');
       return `
       <div class="subj-row" onclick="openDeck('${s.id}')">
         <span class="dot" style="background:${s.color}"></span>
         <div style="flex:1;min-width:0">
           <div class="name">${escapeHtml(s.name)}</div>
-          <div class="meta">1日 ${s.daily?fmtHM(s.daily):'—'} · 週 ${s.weekly?fmtHM(s.weekly):'—'}${s.weak?' · 苦手':''}${s.focus?' · 重点':''}${isNote?' · ノート':((nc||np||nj)?' · 単語'+nc+'件'+(nj?' · 熟語'+nj+'件':'')+(np?' · 問題'+np+'件':''):'')}</div>
+          <div class="meta">1日 ${s.daily?fmtHM(s.daily):'—'} · 週 ${s.weekly?fmtHM(s.weekly):'—'}${s.weak?' · 苦手':''}${s.focus?' · 重点':''}${isLab?' · ラボ':((nc||np||nj)?' · 単語'+nc+'件'+(nj?' · 熟語'+nj+'件':'')+(np?' · 問題'+np+'件':''):'')}</div>
         </div>
         ${pill}
         <button class="icon-btn" onclick="event.stopPropagation();openSubjectModal('${s.id}')">✎</button>
@@ -2383,7 +2392,123 @@ function importJSON(ev){
   reader.readAsText(file);
   ev.target.value='';
 }
-/* ================= 教科ノート（v2.09） ================= */
+/* ================= 教科学習 ================= */
+/* 化学ラボ：登録済みの水溶液反応のみを扱う定性的モデル */
+const CHEM_SOURCE = {
+  ions:'https://www.chemguide.uk/14to16/analysis/cations.html',
+  copper:'https://www.chemguide.co.uk/inorganic/transition/copper.html',
+  silver:'https://www.chemguide.co.uk/inorganic/group7/testing.html',
+  organic:'https://www.chemguide.co.uk/organicprops/alcohols/oxidation.html'
+};
+const CHEM_IONS = [
+  {id:'cu',f:'Cu²⁺',n:'銅(Ⅱ)イオン',color:'#5cb9e6',label:'青色'},
+  {id:'fe2',f:'Fe²⁺',n:'鉄(Ⅱ)イオン',color:'#adc8ac',label:'淡緑色'},
+  {id:'fe3',f:'Fe³⁺',n:'鉄(Ⅲ)イオン',color:'#e4ba65',label:'黄褐色'},
+  {id:'ag',f:'Ag⁺',n:'銀イオン',color:'#e4f1f5',label:'無色'}
+];
+const CHEM_REAGENTS = [
+  {id:'oh',f:'NaOH',n:'水酸化ナトリウム水溶液'},
+  {id:'nh3',f:'NH₃',n:'アンモニア水'},
+  {id:'cl',f:'Cl⁻',n:'塩化物イオン'},
+  {id:'br',f:'Br⁻',n:'臭化物イオン'},
+  {id:'i',f:'I⁻',n:'ヨウ化物イオン'}
+];
+let chemTab='mix', chemIon='cu', chemReagent='oh', chemAmount='small', chemMixed=false;
+let chemRouteId='seed-ethanol', chemEditing=null, chemPractice=null;
+const CHEM_ROUTE_SEEDS = [
+  {id:'seed-ethanol',title:'エタノールの酸化',nodes:['エタノール','アセトアルデヒド','酢酸'],edges:[
+    {name:'酸化',condition:'酸性二クロム酸カリウム／生成物を留出'},
+    {name:'酸化',condition:'酸性二クロム酸カリウム／加熱'}],builtin:true},
+  {id:'seed-propanol',title:'第二級アルコールの酸化',nodes:['2-プロパノール','アセトン'],edges:[
+    {name:'酸化',condition:'酸性二クロム酸カリウム／加熱'}],builtin:true}
+];
+function chemResult(ion,reagent,amount){
+  const base={solution:'無色（模式表示）',liquid:'#e4f1f5',solid:null,solidName:'なし',source:CHEM_SOURCE.ions};
+  const metals={cu:['Cu(OH)₂','水酸化銅(Ⅱ)','#79c8ec','淡青色','Cu²⁺ + 2OH⁻ → Cu(OH)₂↓'],fe2:['Fe(OH)₂','水酸化鉄(Ⅱ)','#86a48a','緑白色','Fe²⁺ + 2OH⁻ → Fe(OH)₂↓'],fe3:['Fe(OH)₃','水酸化鉄(Ⅲ)','#a6502a','赤褐色','Fe³⁺ + 3OH⁻ → Fe(OH)₃↓']};
+  if(metals[ion] && (reagent==='oh'||reagent==='nh3')){
+    if(ion==='cu'&&reagent==='nh3'&&amount==='excess') return {...base,solution:'深青色',liquid:'#2344bb',title:'沈殿が溶け、深青色に',product:'テトラアンミン銅(Ⅱ)イオン',equation:'Cu(OH)₂ + 4NH₃ ⇌ [Cu(NH₃)₄]²⁺ + 2OH⁻',detail:'少量でできた淡青色の沈殿が、過剰のアンモニア水で溶けます。錯イオンの式は水配位子を省略しています。',source:CHEM_SOURCE.copper};
+    const m=metals[ion];
+    return {...base,title:m[3]+'の沈殿',product:m[1],solid:m[2],solidName:m[3],equation:reagent==='nh3'?m[4].replace(/(2|3)OH⁻/,(_,x)=>x+'NH₃ + '+x+'H₂O').replace('↓','↓ + '+(ion==='fe3'?'3':'2')+'NH₄⁺'):m[4],detail:(ion==='fe2'?'放置すると空気中の酸素により褐色に変化します。':'')+(reagent==='oh'?'過剰に加えても、この沈殿は溶けません。':ion==='cu'?'過剰に切り替えると、沈殿の溶解と色の変化を確認できます。':'過剰のアンモニア水にも溶けません。')};
+  }
+  if(ion==='ag'&&['cl','br','i'].includes(reagent)){
+    const m={cl:['AgCl','塩化銀','#fffefa','白色'],br:['AgBr','臭化銀','#f5e8b5','淡黄色（クリーム色）'],i:['AgI','ヨウ化銀','#ead15c','黄色']}[reagent];
+    return {...base,title:m[3]+'の沈殿',product:m[1],solid:m[2],solidName:m[3],equation:'Ag⁺ + '+{cl:'Cl⁻',br:'Br⁻',i:'I⁻'}[reagent]+' → '+m[0]+'↓',detail:'水溶液中のイオン反応。定性分析では希硝酸で酸性にしてから確認します。濃度や光で見え方が変わります。',source:CHEM_SOURCE.silver};
+  }
+  if(ion==='cu'&&reagent==='i') return {...base,title:'白色の沈殿と褐色の溶液',product:'ヨウ化銅(Ⅰ)とヨウ素',solution:'褐色（ヨウ素）',liquid:'#9c6332',solid:'#f5f1df',solidName:'白色',equation:'2Cu²⁺ + 4I⁻ → 2CuI↓ + I₂',detail:'銅(Ⅱ)イオンが還元され、ヨウ化物イオンが酸化されます。白い沈殿はヨウ素の色で見分けにくくなることがあります。',source:CHEM_SOURCE.copper};
+  return null;
+}
+function chemVessel(color,solid,label){
+  return `<div class="chem-vessel-wrap"><div class="chem-vessel" role="img" aria-label="${escapeHtml(label)}"><div class="chem-liquid" style="background:${color}">${solid?`<div class="chem-solid" style="background:${solid}"></div>`:''}</div><i></i><i></i><i></i></div><span>${escapeHtml(label)}</span></div>`;
+}
+function setChemTab(t){chemTab=t;chemPractice=null;chemEditing=null;renderDeck()}
+function chemPick(type,id){if(type==='ion')chemIon=id;else chemReagent=id;chemMixed=false;renderDeck()}
+function chemSetAmount(v){chemAmount=v;renderDeck()}
+function chemMix(){chemMixed=true;renderDeck()}
+function chemReset(){chemMixed=false;chemAmount='small';renderDeck()}
+function chemMixHTML(){
+  const ion=CHEM_IONS.find(x=>x.id===chemIon),reagent=CHEM_REAGENTS.find(x=>x.id===chemReagent);
+  const result=chemMixed?chemResult(chemIon,chemReagent,chemAmount):null;
+  return `<div class="chem-intro">物質を選んで、変化を見よう</div><div class="chem-caption">① 水溶液中のイオン</div><div class="chem-cards">${CHEM_IONS.map(x=>`<button class="chem-card ${chemIon===x.id?'selected':''}" aria-pressed="${chemIon===x.id}" onclick="chemPick('ion','${x.id}')"><b>${x.f}</b><span>${x.n}</span></button>`).join('')}</div>
+  <div class="chem-caption">② 加える試薬・イオン</div><div class="chem-cards reagents">${CHEM_REAGENTS.map(x=>`<button class="chem-card ${chemReagent===x.id?'selected':''}" aria-pressed="${chemReagent===x.id}" onclick="chemPick('reagent','${x.id}')"><b>${x.f}</b><span>${x.n}</span></button>`).join('')}</div>
+  <div class="chem-amount"><span>加える量</span><button class="btn sm ${chemAmount==='small'?'':'ghost'}" onclick="chemSetAmount('small')">少量</button><button class="btn sm ${chemAmount==='excess'?'':'ghost'}" onclick="chemSetAmount('excess')">過剰</button></div>
+  <div class="chem-bench"><div class="chem-caption">${ion.f} ＋ ${reagent.f} <span>／ ${chemAmount==='excess'?'過剰':'少量'}</span></div><div class="chem-observe">${chemVessel(ion.color,null,'反応前：'+ion.label)}<span class="chem-change">→</span>${chemVessel(result?result.liquid:'#e4f1f5',result?.solid,chemMixed?(result?'反応後':'未対応'):'反応後：未確認')}</div><div class="chem-actions"><button class="btn" onclick="chemMix()">組み合わせる</button><button class="btn ghost" onclick="chemReset()">リセット</button></div></div>
+  <div id="chem-result" aria-live="polite">${chemMixed?(result?`<div class="chem-result"><h3>${result.title}</h3><div class="chem-product">${result.product}</div><div class="chem-equation">${result.equation}</div><div class="chem-facts"><span><i style="background:${result.liquid}"></i>溶液：${result.solution}</span><span><i style="background:${result.solid||'transparent'}"></i>沈殿：${result.solidName}</span></div><p>${result.detail}</p><a href="${result.source}" target="_blank" rel="noopener">反応の出典</a></div>`:`<div class="chem-result"><h3>この組み合わせは未対応</h3><p>「反応しない」という意味ではありません。今回は金属イオン＋塩基、銀イオン＋ハロゲン化物イオン、銅(Ⅱ)＋ヨウ化物イオンを収録しています。</p></div>`):'<p class="hint">カードを選び、「組み合わせる」を押してください。</p>'}</div><p class="chem-disclaimer">学習用の模式表示です。色は目安で、濃度・温度・時間・共存イオンは計算していません。液量や反応量も実測値ではありません。実験手順書ではありません。</p>`;
+}
+function chemRoutes(){
+  const custom=(state.chemRoutes||[]).filter(x=>x.sid===deckSid);
+  return CHEM_ROUTE_SEEDS.map(x=>custom.find(c=>c.base===x.id)||{...x,sid:deckSid}).concat(custom.filter(x=>!x.base));
+}
+function chemCurrentRoute(){return chemRoutes().find(x=>x.id===chemRouteId)||chemRoutes()[0]}
+function chemSelectRoute(id){chemRouteId=id;chemPractice=null;chemEditing=null;renderDeck()}
+function chemRouteDiagram(r,hidden){
+  return `<div class="chem-route-scroll"><div class="chem-chain">${r.nodes.map((n,i)=>`${i?`<div class="chem-arrow"><span>${escapeHtml(hidden?'？':r.edges[i-1]?.name||'反応名')}</span><b>⟶</b><small>${escapeHtml(hidden?'条件は？':r.edges[i-1]?.condition||'条件未入力')}</small></div>`:''}<div class="chem-node">${escapeHtml(n)}</div>`).join('')}</div></div>`;
+}
+function chemRouteHTML(){
+  const routes=chemRoutes(),r=chemCurrentRoute();
+  if(chemEditing)return chemEditorHTML();
+  return `<div class="chem-route-toolbar"><label>反応経路<select onchange="chemSelectRoute(this.value)">${routes.map(x=>`<option value="${escapeHtml(x.id)}" ${x.id===r.id?'selected':''}>${escapeHtml(x.title)}</option>`).join('')}</select></label><button class="btn sm ghost" onclick="chemEditRoute(true)">新しく作る</button></div><h3 class="chem-route-title">${escapeHtml(r.title)}</h3>${chemPractice?chemPracticeHTML(r):chemRouteDiagram(r,false)}
+  <div class="chem-actions"><button class="btn" onclick="chemStartPractice()">並べ替え練習</button><button class="btn ghost" onclick="chemEditRoute(false)">経路・矢印を編集</button></div>
+  <p class="hint">矢印の上に反応名、下に酸化剤・触媒・条件を表示します。長い経路は横にスクロールできます。</p>${r.builtin||r.base?`<p class="chem-disclaimer">酸化剤は触媒とは区別して記入。第一級アルコールは条件によりアルデヒドを経てカルボン酸まで酸化されます。<a href="${CHEM_SOURCE.organic}" target="_blank" rel="noopener">出典</a></p>`:'<p class="chem-disclaimer">自作の経路です。内容の自動検証は行いません。</p>'}`;
+}
+function chemEditRoute(fresh){
+  chemPractice=null;
+  chemEditing=fresh?{id:uid(),sid:deckSid,title:'',nodes:['',''],edges:[{name:'',condition:''}]}:JSON.parse(JSON.stringify(chemCurrentRoute()));
+  if(chemEditing.builtin){chemEditing.base=chemEditing.id;chemEditing.id=uid();delete chemEditing.builtin}
+  renderDeck();
+}
+function chemCaptureEditor(){
+  const e=chemEditing;if(!e)return;
+  e.title=document.getElementById('chem-edit-title').value.trim();
+  e.nodes=Array.from(document.querySelectorAll('.chem-edit-node')).map(x=>x.value.trim());
+  e.edges=Array.from(document.querySelectorAll('.chem-edit-name')).map((x,i)=>({name:x.value.trim(),condition:document.querySelectorAll('.chem-edit-condition')[i].value.trim()}));
+}
+function chemEditorHTML(){
+  const e=chemEditing;
+  return `<form class="chem-editor" onsubmit="event.preventDefault();chemSaveRoute()"><label>経路の名前<input id="chem-edit-title" maxlength="80" value="${escapeHtml(e.title)}" placeholder="例：エタノールの酸化" required></label>${e.nodes.map((n,i)=>`${i?`<div class="chem-edit-arrow"><label>矢印の上：反応名<input class="chem-edit-name" maxlength="120" value="${escapeHtml(e.edges[i-1]?.name||'')}" placeholder="例：酸化"></label><div class="chem-editor-arrow">↓</div><label>酸化剤・触媒・条件<input class="chem-edit-condition" maxlength="240" value="${escapeHtml(e.edges[i-1]?.condition||'')}" placeholder="例：酸性二クロム酸カリウム／加熱"></label></div>`:''}<label>物質 ${i+1}<input class="chem-edit-node" value="${escapeHtml(n)}" maxlength="100" placeholder="物質名・化学式" required></label>`).join('')}<div class="chem-actions"><button type="button" class="btn sm ghost" onclick="chemResizeRoute(1)" ${e.nodes.length>=12?'disabled':''}>＋ 次の物質</button><button type="button" class="btn sm ghost" onclick="chemResizeRoute(-1)" ${e.nodes.length<=2?'disabled':''}>最後を外す</button></div><div class="chem-actions"><button type="submit" class="btn">保存する</button><button type="button" class="btn ghost" onclick="chemEditing=null;renderDeck()">キャンセル</button></div><div id="chem-edit-status" role="status" class="hint"></div><p class="hint">端末に保存し、既存のGitHub同期の対象に含めます。自作の内容は自動採点・化学的な検証をしません。</p></form>`;
+}
+function chemResizeRoute(delta){chemCaptureEditor();if(delta>0&&chemEditing.nodes.length<12){chemEditing.nodes.push('');chemEditing.edges.push({name:'',condition:''})}else if(delta<0&&chemEditing.nodes.length>2){chemEditing.nodes.pop();chemEditing.edges.pop()}renderDeck()}
+function chemSaveRoute(){
+  chemCaptureEditor();const e=chemEditing;
+  if(!e.title||e.nodes.some(x=>!x)){document.getElementById('chem-edit-status').textContent='経路名とすべての物質名を入力してください。';return}
+  state.chemRoutes=state.chemRoutes||[];e.sid=deckSid;u_mark(e);
+  const i=state.chemRoutes.findIndex(x=>x.id===e.id);if(i>=0)state.chemRoutes[i]=e;else state.chemRoutes.push(e);
+  chemRouteId=e.id;chemEditing=null;saveState();renderDeck();toast('反応経路を保存しました');
+}
+function chemStartPractice(){const r=chemCurrentRoute();let order=r.nodes.map((_,i)=>i);shuffle(order);if(order.every((x,i)=>x===i))order.reverse();chemPractice={pool:order,picked:[],checked:false};renderDeck()}
+function chemPracticePick(i){if(!chemPractice||chemPractice.checked||chemPractice.picked.includes(i))return;chemPractice.picked.push(i);renderDeck()}
+function chemPracticeUndo(){if(!chemPractice)return;chemPractice.picked.pop();chemPractice.checked=false;renderDeck()}
+function chemPracticeCheck(){if(chemPractice.picked.length!==chemCurrentRoute().nodes.length)return;chemPractice.checked=true;renderDeck()}
+function chemPracticeHTML(r){
+  const p=chemPractice,done=p.picked.length===r.nodes.length,correct=done&&p.picked.every((v,i)=>v===i);
+  return `<p class="hint">物質カードを、反応が進む順にタップしてください。</p><div class="chem-practice-picked">${p.picked.length?p.picked.map((i,j)=>`<span>${j?' → ':''}${escapeHtml(r.nodes[i])}</span>`).join(''):'ここに選んだ順で並びます'}</div><div class="chem-cards">${p.pool.map(i=>`<button class="chem-card" ${p.picked.includes(i)||p.checked?'disabled':''} onclick="chemPracticePick(${i})"><span>${escapeHtml(r.nodes[i])}</span></button>`).join('')}</div><div class="chem-actions"><button class="btn sm ghost" onclick="chemPracticeUndo()">1つ戻す</button><button class="btn sm" ${!done||p.checked?'disabled':''} onclick="chemPracticeCheck()">答え合わせ</button><button class="btn sm ghost" onclick="chemPractice=null;renderDeck()">練習を終了</button></div>${p.checked?`<div class="chem-feedback" role="status">${correct?'正解！':'順番を確認しよう'}</div>${chemRouteDiagram(r,false)}`:''}`;
+}
+function renderChemDeck(s){
+  document.getElementById('deck-title').textContent=s.name+' ラボ';
+  document.getElementById('deck-head').innerHTML='';
+  document.getElementById('deck-tabs').innerHTML=[['mix','組み合わせ'],['route','反応経路']].map(([id,label])=>`<button class="${chemTab===id?'on':''}" onclick="setChemTab('${id}')">${label}</button>`).join('');
+  document.getElementById('deck-pane').innerHTML=`<div class="chem-lab">${chemTab==='mix'?chemMixHTML():chemRouteHTML()}</div>`;
+}
+
 const SRS_STEPS = [0,1,2,4,7,14,30,60];
 const SRS_MASTER = 90;                        // 復習間隔を固定した状態の目印
 const SRS_FIX_DEF = { n:5, d:2 };              // 既定：5回できたら2日おきに固定
@@ -2426,13 +2551,13 @@ function setMemOrder(sid, v){
   renderDeck();
 }
 const DECK_KIND_RULES = [
-  [/化学/, ['note']],
+  [/化学/, ['lab']],
   [/数学|算数|物理/, ['prob']],
   [/地理|英語|英単語|国語|古文|漢文|現代文/, ['card','juk','prob']],
   [/世界史|日本史|社会|生物|地学|公民|倫理|政治|経済/, ['card','juk']]
 ];
 function deckKinds(s){ const n = (s&&s.name)||''; for(const r of DECK_KIND_RULES){ if(r[0].test(n)) return r[1].slice() } return ['card','juk','prob'] }
-function kindLabel(k){ return k==='card' ? '単語カード' : k==='juk' ? '熟語カード' : k==='note' ? 'ノート' : '問題' }
+function kindLabel(k){ return k==='card' ? '単語カード' : k==='juk' ? '熟語カード' : k==='lab' ? 'ラボ' : '問題' }
 
 function todayKey(d){ const x = d?new Date(d):new Date(); return x.getFullYear()+'-'+pad2(x.getMonth()+1)+'-'+pad2(x.getDate()) }
 function addDaysKey(n){ const x = new Date(); x.setDate(x.getDate()+n); return todayKey(x) }
@@ -2504,51 +2629,8 @@ function sortCards(cs, kind){
   return a;
 }
 
-/* ---- 化学ノート（写真から書き起こした図を見る） ---- */
-let NOTES=null, notesBusy=false, noteOpen=null;
-function notesFile(s){ const map={'化学':'Chemistry'}; return 'notes_'+((map[s.name])||s.name)+'.json' }
-function loadNotes(s, cb){
-  if(NOTES!==null){ cb&&cb(); return }
-  if(notesBusy) return;
-  notesBusy=true;
-  fetch(notesFile(s)).then(r=>{ if(!r.ok) throw 0; return r.json() })
-    .then(d=>{ NOTES=(d&&typeof d==='object')?d:{pages:[]} })
-    .catch(()=>{ NOTES={pages:[]} })
-    .then(()=>{ notesBusy=false; cb&&cb() });
-}
-function noteBlockHTML(b){
-  let out='';
-  if(b.h) out+=`<div class="note-h">${escapeHtml(b.h)}</div>`;
-  if(b.t) out+=`<div class="note-t">${escapeHtml(b.t)}</div>`;
-  if(b.list) out+='<ul class="note-l">'+b.list.map(x=>`<li>${escapeHtml(x)}</li>`).join('')+'</ul>';
-  if(b.fig) out+=`<div class="note-fig">${b.fig}</div>`;
-  if(b.table) out+='<table class="note-tb"><thead><tr>'+b.table.head.map(h=>`<th>${escapeHtml(h)}</th>`).join('')+'</tr></thead><tbody>'+b.table.rows.map(r=>'<tr>'+r.map(c=>`<td>${escapeHtml(c)}</td>`).join('')+'</tr>').join('')+'</tbody></table>';
-  return out;
-}
-function notePageHTML(p){
-  return `<div class="note-card"><div class="note-tt">${escapeHtml(p.title||'ノート')}${p.tag?`<span>${escapeHtml(p.tag)}</span>`:''}</div>`+(p.blocks||[]).map(noteBlockHTML).join('')+'</div>';
-}
-function notesListHTML(){
-  const d=NOTES||{pages:[]};
-  if(!d.pages||!d.pages.length) return `<div class="empty">化学ノートはまだありません。<br><span class="hint" style="display:inline">手書きノートの写真を送ってください。見やすい図に作り直して、ここに表示します。</span></div>`;
-  if(noteOpen!=null){ const p=d.pages[noteOpen]; if(!p){ noteOpen=null; return notesListHTML() }
-    return `<button class="btn sm ghost" onclick="noteOpen=null;renderDeck()" style="margin-bottom:10px">‹ 一覧へ</button>`+notePageHTML(p) }
-  return d.pages.map((p,i)=>`<div class="crow" onclick="noteOpen=${i};openNote(${i})">
-     <div style="flex:1;min-width:0"><div class="cf">${escapeHtml(p.title||'ノート')}</div>
-     <div class="ct">${p.tag?escapeHtml(p.tag)+' · ':''}${(p.blocks||[]).length}ブロック</div></div>
-     <span class="icon-btn">›</span></div>`).join('');
-}
-function openNote(i){ noteOpen=i; renderDeck() }
-function renderNoteDeck(s){
-  document.getElementById('deck-title').textContent = s.name+' ノート';
-  document.getElementById('deck-head').innerHTML = '';
-  document.getElementById('deck-tabs').innerHTML = deckTabsHTML(s);
-  const pane=document.getElementById('deck-pane');
-  if(!NOTES){ pane.innerHTML='<div class="hint">読み込み中…</div>'; loadNotes(s, ()=>renderNoteDeck(s)); return }
-  pane.innerHTML = notesListHTML();
-}
-/* ---- 教科ノート画面 ---- */
-function openDeck(sid){ deckSid = sid; const _k=deckKinds(findSubject(sid)); deckTab = (_k[0]==='note') ? 'note' : 'today'; sess = null;
+/* ---- 教科学習画面 ---- */
+function openDeck(sid){ deckSid = sid; const _k=deckKinds(findSubject(sid)); deckTab = (_k[0]==='lab') ? 'lab' : 'today'; chemEditing=null; chemPractice=null; sess = null;
   const s0 = findSubject(sid); if(s0){ const k0 = deckKinds(s0); if(k0.indexOf(addKind)<0) addKind = k0[0] }
   document.getElementById('sess-view').classList.remove('show');
   document.getElementById('deck-view').classList.add('show');
@@ -2557,7 +2639,7 @@ function closeDeck(){ deckSid = null; document.getElementById('deck-view').class
 function setDeckTab(t){ deckTab = t; renderDeck() }
 function deckTabsHTML(s){
   const ks = deckKinds(s);
-  if(ks.indexOf('note')>=0) return `<button data-t="note" class="${deckTab==='note'?'on':''}" onclick="setDeckTab('note')">ノート</button>`;
+  if(ks.indexOf('lab')>=0) return '';
   const t = [['today','今日']];
   if(ks.indexOf('card')>=0){ t.push(['card','単語']); t.push(['juk','熟語']); }
   if(ks.indexOf('prob')>=0) t.push(['prob','問題']);
@@ -2570,7 +2652,7 @@ function renderDeck(){
   if(!s){ closeDeck(); return }
   const ks = deckKinds(s);
   if(ks.indexOf(addKind)<0) addKind = ks[0];
-  if(ks.indexOf('note')>=0){ renderNoteDeck(s); return }
+  if(ks.indexOf('lab')>=0){ renderChemDeck(s); return }
   const two = ks.indexOf('card')>=0 && ks.indexOf('prob')>=0;
   const stc = cardStats(deckSid,'card'), stp = cardStats(deckSid,'prob'), stj = cardStats(deckSid,'juk');
   const todo = stc.due + stj.due + (stp.total && !probDoneToday(deckSid) ? 1 : 0);
@@ -3375,7 +3457,7 @@ function abSchedule(ms){
 }
 
 /* ---- 同期（iPhone・iPadの記録を合体する） ---- */
-const SYNC_COLS = ['sessions','activities','subjects','exams','cards','diary'];
+const SYNC_COLS = ['sessions','activities','subjects','exams','cards','diary','chemRoutes'];
 let syncSnap = null, abPending = false;
 function itemSig(o){ const {u, ...r} = o; return JSON.stringify(r) }
 function takeSnap(){
