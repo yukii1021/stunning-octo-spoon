@@ -685,11 +685,8 @@ function loadGameFont(){}
     </div>
 
     <div class="card">
-      <h2>勉強時間（教科別）</h2>
-      <div class="pie-wrap">
-        <canvas class="pie-canvas" id="tl-subj-pie" width="260" height="260"></canvas>
-        <div class="legend" id="tl-subj-legend"></div>
-      </div>
+      <h2>日記</h2>
+      <div id="diary-box"></div>
     </div>
 
     <div class="card">
@@ -853,7 +850,7 @@ function loadGameFont(){}
 
     <button class="btn" style="position:relative;width:100%;margin-top:12px;padding:16px 0 14px;border-radius:13px;border:1px solid #c9a24a;background:radial-gradient(130% 180% at 50% 0%,#2a2213 0%,#14100a 58%,#0a0806 100%);color:#f3e3bd;font-size:15px;letter-spacing:.24em;font-weight:700;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;cursor:pointer;box-shadow:0 0 0 1px rgba(201,162,74,.25),inset 0 0 18px rgba(201,162,74,.07)" onclick="location.href='cards.html'"><span style="display:block;font-size:9.5px;letter-spacing:.34em;color:#c9a24a;margin-bottom:6px">CARD BATTLE</span>学府の絵札</button>
 
-    <div class="hint" style="text-align:center;margin-top:16px">StudyTime v3.21 · ローカル保存＋GitHub自動バックアップ</div>
+    <div class="hint" style="text-align:center;margin-top:16px">StudyTime v3.23 · ローカル保存＋GitHub自動バックアップ</div>
   </div>
 
   <!-- ================= DESIGN ================= -->
@@ -1133,6 +1130,7 @@ let state = {
   sessions:   [], // {id,activityId,start,end}
   exams:    [], // {id,name,date}
   cards:    [], // {id,sid,kind,f,b,x,tag,box,n,due}
+  diary:    [], // {id,date,text,u}
   streak:   {}, // {sid:{n,d}}
   goals:      { daily:360, weekly:2520 },
   settings:   { theme:'dark' },
@@ -1774,6 +1772,40 @@ function renderHomeAdvice(){
 let tlDate = new Date();
 function shiftDay(d){ tlDate = new Date(tlDate); tlDate.setDate(tlDate.getDate()+d); renderTimeline() }
 function setToday(){ tlDate = new Date(); renderTimeline() }
+/* ---- 日記（その日の特別なことを記録して見返す） ---- */
+function diaryOf(key){ state.diary = state.diary||[]; return state.diary.find(e=>e.date===key) }
+function diaryKey(){ return todayKey(tlDate) }
+function saveDiary(){
+  const el = document.getElementById('diary-text'); if(!el) return;
+  state.diary = state.diary||[];
+  const key = diaryKey(), text = el.value.trim();
+  const e = state.diary.find(x=>x.date===key);
+  if(!text){
+    if(e){ state.diary = state.diary.filter(x=>x!==e); saveState(); toast('日記を削除しました') }
+    renderDiary(); return;
+  }
+  let cur = e;
+  if(!cur){ cur = { id:uid(), date:key, text:'', u:0 }; state.diary.push(cur) }
+  cur.text = text; u_mark(cur); saveState(); toast('日記を保存しました');
+  renderDiary();
+}
+function diaryListHTML(curKey){
+  const entries = (state.diary||[]).slice().sort((a,b)=>String(b.date).localeCompare(String(a.date))).slice(0,30);
+  if(!entries.length) return '<div class="hint" style="text-align:center">まだ日記はありません</div>';
+  return '<div class="hint" style="margin-bottom:6px">書いた日の一覧（タップで見返す）</div>'+entries.map(e=>
+    `<div class="crow"${e.date===curKey?' style="border-color:var(--accent)"':''} onclick="diaryJump('${e.date}')">
+      <div style="flex:1;min-width:0"><div class="cf">${fmtDateJP(new Date(e.date+'T00:00:00'))}</div>
+      <div class="ct">${escapeHtml(e.text.length>60 ? e.text.slice(0,60)+'…' : e.text)}</div></div>
+      <span class="icon-btn">›</span></div>`).join('');
+}
+function diaryJump(d){ tlDate = new Date(d+'T00:00:00'); renderTimeline() }
+function renderDiary(){
+  const box = document.getElementById('diary-box'); if(!box) return;
+  const key = diaryKey(), e = diaryOf(key);
+  box.innerHTML = `<textarea id="diary-text" rows="4" placeholder="その日にあった特別なことを書く（空欄で保存すると削除）" style="width:100%;box-sizing:border-box;min-height:96px;resize:vertical;background:var(--bg-elev);border:1px solid var(--line);border-radius:12px;color:var(--text);padding:10px 12px;font-size:15px;line-height:1.6;font-family:inherit">${escapeHtml(e?e.text:'')}</textarea>
+    <button class="btn primary block" style="margin-top:8px" onclick="saveDiary()">日記を保存する</button>
+    <div id="diary-list" style="margin-top:16px">${diaryListHTML(key)}</div>`;
+}
 
 function textOnColor(hex){
   const m = /^#?([0-9a-f]{6})$/i.exec(String(hex||'').trim()); if(!m) return '#0b0d12';
@@ -1836,8 +1868,7 @@ function renderTimeline(){
 
   // Pies for the day
   renderDayPie();
-  drawPie('tl-subj-pie', aggregateBySubject(tlDate));
-  renderLegend('tl-subj-legend', aggregateBySubject(tlDate));
+  renderDiary();
 
   // Day list
   const dl = document.getElementById('tl-list');
@@ -2436,8 +2467,8 @@ function gradeCard(c, g, force){
     }
     c.ok = (c.ok||0)+1;
   }
-  else { c.box = 0; c.due = addDaysKey(1) }
-  c.grDate = t;
+  else { c.box = 0; c.ok = 0; c.due = t }
+  c.grDate = g==='ok' ? t : '';
   bumpStreak(c.sid);
   saveState();
   return again;
@@ -2572,6 +2603,17 @@ function renderDeck(){
   }
 }
 function sect(t){ return `<div class="sect">${t}<i></i></div>` }
+function weakQuizCards(sid, kind){
+  return subjCards(sid,kind||'card').filter(c=>(c.quizWrong||0)>0).sort((a,b)=>
+    (b.quizWrong||0)-(a.quizWrong||0) || (a.box||0)-(b.box||0) || (b.quizWrongAt||0)-(a.quizWrongAt||0) || String(a.id).localeCompare(String(b.id)));
+}
+function weakQuizSection(kind){
+  const weak = weakQuizCards(deckSid,kind), total=subjCards(deckSid,kind).length;
+  return `<div class="card" style="margin-top:18px"><h2>苦手ピックアップ</h2>
+    <div class="hint">${weak.length?`誤答回数が多い順に最大20問 · 対象 ${weak.length}件`:'テストで間違えた単語・熟語がここに集まります'}</div>
+    ${weak.length?`<ol class="quiz-review-list">${weak.slice(0,5).map(c=>`<li><span class="quiz-review-front">${escapeHtml(c.f)}</span><span class="hint" style="display:block">誤答 ${c.quizWrong}回</span></li>`).join('')}</ol>`:''}
+    <button class="btn block" style="margin-top:12px" ${weak.length&&total>=4?'':'disabled'} onclick="startQuiz('${deckSid}','${kind}',true)">苦手だけテストする</button></div>`;
+}
 function todayMemSection(kind, title, two){
   const st = cardStats(deckSid, kind), head = two ? sect(title) : '';
   if(st.total===0){
@@ -2591,7 +2633,8 @@ function todayMemSection(kind, title, two){
       <button class="btn primary block" style="margin-top:10px" onclick="startMemorize('${deckSid}','${kind}')">暗記モード</button>
       <button class="btn block" style="margin-top:8px" ${st.total>=4?'':'disabled'} onclick="startQuiz('${deckSid}','${kind}')">テストモード</button>
       ${st.total>=4?'':'<div class="hint" style="text-align:center;margin-top:8px">テストモードはカードが4件以上で使えます</div>'}
-      ${n?'':'<div class="hint" style="text-align:center;margin-top:8px">今日の分は終わりです</div>'}`;
+      ${n?'':'<div class="hint" style="text-align:center;margin-top:8px">今日の分は終わりです</div>'}
+      ${weakQuizSection(kind)}`;
 }
 function deckToday(){
   const s = findSubject(deckSid); if(!s) return '';
@@ -2982,15 +3025,17 @@ function againSess(){
   if(!sess) return;
   const md = sess.mode, sid = sess.sid;
   if(md==='memorize') startMemorize(sid, sess.k);
-  else if(md==='quiz') startQuiz(sid, sess.k);
+  else if(md==='quiz') startQuiz(sid, sess.k, sess.weak);
   else startProbSession(sid, null);
 }
-function startQuiz(sid, kind){
+function startQuiz(sid, kind, weak){
   kind = kind||'card';
   const cs = subjCards(sid, kind);
   if(cs.length<4){ toast('カードが4件以上必要です'); return }
   const due = dueCards(sid, kind).map(c=>c.id);
-  sess = { mode:'quiz', sid, k:kind, q:shuffle(due.length?due.slice():cs.map(c=>c.id)).slice(0,20), i:0, ok:0, picked:null, choices:null };
+  const q = weak ? weakQuizCards(sid,kind).slice(0,20).map(c=>c.id) : shuffle(due.length?due.slice():cs.map(c=>c.id)).slice(0,20);
+  if(!q.length){ toast('まだ誤答の記録がありません'); return }
+  sess = { mode:'quiz', sid, k:kind, weak:!!weak, q, i:0, ok:0, picked:null, choices:null, answerGraded:false };
   openSess();
 }
 function startProbSession(sid, ids){
@@ -3099,7 +3144,7 @@ function renderSess(){
       <button class="btn block" style="margin-top:8px" onclick="closeSess()">終わる</button>`;
     return;
   }
-  cnt.textContent = (sess.i+1)+' / '+sess.q.length + ((sess.mode==='memorize' && sess.order==='add') ? '・追加順' : '');
+  cnt.textContent = (sess.weak?'苦手 · ':'')+(sess.i+1)+' / '+sess.q.length + ((sess.mode==='memorize' && sess.order==='add') ? '・追加順' : '');
   if(sess.mode==='memorize'){
     const known = (cur.box||0)>=1, fixed = (cur.box||0)>=SRS_MASTER;
     const chips = MEM_FILTERS.map(f=>`<button class="mchip${memFilter===f.id?' on':''}" onclick="setMemFilter('${f.id}')">${f.name}</button>`).join('');
@@ -3177,7 +3222,19 @@ function renderSess(){
 }
 function flipCard(){ if(typeof memDragged!=="undefined" && memDragged){ memDragged=false; return } if(!sess) return; sess.flip = !sess.flip; renderSess() }
 function revealAnswer(){ if(!sess) return; sess.revealed = true; renderSess() }
-function pickChoice(n){ if(!sess || sess.picked!=null) return; sess.picked = n; renderSess() }
+function gradeQuizAnswer(cur, ok){
+  if(!ok){cur.quizWrong=(cur.quizWrong||0)+1;cur.quizWrongAt=Date.now();}
+  gradeCard(cur,ok?'ok':'no');
+}
+function pickChoice(n){
+  if(!sess || sess.picked!=null || !sess.choices || !Number.isInteger(n) || !sess.choices.list[n]) return;
+  sess.picked = n;
+  if(sess.mode==='quiz'){
+    const cur=(state.cards||[]).find(c=>c.id===sess.q[sess.i]);
+    if(cur){gradeQuizAnswer(cur,!!sess.choices.list[n].ok);sess.answerGraded=true;}
+  }
+  renderSess();
+}
 function ordReset(){ if(!sess || sess.ordDone || !sess.ordSlots) return; sess.ordSlots = sess.ordSlots.map(()=>null); renderSess() }
 function ordUndo(){
   if(!sess || sess.ordDone || !sess.ordSlots) return;
@@ -3252,8 +3309,9 @@ function showExp(){
 }
 function gradeSession(g){
   if(!sess) return;
+  if(sess.mode==='quiz' && (sess.picked==null || !sess.choices)) return;
   const cur = (state.cards||[]).find(c=>c.id===sess.q[sess.i]); if(!cur) return;
-  const ok = (g===true || g==='ok');
+  const ok = sess.mode==='quiz' && sess.picked!=null && sess.choices ? !!sess.choices.list[sess.picked].ok : (g===true || g==='ok');
   if(!ok && sess.mode!=='memorize'){
     let answer = '';
     if(sess.choices && sess.picked!=null){const choice=sess.choices.list[sess.picked];if(choice)answer=choice.text;}
@@ -3261,9 +3319,12 @@ function gradeSession(g){
     else answer='解けなかった';
     (sess.wrong||(sess.wrong=[])).push({id:cur.id,f:cur.f||'',b:(cur.ord&&cur.ord.length>1)?cur.ord.join(' '):cur.b||'',answer,x:cur.x||''});
   }
-  gradeCard(cur, ok ? (sess.retry ? 'retry' : 'ok') : 'no');
+  if(!sess.answerGraded){
+    if(sess.mode==='quiz') gradeQuizAnswer(cur,ok);
+    else gradeCard(cur, ok ? (sess.retry ? 'retry' : 'ok') : 'no');
+  }
   if(ok) sess.ok = (sess.ok||0)+1;
-  sess.i++; sess.flip = false; sess.picked = null; sess.choices = null; sess.revealed = false; sess.exp = false;
+  sess.i++; sess.flip = false; sess.picked = null; sess.choices = null; sess.revealed = false; sess.exp = false; sess.answerGraded = false;
   sess.ordTiles = null; sess.ordSlots = null; sess.ordDone = false; sess.ordOk = false;
   renderSess();
 }
@@ -3310,7 +3371,7 @@ function abSchedule(ms){
 }
 
 /* ---- 同期（iPhone・iPadの記録を合体する） ---- */
-const SYNC_COLS = ['sessions','activities','subjects','exams','cards'];
+const SYNC_COLS = ['sessions','activities','subjects','exams','cards','diary'];
 let syncSnap = null, abPending = false;
 function itemSig(o){ const {u, ...r} = o; return JSON.stringify(r) }
 function takeSnap(){
@@ -3334,7 +3395,7 @@ function stampChanges(){
 }
 function syncSig(x){
   const o = {g:x.goals||{}, gu:x.goalsU||0, s:x.streak||{}, su:x.streakU||0, d:x.deleted||{}};
-  SYNC_COLS.forEach(k=>o[k]=x[k]||[]);
+  SYNC_COLS.forEach(k=>{ if(x[k]||!o[k]) o[k]=x[k]||[] });
   return JSON.stringify(o);
 }
 function mergeStates(L, R){
