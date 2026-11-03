@@ -566,7 +566,7 @@ function loadGameFont(){}
 .chem-caption{font-size:12px;font-weight:700;color:var(--text-mute);margin:16px 0 9px}.chem-caption span{font-weight:400}
 .chem-cards{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.chem-cards.reagents{grid-template-columns:repeat(3,minmax(0,1fr))}
 .chem-card{font:inherit;text-align:left;min-height:76px;padding:12px 10px;border:1px solid var(--line);border-radius:12px;background:var(--bg-elev);color:var(--text);cursor:pointer;min-width:0;overflow-wrap:anywhere}
-.chem-card b{display:block;font-size:23px;letter-spacing:.025em;font-family:ui-monospace,monospace;margin-bottom:6px}.chem-card span{display:block;font-size:11px;line-height:1.5}.chem-card.selected{border-color:var(--chem-accent);background:var(--chem-soft);box-shadow:inset 0 0 0 1px var(--chem-accent)}
+.chem-card b{display:block;font-size:19px;letter-spacing:0;font-family:inherit;margin-bottom:6px;white-space:nowrap;overflow-x:auto}.chem-card span{display:block;font-size:11px;line-height:1.5}.chem-card.selected{border-color:var(--chem-accent);background:var(--chem-soft);box-shadow:inset 0 0 0 1px var(--chem-accent)}
 .chem-card:disabled{opacity:.35;cursor:default}.chem-lab button:focus-visible,.chem-lab input:focus-visible,.chem-lab select:focus-visible{outline:2px solid var(--chem-accent);outline-offset:3px}
 .chem-amount{display:flex;align-items:center;gap:8px;margin:16px 0}.chem-amount>span{font-size:12px;margin-right:auto;color:var(--text-mute)}
 .chem-bench{background:var(--bg-elev);border:1px solid var(--line);border-radius:18px;padding:2px 16px 18px}.chem-bench>.chem-caption{text-align:center;font-family:ui-monospace,monospace;font-size:14px}
@@ -576,6 +576,9 @@ function loadGameFont(){}
 .chem-route-toolbar{display:flex;gap:10px;align-items:flex-end;margin:16px 0}.chem-route-toolbar label{flex:1;min-width:0;font-size:12px;color:var(--text-mute)}.chem-route-toolbar select{display:block;width:100%;margin-top:7px;background:var(--bg-elev);color:var(--text);border:1px solid var(--line);border-radius:10px;padding:10px;font:inherit}.chem-route-title{font-size:18px;margin:24px 0 12px}.chem-route-scroll{overflow-x:auto;border:1px solid var(--line);border-radius:14px;background:var(--bg-elev);margin-bottom:12px;padding:30px 16px;overscroll-behavior-x:contain}.chem-chain{display:flex;align-items:center;width:max-content;min-height:110px}.chem-node{width:116px;flex-shrink:0;min-height:64px;display:flex;align-items:center;justify-content:center;border:1px solid var(--line);border-radius:12px;text-align:center;font-size:14px;font-weight:700;line-height:1.7;padding:12px;overflow-wrap:anywhere}.chem-arrow{display:flex;flex-direction:column;align-items:center;justify-content:center;width:146px;flex-shrink:0;padding:0 9px;position:relative;align-self:stretch}.chem-arrow span{font-size:12px;color:var(--chem-accent);text-align:center;overflow-wrap:anywhere}.chem-arrow b{font-size:34px;font-weight:400;line-height:1.2}.chem-arrow small{display:block;font-size:10px;text-align:center;color:var(--text-mute);line-height:1.7;overflow-wrap:anywhere;max-width:100%}
 .chem-editor label{display:block;font-size:12px;color:var(--text-mute);margin:12px 0}.chem-editor input{display:block;width:100%;box-sizing:border-box;border:1px solid var(--line);border-radius:10px;background:var(--bg-elev);color:var(--text);padding:12px;margin-top:6px;font:inherit;font-size:14px}.chem-edit-arrow{border-left:2px solid var(--chem-accent);padding:0 0 0 18px;margin:20px 0}.chem-editor-arrow{font-size:23px;color:var(--chem-accent);margin:-10px 0}.chem-practice-picked{border:1px dashed var(--chem-accent);border-radius:12px;padding:16px;font-size:14px;line-height:2;min-height:68px;margin:12px 0;overflow-wrap:anywhere}.chem-feedback{margin:16px 0 8px;font-size:18px;font-weight:700;color:var(--chem-accent)}
 @keyframes chem-settle{from{transform:translateY(-8px);opacity:.25}to{transform:translateY(0);opacity:1}}@media(prefers-reduced-motion:reduce){.chem-solid{animation:none}.chem-liquid{transition:none}}@media(min-width:600px){.chem-cards{grid-template-columns:repeat(4,minmax(0,1fr))}.chem-cards.reagents{grid-template-columns:repeat(5,minmax(0,1fr))}.chem-vessel{width:94px;height:148px}}[data-theme="light"] .chem-lab{--chem-accent:#16787d;--chem-soft:rgba(22,120,125,.08)}
+.chem-lab [hidden]{display:none!important}.chem-card-shelf{max-height:258px;overflow-y:auto;padding:2px;overscroll-behavior-y:contain;scrollbar-width:thin}.chem-cards.reagents{grid-template-columns:repeat(2,minmax(0,1fr))}.chem-search{display:block;font-size:11px;color:var(--text-mute);margin:10px 0}.chem-search input{display:block;width:100%;padding:10px 12px;margin-top:5px;border:1px solid var(--line);border-radius:10px;background:var(--bg-elev);color:var(--text);font:inherit;font-size:14px}.chem-equation{white-space:nowrap;overflow-x:auto;overflow-wrap:normal;padding-bottom:4px;font-family:inherit}.chem-arrow{width:auto;min-width:146px}.chem-arrow small,.chem-arrow span{white-space:nowrap;overflow-wrap:normal;max-width:none}.chem-node{width:auto;min-width:116px;white-space:nowrap;overflow-wrap:normal}.chem-formula{white-space:nowrap}.chem-ref-entry{border:1px solid var(--line);border-radius:12px;background:var(--bg-elev);margin:8px 0;overflow:hidden}.chem-ref-entry summary{padding:13px 12px;cursor:pointer;font-size:14px;line-height:1.7}.chem-ref-entry summary small{display:block;margin-left:15px;color:var(--text-mute);font-size:11px}.chem-ref-detail{padding:0 14px 16px;font-size:12px;line-height:1.8}.chem-ref-detail a{color:var(--chem-accent);text-decoration:underline;margin-right:16px}.chem-ref-detail button{margin-top:8px}.chem-color-guide{margin-top:20px;font-size:13px}.chem-color-guide summary{cursor:pointer;padding:12px 0}.chem-ref-ion{display:flex;align-items:center;gap:10px;border-top:1px solid var(--line);padding:10px 0;font-size:12px}.chem-ref-ion small{margin-left:auto;color:var(--text-mute)}.chem-quiz-prompt{padding:18px 14px;border:1px solid var(--line);border-radius:14px;background:var(--bg-elev);font-size:13px;line-height:1.8;margin-bottom:18px}.chem-quiz-prompt>b{font-size:19px;white-space:nowrap;display:block;overflow-x:auto}.chem-quiz-prompt p{font-size:11px;color:var(--text-mute)}.chem-quiz-options{display:grid;gap:8px}.chem-answer{min-height:52px;border:1px solid var(--line);border-radius:12px;font-size:15px;font-weight:600;color:var(--text);background:var(--bg-elev);text-align:left;padding:12px 14px}.chem-answer.correct{background:#16a34a!important;color:#fff!important;border-color:#16a34a!important}.chem-answer.wrong{background:#dc2626!important;color:#fff!important;border-color:#dc2626!important}.chem-quiz-options~.btn{margin-top:14px}@media(min-width:600px){.chem-cards.reagents{grid-template-columns:repeat(4,minmax(0,1fr))}.chem-card-shelf{max-height:300px}}#deck-tabs:has(button[onclick*="setChemTab"]) button{white-space:nowrap;font-size:12px;padding-left:3px;padding-right:3px}
+.chem-bench>.chem-caption{white-space:nowrap;overflow-x:auto;font-family:inherit}.chem-ref-entry summary>.chem-formula{display:inline-block;vertical-align:top;max-width:calc(100% - 20px);overflow-x:auto}.chem-lab{min-width:0}.chem-route-scroll{max-width:100%}.chem-ref-ion>b{flex-shrink:0}.chem-ref-ion span{min-width:0}.chem-color-guide .chem-ref-ion{align-items:flex-start}
+html:has(#deck-view.show .chem-lab){overflow:hidden}body:has(#deck-view.show .chem-lab){height:100dvh;min-height:0;overflow:hidden}#deck-view:has(.chem-lab){isolation:isolate;overflow:hidden}#deck-view:has(.chem-lab)>.deck-body{min-height:0;overscroll-behavior-y:contain}
 
 </style>
 </head>
@@ -854,7 +857,7 @@ function loadGameFont(){}
 
     <button class="btn" style="position:relative;width:100%;margin-top:12px;padding:16px 0 14px;border-radius:13px;border:1px solid #c9a24a;background:radial-gradient(130% 180% at 50% 0%,#2a2213 0%,#14100a 58%,#0a0806 100%);color:#f3e3bd;font-size:15px;letter-spacing:.24em;font-weight:700;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;cursor:pointer;box-shadow:0 0 0 1px rgba(201,162,74,.25),inset 0 0 18px rgba(201,162,74,.07)" onclick="location.href='cards.html'"><span style="display:block;font-size:9.5px;letter-spacing:.34em;color:#c9a24a;margin-bottom:6px">CARD BATTLE</span>学府の絵札</button>
 
-    <div class="hint" style="text-align:center;margin-top:16px">StudyTime v3.25 · ローカル保存＋GitHub自動バックアップ</div>
+    <div class="hint" style="text-align:center;margin-top:16px">StudyTime v3.26 · ローカル保存＋GitHub自動バックアップ</div>
   </div>
 
   <!-- ================= DESIGN ================= -->
@@ -2393,6 +2396,302 @@ function importJSON(ev){
   ev.target.value='';
 }
 /* ================= 教科学習 ================= */
+/* StudyTime 化学ラボ追加教材（2026-11-04 出典本文確認）。画面・既存配列は変更しない。
+ * 接続: CHEM_IONS.concat(CHEM_EXTRA_IONS)、CHEM_REAGENTS.concat(CHEM_EXTRA_REAGENTS)。
+ * chemExpandedResult(...) ?? chemResult(...) の順で呼ぶ。既存4イオン・5試薬は重複登録しない。
+ * small / excess は添加量であり濃度ではない。未収録・条件未確定は null。
+ * 各試験は新しい試料への独立した操作。前の操作の生成物を状態として引き継がない。
+ * 固体カードは懸濁試料、limewater は石灰水。気体は detail/title に記載し solid にしない。
+ * 危険物を含む学習用の定性モデルで、実験手順書・網羅表・平衡計算ではない。
+ * このファイルはCHEM_SOURCEに依存せず、chem-lab.jsより先に評価できる。
+ */
+const CHEM_EXPANDED_SOURCES = Object.freeze({
+  school:'https://www.shinko-keirin.co.jp/keirinkan/kou/science/kagaku-jissen_arch/201912/',
+  cations:'https://www.chemguide.uk/14to16/analysis/cations.html',
+  copper:'https://www.chemguide.co.uk/inorganic/transition/copper.html',
+  halides:'https://www.chemguide.co.uk/inorganic/group7/testing.html',
+  chromium:'https://www.chemguide.co.uk/inorganic/transition/chromium.html',
+  manganese:'https://www.chemguide.co.uk/inorganic/transition/manganese.html',
+  carbonate:'https://www.chemguide.co.uk/inorganic/complexions/aquaco3.html',
+  acidCarbonate:'https://www.chemguide.uk/14to16/acids/carbonates.html',
+  hydroxide:'https://www.chemguide.co.uk/inorganic/complexions/aquaoh.html',
+  lead:'https://chem.libretexts.org/Bookshelves/Analytical_Chemistry/Supplemental_Modules_(Analytical_Chemistry)/Qualitative_Analysis/Characteristic_Reactions_of_Select_Metal_Ions/Characteristic_Reactions_of_Lead_Ions_(Pb)',
+  silver:'https://chem.libretexts.org/Bookshelves/Analytical_Chemistry/Supplemental_Modules_(Analytical_Chemistry)/Qualitative_Analysis/Characteristic_Reactions_of_Select_Metal_Ions/Characteristic_Reactions_of_Silver_Ions_(Ag)',
+  nickel:'https://chem.libretexts.org/Bookshelves/Analytical_Chemistry/Supplemental_Modules_(Analytical_Chemistry)/Qualitative_Analysis/Characteristic_Reactions_of_Select_Metal_Ions/Characteristic_Reactions_of_Nickel_Ions_(Ni)',
+  mn2:'https://chem.libretexts.org/Bookshelves/Analytical_Chemistry/Supplemental_Modules_(Analytical_Chemistry)/Qualitative_Analysis/Characteristic_Reactions_of_Select_Metal_Ions/Characteristic_Reactions_of_Manganese_Ions_(Mn)',
+  barium:'https://chem.libretexts.org/Bookshelves/Analytical_Chemistry/Supplemental_Modules_(Analytical_Chemistry)/Qualitative_Analysis/Characteristic_Reactions_of_Select_Metal_Ions/Characteristic_Reactions_of_Barium_(Ba)',
+  calcium:'https://chem.libretexts.org/Bookshelves/Analytical_Chemistry/Supplemental_Modules_(Analytical_Chemistry)/Qualitative_Analysis/Characteristic_Reactions_of_Select_Metal_Ions/Characteristic_Reactions_of_Calcium_Ions_(Ca)',
+  magnesium:'https://chem.libretexts.org/Bookshelves/Analytical_Chemistry/Supplemental_Modules_(Analytical_Chemistry)/Qualitative_Analysis/Characteristic_Reactions_of_Select_Metal_Ions/Characteristic_Reactions_of_Magnesium_Ions_(Mg)',
+  iron:'https://chem.libretexts.org/Bookshelves/Analytical_Chemistry/Supplemental_Modules_(Analytical_Chemistry)/Qualitative_Analysis/Characteristic_Reactions_of_Select_Metal_Ions/Characteristic_Reactions_of_Iron__(Fe)',
+  cuTests:'https://chem.libretexts.org/Bookshelves/Analytical_Chemistry/Supplemental_Modules_(Analytical_Chemistry)/Qualitative_Analysis/Characteristic_Reactions_of_Select_Metal_Ions/Characteristic_Reactions_of_Copper_Ions_(Cu)',
+  zinc:'https://chem.libretexts.org/Bookshelves/Analytical_Chemistry/Supplemental_Modules_(Analytical_Chemistry)/Qualitative_Analysis/Characteristic_Reactions_of_Select_Metal_Ions/Characteristic_Reactions_of_Zinc_Ions_(Zn)',
+  sulfide:'https://web.williams.edu/wp-etc/chemistry/epeacock/EPL_CHEM_153/153-LABMAN_PDF_05/2-3-qualanalysis.pdf',
+  sulfideColors:'https://examist.jp/chemistry/metal/metal-ion-tinden/',
+  znPH:'https://www.chart.co.jp/subject/rika/scnet/54/Snet54-3.pdf',
+  h2s:'https://edu.rsc.org/experiments/microscale-reactions-of-hydrogen-sulfide/532.article',
+  leadHalides:'https://www.chemedx.org/sites/www/files/webware/CCA/CCA4/MAIN/PBNO/PAGE1.HTM',
+  leadIodide:'https://edu.rsc.org/exhibition-chemistry/golden-rain/2000048.article',
+  hydration:'https://www.chemguide.co.uk/physical/equilibria/ethanol.html',
+  dehydration:'https://www.chemguide.co.uk/organicprops/alcohols/dehydration.html',
+  ester:'https://www.chemguide.co.uk/organicprops/alcohols/esterification.html',
+  aniline:'https://www.chemguide.co.uk/organicprops/aniline/preparation.html',
+  diazo:'https://www.chemguide.co.uk/organicprops/aniline/makediazo.html',
+  diazoReactions:'https://www.chemguide.co.uk/organicprops/aniline/propsdiazo.html'
+});
+
+const CHEM_EXTRA_IONS = [
+  {id:'al',f:'Al³⁺',n:'アルミニウムイオン',color:'#e4f1f5',label:'無色',source:CHEM_EXPANDED_SOURCES.cations},
+  {id:'zn',f:'Zn²⁺',n:'亜鉛イオン',color:'#e4f1f5',label:'無色',source:CHEM_EXPANDED_SOURCES.cations},
+  {id:'pb',f:'Pb²⁺',n:'鉛(Ⅱ)イオン',color:'#e4f1f5',label:'無色',source:CHEM_EXPANDED_SOURCES.lead},
+  {id:'ca',f:'Ca²⁺',n:'カルシウムイオン',color:'#e4f1f5',label:'無色',source:CHEM_EXPANDED_SOURCES.cations},
+  {id:'ba',f:'Ba²⁺',n:'バリウムイオン',color:'#e4f1f5',label:'無色',source:CHEM_EXPANDED_SOURCES.barium},
+  {id:'mg',f:'Mg²⁺',n:'マグネシウムイオン',color:'#e4f1f5',label:'無色',source:CHEM_EXPANDED_SOURCES.magnesium},
+  {id:'ni',f:'Ni²⁺',n:'ニッケル(Ⅱ)イオン',color:'#80b995',label:'緑色',source:CHEM_EXPANDED_SOURCES.nickel},
+  {id:'cr3',f:'Cr³⁺',n:'クロム(Ⅲ)イオン',color:'#81a58b',label:'緑色～紫色（配位子による）',source:CHEM_EXPANDED_SOURCES.chromium},
+  {id:'mn2',f:'Mn²⁺',n:'マンガン(Ⅱ)イオン',color:'#f0e7eb',label:'ごく淡い桃色（ほぼ無色）',source:CHEM_EXPANDED_SOURCES.manganese},
+  {id:'nh4',f:'NH₄⁺',n:'アンモニウムイオン',color:'#e4f1f5',label:'無色',source:CHEM_EXPANDED_SOURCES.cations},
+  {id:'na',f:'Na⁺',n:'ナトリウムイオン',color:'#e4f1f5',label:'無色',source:CHEM_EXPANDED_SOURCES.sulfide},
+  {id:'k',f:'K⁺',n:'カリウムイオン',color:'#e4f1f5',label:'無色',source:CHEM_EXPANDED_SOURCES.sulfide},
+  {id:'chromate',f:'CrO₄²⁻',n:'クロム酸イオン',color:'#ecd64b',label:'黄色',source:CHEM_EXPANDED_SOURCES.chromium},
+  {id:'dichromate',f:'Cr₂O₇²⁻',n:'二クロム酸イオン',color:'#ed983d',label:'赤橙色',source:CHEM_EXPANDED_SOURCES.chromium},
+  {id:'permanganate',f:'MnO₄⁻',n:'過マンガン酸イオン',color:'#903999',label:'赤紫色',source:CHEM_EXPANDED_SOURCES.manganese},
+  {id:'agcl',f:'AgCl（固）',n:'塩化銀の懸濁試料',color:'#e4f1f5',label:'白色（固体）',phase:'solid',solid:'#fffefa',source:CHEM_EXPANDED_SOURCES.halides},
+  {id:'agbr',f:'AgBr（固）',n:'臭化銀の懸濁試料',color:'#e4f1f5',label:'淡黄色（固体）',phase:'solid',solid:'#f5e8b5',source:CHEM_EXPANDED_SOURCES.halides},
+  {id:'agi',f:'AgI（固）',n:'ヨウ化銀の懸濁試料',color:'#e4f1f5',label:'黄色（固体）',phase:'solid',solid:'#ead15c',source:CHEM_EXPANDED_SOURCES.halides},
+  {id:'caco3',f:'CaCO₃（固）',n:'炭酸カルシウムの懸濁試料',color:'#e4f1f5',label:'白色（固体）',phase:'solid',solid:'#fffefa',source:CHEM_EXPANDED_SOURCES.acidCarbonate},
+  {id:'limewater',f:'Ca(OH)₂水溶液',n:'石灰水（塩基性）',color:'#e4f1f5',label:'無色',source:CHEM_EXPANDED_SOURCES.acidCarbonate}
+];
+
+const CHEM_EXTRA_REAGENTS = [
+  {id:'sulfate',f:'SO₄²⁻',n:'硫酸塩水溶液',source:CHEM_EXPANDED_SOURCES.barium},
+  {id:'carbonate',f:'CO₃²⁻',n:'炭酸ナトリウム水溶液',source:CHEM_EXPANDED_SOURCES.carbonate},
+  {id:'chromate',f:'CrO₄²⁻',n:'クロム酸カリウム水溶液',source:CHEM_EXPANDED_SOURCES.school},
+  {id:'h2s_acid',f:'H₂S／強酸性',n:'硫化水素（強酸性・pH 約0.5～1）',source:CHEM_EXPANDED_SOURCES.sulfide},
+  {id:'h2s_basic',f:'H₂S／塩基性',n:'硫化水素（アンモニア性緩衝液・pH 約9）',source:CHEM_EXPANDED_SOURCES.sulfide},
+  {id:'scn',f:'SCN⁻',n:'チオシアン酸カリウム水溶液',source:CHEM_EXPANDED_SOURCES.iron},
+  {id:'ferrocyanide',f:'K₄[Fe(CN)₆]',n:'ヘキサシアニド鉄(Ⅱ)酸カリウム水溶液',source:CHEM_EXPANDED_SOURCES.iron},
+  {id:'ferricyanide',f:'K₃[Fe(CN)₆]',n:'ヘキサシアニド鉄(Ⅲ)酸カリウム水溶液',source:CHEM_EXPANDED_SOURCES.iron},
+  {id:'acid',f:'H⁺',n:'希硝酸（塩化物・硫酸塩を加えない）',source:CHEM_EXPANDED_SOURCES.acidCarbonate},
+  {id:'co2',f:'CO₂',n:'二酸化炭素',source:CHEM_EXPANDED_SOURCES.acidCarbonate},
+  {id:'nh3_dilute',f:'NH₃（希）',n:'希アンモニア水（銀の固体比較用）',source:CHEM_EXPANDED_SOURCES.halides},
+  {id:'nh3_conc',f:'NH₃（濃）',n:'濃アンモニア水（銀の固体比較用）',source:CHEM_EXPANDED_SOURCES.halides},
+  {id:'fe2_acid',f:'Fe²⁺／H₂SO₄',n:'鉄(Ⅱ)塩水溶液（硫酸酸性）',source:CHEM_EXPANDED_SOURCES.manganese},
+  {id:'h2o2_acid',f:'H₂O₂／H₂SO₄',n:'過酸化水素（硫酸酸性）',source:CHEM_EXPANDED_SOURCES.manganese},
+  {id:'h2o2_basic',f:'H₂O₂／NaOH',n:'過酸化水素（十分なNaOHで塩基性・必要に応じ温める）',source:CHEM_EXPANDED_SOURCES.sulfide}
+];
+
+/* 公開可能な反応台帳。small/excess を別の組合せとして水増ししない。
+ * entry.result は通常の結果、entry.excess は十分な試薬添加後の結果。
+ * min/max の濃度を計算してはいない。式は正味式または明示した代表・段階式。
+ */
+const CHEM_EXPANDED_ENTRIES = (() => {
+  const S=CHEM_EXPANDED_SOURCES, rows=[];
+  const clear={solution:'無色（模式表示）',liquid:'#e4f1f5',solid:null,solidName:'なし'};
+  const put=(ion,reagent,result,excess)=>{
+    const entry={ion,reagent,result:{...clear,...result}};
+    if(excess) entry.excess={...clear,...excess};
+    rows.push(entry);
+  };
+  const ppt=(product,color,label,equation,detail,source)=>({title:label+'の沈殿',product,solid:color,solidName:label,equation,detail,source});
+  const sol=(product,label,color,equation,detail,source)=>({title:label+'の溶液',product,solution:label,liquid:color,equation,detail,source});
+  const white='#fffefa', black='#333333';
+  const metals=[
+    ['cu','Cu²⁺','Cu(OH)₂','水酸化銅(Ⅱ)',2,'#79c8ec','淡青色',S.cations],
+    ['fe2','Fe²⁺','Fe(OH)₂','水酸化鉄(Ⅱ)',2,'#86a48a','緑白色',S.cations],
+    ['fe3','Fe³⁺','Fe(OH)₃','水酸化鉄(Ⅲ)',3,'#a6502a','赤褐色',S.cations],
+    ['al','Al³⁺','Al(OH)₃','水酸化アルミニウム',3,white,'白色',S.cations],
+    ['zn','Zn²⁺','Zn(OH)₂','水酸化亜鉛',2,white,'白色',S.cations],
+    ['pb','Pb²⁺','Pb(OH)₂','水酸化鉛(Ⅱ)',2,white,'白色',S.lead],
+    ['ca','Ca²⁺','Ca(OH)₂','水酸化カルシウム',2,white,'白色',S.calcium],
+    ['mg','Mg²⁺','Mg(OH)₂','水酸化マグネシウム',2,white,'白色',S.cations],
+    ['ni','Ni²⁺','Ni(OH)₂','水酸化ニッケル(Ⅱ)',2,'#77ad82','緑色',S.nickel],
+    ['cr3','Cr³⁺','Cr(OH)₃','水酸化クロム(Ⅲ)',3,'#849487','灰緑色',S.chromium],
+    ['mn2','Mn²⁺','Mn(OH)₂','水酸化マンガン(Ⅱ)',2,'#eee7dc','白色～淡褐色',S.mn2]
+  ];
+  const amph={al:['[Al(OH)₄]⁻','OH⁻'],zn:['[Zn(OH)₄]²⁻','2OH⁻'],pb:['[Pb(OH)₄]²⁻','2OH⁻'],cr3:['[Cr(OH)₆]³⁻','3OH⁻']};
+  const ammines={cu:['[Cu(NH₃)₄]²⁺',4,'深青色','#2344bb'],zn:['[Zn(NH₃)₄]²⁺',4,'無色','#e4f1f5'],ni:['[Ni(NH₃)₆]²⁺',6,'青色～青紫色','#6b7fc1']};
+  for(const [id,ion,formula,name,n,color,label,source] of metals){
+    let note='通常の定性分析の濃度を想定。少量は沈殿生成段階であり、反応率や残存イオンの色は計算していません。';
+    if(id==='ca') note+='Ca(OH)₂は比較的溶けやすく、十分なCa²⁺濃度とOH⁻濃度が必要です。希薄なら沈殿は見えません。';
+    if(id==='fe2') note+='空気酸化により沈殿が褐色になります。';
+    if(id==='fe3') note+='Fe(OH)₃は高校の慣用表記で、実際の沈殿は含水酸化物などを含みます。';
+    if(id==='mn2') note+='生成直後と空気酸化後で色が変わります。褐変後の組成は一意に固定しません。';
+    const oh=ppt(name+' '+formula,color,label,ion+' + '+n+'OH⁻ → '+formula+'↓',note,source);
+    let ohEx={...oh,detail:note+'通常の濃度では過剰NaOHにも溶けません。'};
+    if(amph[id]){
+      const [complex,extra]=amph[id];
+      ohEx=sol(complex,id==='cr3'?'緑色':'無色',id==='cr3'?'#427e59':'#e4f1f5',formula+' + '+extra+' ⇌ '+complex,'いったん生じた両性水酸化物が、十分な過剰NaOHで溶ける段階式。'+(id==='cr3'?'ヒドロキシド錯体は条件に依存し、ここでは出典の[Cr(OH)₆]³⁻で代表させています。':'水配位子は省略しています。'),source);
+    }
+    put(id,'oh',oh,ohEx);
+    // Pb²⁺ + NH₃ は対イオンによって塩基性塩となるため単純な水酸化物として登録しない。
+    if(id==='pb'||id==='ca') continue;
+    const nh=ppt(name+' '+formula,color,label,ion+' + '+n+'NH₃ + '+n+'H₂O ⇌ '+formula+'↓ + '+n+'NH₄⁺',note+(id==='mg'?'多量のアンモニウム塩が共存すると沈殿を抑制するため、この表示はその条件を除きます。':''),source);
+    // 既存Cu/Fe試験を覆う理由は出題条件・除外指定の追加のみ。
+    // 既存の沈殿色・過剰NH₃への挙動と、Fe/NH₃の厳密な式文字列を維持する。
+    if(['cu','fe2','fe3'].includes(id)) nh.equation=nh.equation.replace('⇌','→');
+    let nhEx={...nh,detail:nh.detail+'通常の条件では過剰アンモニア水で完全に再溶解しません。'};
+    if(ammines[id]){
+      const [complex,count,lc,hue]=ammines[id];
+      nhEx=sol(complex,lc,hue,formula+' + '+count+'NH₃ ⇌ '+complex+' + 2OH⁻','少量でできた水酸化物が十分な過剰アンモニアで溶解する段階式。水配位子は省略。添加量と濃度は別です。',id==='ni'?S.nickel:source);
+    }
+    if(id==='cr3') nhEx={...nh,detail:note+'過剰、とくに濃アンモニアでは一部が錯体化して溶ける場合があります。全量が不溶とも完全溶解とも断定しません。本モデルは残存沈殿を表示します。'};
+    put(id,'nh3',nh,nhEx);
+  }
+  put('ag','oh',ppt('酸化銀(Ⅰ) Ag₂O','#795336','褐色','2Ag⁺ + 2OH⁻ → Ag₂O↓ + H₂O','AgOHを安定な最終沈殿とはしません。通常の過剰NaOHには溶けません。',S.silver));
+  put('ag','nh3',ppt('酸化銀(Ⅰ) Ag₂O','#795336','褐色','2Ag⁺ + 2NH₃ + H₂O ⇌ Ag₂O↓ + 2NH₄⁺','少量のアンモニア水で酸化銀が生じる段階。過剰では錯体化します。',S.school),sol('ジアンミン銀(Ⅰ)イオン [Ag(NH₃)₂]⁺','無色','#e4f1f5','Ag₂O + 4NH₃ + H₂O ⇌ 2[Ag(NH₃)₂]⁺ + 2OH⁻','酸化銀が過剰アンモニア水で溶ける段階式です。',S.silver));
+  for(const [r,x,formula,label,hue] of [['cl','Cl⁻','AgCl','白色',white],['br','Br⁻','AgBr','淡黄色（クリーム色）','#f5e8b5'],['i','I⁻','AgI','黄色','#ead15c']]){
+    put('ag',r,ppt(formula,hue,label,'Ag⁺ + '+x+' → '+formula+'↓','希硝酸酸性で行うハロゲン化物の確認試験。光により暗色化します。通常の試験条件の表示で、非常に高濃度のハロゲン化物による錯体化は計算しません。',S.halides));
+  }
+  for(const [r,x,formula,label,hue,source] of [['cl','Cl⁻','PbCl₂','白色',white,S.lead],['br','Br⁻','PbBr₂','白色',white,S.leadHalides],['i','I⁻','PbI₂','黄色','#f3d149',S.leadIodide]]){
+    put('pb',r,ppt(formula,hue,label,'Pb²⁺ + 2'+x+' → '+formula+'↓','冷時・沈殿が見える濃度の試料を想定。'+(r==='cl'?'PbCl₂は温水に溶けやすく、析出に時間がかかることがあります。非常に高いCl⁻濃度では錯体化して溶け得ます。':r==='i'?'PbI₂は温めると溶けやすく、冷却すると再結晶します。':'臭化銀のクリーム色と混同しないでください。')+'「過剰」は濃度無限大ではありません。高濃度ハロゲン化物中の錯体化は未計算です。',source));
+  }
+  put('cu','i',{...ppt('ヨウ化銅(Ⅰ) CuI とヨウ素 I₂',white,'白色','2Cu²⁺ + 4I⁻ → 2CuI↓ + I₂','白色沈殿がヨウ素の褐色で見分けにくくなる場合があります。過剰I⁻ではヨウ素の一部はI₃⁻になります。',S.copper),solution:'褐色（ヨウ素）',liquid:'#9c6332'});
+  for(const [id,m,name,source] of [['ba','Ba','硫酸バリウム',S.barium],['pb','Pb','硫酸鉛(Ⅱ)',S.lead],['ca','Ca','硫酸カルシウム',S.calcium]]){
+    put(id,'sulfate',ppt(name+' '+m+'SO₄',white,'白色',m+'²⁺ + SO₄²⁻ ⇌ '+m+'SO₄↓',id==='ca'?'CaSO₄は比較的溶けやすく、非常に濃いCa²⁺溶液など沈殿条件を満たす場合に限る表示です。希薄なら目に見える沈殿はできません。':'溶解度積を超える条件で沈殿。共存イオンや濃度による変化は計算しません。',source));
+  }
+  for(const [id,m,source] of [['ca','Ca',S.calcium],['ba','Ba',S.barium],['pb','Pb',S.leadHalides]]){
+    put(id,'carbonate',ppt(m+'CO₃',white,'白色',m+'²⁺ + CO₃²⁻ → '+m+'CO₃↓','炭酸塩を生じる代表式。強酸性や過剰CO₂中では炭酸塩の平衡が変わります。炭酸塩がすべて白色という意味ではありません。',source));
+  }
+  for(const [id,m,label,hue] of [['al','Al','白色',white],['fe3','Fe','赤褐色','#a6502a'],['cr3','Cr','灰緑色','#849487']]){
+    put(id,'carbonate',ppt(m+'(OH)₃ と二酸化炭素',hue,label,'2'+m+'³⁺ + 3CO₃²⁻ + 3H₂O → 2'+m+'(OH)₃↓ + 3CO₂↑','炭酸塩ではなく加水分解による水酸化物。式は酸性の金属イオンが十分ある場合の代表式で、混合比によってはCO₂ではなくHCO₃⁻が溶液に残り、気泡が見えない場合もあります。',S.carbonate));
+  }
+  put('cu','carbonate',ppt('塩基性炭酸銅(Ⅱ)（代表組成 Cu₂(OH)₂CO₃）','#70b7a4','青緑色','2Cu²⁺ + 2CO₃²⁻ + H₂O → Cu₂(OH)₂CO₃↓ + CO₂','塩基性炭酸塩の代表組成を選んで収支を合わせた式です。実際の沈殿の組成・水和数は一定でなく、この式は気泡の観察を保証しません。純粋なCuCO₃または白色沈殿と断定しません。',S.copper));
+  for(const [id,m,n,formula,label,hue] of [['ag','Ag',2,'Ag₂CrO₄','赤褐色','#a44d35'],['pb','Pb',1,'PbCrO₄','黄色','#eed64a'],['ba','Ba',1,'BaCrO₄','黄色','#ecda64']]){
+    put(id,'chromate',ppt(formula,hue,label,(n===2?'2Ag⁺':m+'²⁺')+' + CrO₄²⁻ → '+formula+'↓','強酸性を避けたクロム酸塩の沈殿試験。クロム酸／二クロム酸の平衡や共存イオンの影響があります。',S.school));
+  }
+  // 強酸性と塩基性は別試薬。未登録の組合せは「沈殿しない」ではなく未対応。
+  for(const [id,m,n,formula,label,hue,source] of [
+    ['cu','Cu',1,'CuS','黒色',black,S.sulfide],['pb','Pb',1,'PbS','黒色',black,S.sulfide],['ag','Ag',2,'Ag₂S','黒色',black,S.h2s],
+    ['zn','Zn',1,'ZnS','白色',white,S.znPH],['fe2','Fe',1,'FeS','黒色',black,S.sulfide],['ni','Ni',1,'NiS','黒色',black,S.nickel],['mn2','Mn',1,'MnS','淡桃色','#d8acb4',S.sulfideColors]
+  ]){
+    const ionic=n===2?'2Ag⁺':m+'²⁺';
+    const basicEq=ionic+' + H₂S + 2NH₃ → '+formula+'↓ + 2NH₄⁺';
+    put(id,'h2s_basic',ppt(formula,hue,label,basicEq,'アンモニア性緩衝液（pH 約9を保つ条件）での正味式。NH₃がH⁺を受け取り、硫化物が生じます。'+(id==='zn'?'ZnSは弱酸性でも生じ得るため「酸性なら沈殿しない」と一般化できません。':''),source));
+    if(['cu','pb','ag'].includes(id)) put(id,'h2s_acid',ppt(formula,hue,label,ionic+' + H₂S → '+formula+'↓ + 2H⁺','強酸性（pH 約0.5～1）でも生じる難溶性硫化物。H₂Sは有毒で、これは操作手順ではありません。',source));
+  }
+  for(const [id,m,label,hue] of [['al','Al','白色',white],['cr3','Cr','灰緑色','#849487']]){
+    put(id,'h2s_basic',ppt(m+'(OH)₃（硫化物ではない）',hue,label,m+'³⁺ + 3NH₃ + 3H₂O → '+m+'(OH)₃↓ + 3NH₄⁺','アンモニア性緩衝液の塩基により水酸化物が沈殿します。Al₂S₃やCr₂S₃が水溶液中で沈殿する表示ではありません。',S.sulfide));
+  }
+  put('fe3','h2s_basic',ppt('硫化鉄(Ⅱ) FeS と硫黄 S',black,'黒色（硫黄も共存）','2Fe³⁺ + 3H₂S + 6NH₃ → 2FeS↓ + S↓ + 6NH₄⁺','アンモニア性緩衝液での還元と沈殿の総括式。Fe³⁺はFe²⁺に還元されるため、Fe₂S₃を生成物としません。途中の水酸化物や気体量は計算しません。',S.sulfide));
+  put('fe3','scn',sol('チオシアン酸鉄(Ⅲ)錯体 [FeSCN]²⁺','血赤色','#b52b30','Fe³⁺ + SCN⁻ ⇌ [FeSCN]²⁺','代表的な1対1錯体による表示。濃度によって他の錯体も共存します。沈殿ではなく溶液の呈色です。',S.iron));
+  put('fe3','ferrocyanide',ppt('ベルリン青（カリウムを含む代表組成 KFe[Fe(CN)₆]）','#193980','濃青色','K⁺ + Fe³⁺ + [Fe(CN)₆]⁴⁻ → KFe[Fe(CN)₆]↓','試薬由来のK⁺を含む代表式。ベルリン青は組成・水和が変動します。シアニド錯体に強酸を加えたり加熱したりする操作を推奨するものではありません。',S.iron));
+  put('fe2','ferricyanide',ppt('ターンブル青（ベルリン青と同型）','#193980','濃青色','K⁺ + Fe²⁺ + [Fe(CN)₆]³⁻ → KFe[Fe(CN)₆]↓','形式的な総括式。生成固体は内部の電子移動によりベルリン青と同じ混合原子価構造になります。別種の安定なFe(Ⅱ)₃[Fe(Ⅲ)(CN)₆]₂と断定しません。',S.iron));
+  put('fe2','ferrocyanide',ppt('ヘキサシアニド鉄(Ⅱ)酸鉄(Ⅱ) Fe₂[Fe(CN)₆]',white,'白色～青白色','2Fe²⁺ + [Fe(CN)₆]⁴⁻ → Fe₂[Fe(CN)₆]↓','空気酸化で青色になります。表示式は生成直後の代表組成です。',S.iron));
+  put('cu','ferrocyanide',ppt('ヘキサシアニド鉄(Ⅱ)酸銅(Ⅱ) Cu₂[Fe(CN)₆]','#9e5539','赤褐色','2Cu²⁺ + [Fe(CN)₆]⁴⁻ → Cu₂[Fe(CN)₆]↓','確認試験の一つ。他の金属も沈殿をつくるため、これだけで混合試料を分離・同定できるわけではありません。',S.cuTests));
+  put('zn','ferrocyanide',ppt('カリウムを含む亜鉛塩 K₂Zn₃[Fe(CN)₆]₂','#e4e3df','灰白色','3Zn²⁺ + 2K⁺ + 2[Fe(CN)₆]⁴⁻ → K₂Zn₃[Fe(CN)₆]₂↓','試薬由来のK⁺も含めた代表式です。微量の鉄の混入で青緑色を帯びる場合があります。',S.zinc));
+  put('chromate','acid',sol('二クロム酸イオン Cr₂O₇²⁻','赤橙色','#ed983d','2CrO₄²⁻ + 2H⁺ ⇌ Cr₂O₇²⁻ + H₂O','酸を加えると平衡が右へ移ります。希硝酸をH⁺源とする正味式で、硫酸を使う出典の実験と同じ酸塩基平衡を表します。還元反応ではありません。',S.chromium));
+  put('dichromate','oh',sol('クロム酸イオン CrO₄²⁻','黄色','#ecd64b','Cr₂O₇²⁻ + 2OH⁻ ⇌ 2CrO₄²⁻ + H₂O','塩基を加えるとクロム酸側へ平衡が移動します。少量での色は実際の酸の残量にも依存します。',S.chromium));
+  put('nh4','oh',{title:'温めるとアンモニアが発生',product:'アンモニア NH₃（気体）',equation:'NH₄⁺ + OH⁻ → NH₃↑ + H₂O',detail:'NaOHを加えて穏やかに温めることが確認試験の条件です。単なる常温混合だけで、目に見える気泡が必ず出るという表示ではありません。湿った赤色リトマス紙を青変させます。直接においをかぐ試験を勧めません。',source:S.cations});
+  put('caco3','acid',{title:'白色固体が溶け、二酸化炭素が発生',product:'Ca²⁺ と二酸化炭素 CO₂',equation:'CaCO₃ + 2H⁺ → Ca²⁺ + CO₂↑ + H₂O',detail:'十分な希硝酸がある場合の総括式。少量の酸では白色固体が残り得ます。硫酸を用いる場合のCaSO₄被膜形成とは区別します。',source:S.acidCarbonate});
+  put('caco3','co2',{title:'二酸化炭素を含む水で徐々に溶解',product:'Ca²⁺ と炭酸水素イオン HCO₃⁻',equation:'CaCO₃ + CO₂ + H₂O ⇌ Ca²⁺ + 2HCO₃⁻',detail:'十分なCO₂を含む水との接触による平衡。速度・固体残量は計算しません。炭酸水素カルシウムは水溶液として扱います。',source:S.acidCarbonate});
+  put('limewater','co2',ppt('炭酸カルシウム CaCO₃',white,'白色','Ca(OH)₂ + CO₂ → CaCO₃↓ + H₂O','Ca²⁺単独のカードとは異なり、OH⁻を含む石灰水です。少量のCO₂で白濁します。',S.acidCarbonate),{title:'過剰の二酸化炭素で白濁が消える',product:'炭酸水素カルシウム（水溶液）',equation:'CaCO₃ + CO₂ + H₂O ⇌ Ca²⁺ + 2HCO₃⁻',detail:'先に生じたCaCO₃が、十分な過剰CO₂で溶ける段階式。温度・濃度に依存する平衡です。',source:S.acidCarbonate});
+  for(const [id,formula,x,label,hue] of [['agcl','AgCl','Cl⁻','白色',white],['agbr','AgBr','Br⁻','淡黄色（クリーム色）','#f5e8b5'],['agi','AgI','I⁻','黄色','#ead15c']]){
+    for(const r of ['nh3','nh3_dilute','nh3_conc']){
+      // 既存nh3は固体試料に限り希アンモニアとして扱う。量のexcessで濃に切り替えない。
+      const dissolves=id==='agcl'||(id==='agbr'&&r==='nh3_conc');
+      const result=dissolves?sol('[Ag(NH₃)₂]⁺ と '+x,'無色','#e4f1f5',formula+' + 2NH₃ ⇌ [Ag(NH₃)₂]⁺ + '+x,'錯体形成により溶解。選んだ濃度で十分な量を加えた場合の定性結果です。少量では固体が残る場合があります。',S.halides):ppt(formula,hue,label,'',id==='agi'?'通常の希・濃アンモニア水のいずれにも、目に見える溶解は認められません。':'希アンモニア水ではほとんど変化しません。希アンモニアの添加量を過剰にしても、濃アンモニアに変更したことにはなりません。',S.halides);
+      if(!dissolves){result.title='固体が残る（通常の試験条件）';result.observationOnly=true;}
+      result.detail+=(r==='nh3'?'既存NH₃カードはこの固体試料では希アンモニア水として扱います。':'')+'濃度は試薬カード、添加量は少量／過剰で別々に指定します。';
+      const small=dissolves?{...result,title:'固体が溶け始める（残存量は条件による）',solid:hue,solidName:label+'の残存固体（模式表示）',detail:result.detail+'少量では全量溶解を仮定せず、残存固体を模式表示します。'}:result;
+      put(id,r,small,dissolves?result:undefined);
+    }
+  }
+  put('permanganate','fe2_acid',sol('Mn²⁺ と Fe³⁺','ほぼ無色～淡黄色','#e9e5ba','MnO₄⁻ + 5Fe²⁺ + 8H⁺ → Mn²⁺ + 5Fe³⁺ + 4H₂O','十分な硫酸酸性で、還元剤Fe²⁺が足りる場合。少量ならMnO₄⁻が残って赤紫色が残り得ます。Fe³⁺の色も濃度に依存します。',S.manganese));
+  put('permanganate','h2o2_acid',{title:'硫酸酸性で脱色し酸素が発生',product:'Mn²⁺ と酸素 O₂',equation:'2MnO₄⁻ + 5H₂O₂ + 6H⁺ → 2Mn²⁺ + 5O₂↑ + 8H₂O',detail:'十分な硫酸酸性と還元剤量の条件での最終像。H₂O₂が足りなければ赤紫色が残ります。塩酸酸性での副反応とは区別します。',source:S.manganese});
+  put('permanganate','h2s_acid',ppt('硫黄 S と Mn²⁺','#eadc78','淡黄色','2MnO₄⁻ + 5H₂S + 6H⁺ → 2Mn²⁺ + 5S↓ + 8H₂O','十分な強酸性・還元剤量の場合の最終式。途中で褐色を経ることがあります。H₂Sは有毒です。',S.h2s));
+  put('dichromate','fe2_acid',sol('Cr³⁺ と Fe³⁺','緑色を帯びる','#6f9b65','Cr₂O₇²⁻ + 6Fe²⁺ + 14H⁺ → 2Cr³⁺ + 6Fe³⁺ + 7H₂O','硫酸酸性でFe²⁺が十分ある場合の最終像。少量なら二クロム酸が残ります。クロム錯体の色とFe³⁺の色が重なります。',S.chromium));
+  put('cr3','h2o2_basic',sol('クロム酸イオン CrO₄²⁻','黄色','#ecd64b','2Cr³⁺ + 3H₂O₂ + 10OH⁻ → 2CrO₄²⁻ + 8H₂O','十分な過剰NaOHで錯体化した後、H₂O₂により酸化。温める条件を含みます。Cr³⁺からの総括式であり、H₂O₂単独添加ではありません。',S.sulfide));
+  put('mn2','h2o2_basic',ppt('二酸化マンガン MnO₂','#775239','褐色','Mn²⁺ + H₂O₂ + 2OH⁻ → MnO₂↓ + 2H₂O','塩基性でまず水酸化物が生じ、それをH₂O₂が酸化する総括式。酸性のH₂O₂とは挙動が異なります。',S.mn2));
+  // 確認済みの「通常の希薄水溶液で目立つ変化なし」だけを別区分で登録。
+  // 空のequationは反応式を捏造しないため。nullの未対応とは意味が異なる。
+  const unchanged=[
+    ['cu',S.cuTests,'青色','#5cb9e6'],['fe2',S.iron,'淡緑色','#adc8ac'],['fe3',S.iron,'黄褐色','#e4ba65'],
+    ['zn',S.zinc,'無色','#e4f1f5'],['mg',S.magnesium,'無色','#e4f1f5'],['ni',S.nickel,'緑色','#80b995'],['mn2',S.mn2,'ごく淡い桃色','#f0e7eb']
+  ];
+  for(const [id,source,label,hue] of unchanged) for(const r of ['cl','sulfate']){
+    put(id,r,{title:'通常の希薄水溶液では目立つ変化なし',product:'新しい沈殿の生成なし（指定条件）',solution:label,liquid:hue,equation:'',detail:'出典が挙げる通常の水溶液試験の結果。高濃度の塩化物による錯体化や特殊な条件まで「反応しない」と断定するものではありません。',source,observationOnly:true});
+  }
+  for(const id of ['na','k']) for(const r of ['cl','carbonate','h2s_acid','h2s_basic']){
+    put(id,r,{title:'この分離条件では沈殿しない',product:'アルカリ金属イオンは溶液中に残る',equation:'',detail:'出典の系統分離条件での観察結果。炎色試験を行うモデルではなく、すべての試薬に無反応という意味ではありません。',source:S.sulfide,observationOnly:true});
+  }
+  // 自動出題用の条件。表示用のdetailから条件を推測する必要をなくす。
+  // 色・固体残量が一意でないものは参考表には残し、小テストからは除外する。
+  for(const entry of rows){
+    const {ion,reagent}=entry;
+    const key=ion+'/'+reagent;
+    const initial=entry.result, final=entry.excess||entry.result;
+    for(const amount of ['small','excess']){
+      // 通常結果を共有する場合にも添加量ごとに独立したメタデータを持つ。
+      const result={...(amount==='excess'?final:initial)};
+      const conditions=['妨害する共存イオンのない、新しい試料を用いる。'];
+      if(reagent==='h2s_acid') conditions.push('強酸性（pH 約0.5～1）を保つ。');
+      if(reagent==='h2s_basic') conditions.push('アンモニア性緩衝液で塩基性（pH 約9）を保つ。');
+      if(reagent==='fe2_acid'||reagent==='h2o2_acid') conditions.push('十分な硫酸酸性で、還元剤を反応に必要な量以上加えた最終状態を考える。');
+      if(reagent==='h2o2_basic') conditions.push('十分なNaOHで塩基性にする。');
+      if(key==='cr3/h2o2_basic') conditions.push('過剰NaOHで錯体化した後に過酸化水素を加え、温める。');
+      if(key==='nh4/oh') conditions.push('NaOHを加え、穏やかに加熱する。');
+      if(reagent==='chromate') conditions.push('強酸性を避け、クロム酸塩の沈殿が生じる条件とする。');
+      if(ion==='ag'&&['cl','br','i'].includes(reagent)) conditions.push('希硝酸酸性、通常の試験濃度で、光による暗色化前を考える。');
+      if(ion==='pb'&&['cl','br','i'].includes(reagent)) conditions.push('冷時、沈殿が生じる濃度で考える。高濃度ハロゲン化物による錯体化は扱わない。');
+      if(reagent==='carbonate') conditions.push('強酸性・過剰二酸化炭素の条件を避ける。');
+      if(['al','fe3','cr3'].includes(ion)&&reagent==='carbonate') conditions.push('金属のアクアイオンが十分にあり、炭酸イオンの添加で二酸化炭素を生じる混合比を考える。');
+      if(key==='chromate/acid') conditions.push('二クロム酸側へ平衡が移るまで十分に酸性にする。');
+      if(key==='dichromate/oh') conditions.push('残存する酸を中和し、クロム酸側へ平衡が移るまで塩基性にする。');
+      if(key==='caco3/acid') conditions.push('十分な希硝酸と接触させた場合の総括式であり、酸の少量添加では固体が残り得る。');
+      if(key==='caco3/co2') conditions.push('十分な二酸化炭素を含む水と接触させる。速度・残存固体量は一定としない。');
+      if(key==='limewater/co2') conditions.push(amount==='small'?'石灰水に少量の二酸化炭素を通じ、白濁した段階を考える。':'白濁した石灰水にさらに十分な二酸化炭素を通じ、沈殿が溶けた段階を考える。');
+      if(['agcl','agbr','agi'].includes(ion)){
+        conditions.push(reagent==='nh3_conc'?'濃アンモニア水を用いる。':'希アンモニア水を用いる。');
+        conditions.push(amount==='excess'?'選んだ濃度のアンモニア水を十分に加える。添加量と濃度は区別する。':'少量添加では固体の残存量が試料量に依存する。');
+      }
+      if(['oh','nh3'].includes(reagent)&&!['agcl','agbr','agi','nh4','dichromate'].includes(ion)){
+        conditions.push(amount==='small'?'通常の定性分析濃度で、沈殿が生成した初期段階を考える。':'通常の定性分析濃度で、十分な過剰量を加えた段階を考える。');
+      }
+      if(ion==='fe2'&&['oh','nh3','ferrocyanide'].includes(reagent)) conditions.push('空気による酸化が進む前に観察する。');
+      if(ion==='mg'&&reagent==='nh3') conditions.push('沈殿を抑制する多量のアンモニウム塩が共存しない。');
+      result.quizCondition=conditions.join('');
+      const ambiguous=result.observationOnly||/[～〜]/.test(result.solution+' '+result.solidName)||
+        (ion==='ca'&&['oh','sulfate'].includes(reagent))||
+        (ion==='cr3'&&reagent==='nh3'&&amount==='excess')||
+        (['agcl','agbr','agi'].includes(ion)&&amount==='small')||
+        ['caco3/acid','caco3/co2','cu/i','cu/carbonate','fe3/h2s_basic',
+          'permanganate/fe2_acid','permanganate/h2o2_acid','permanganate/h2s_acid',
+          'dichromate/fe2_acid'].includes(key)||
+        // 色のある原液への少量添加では、残存イオンの色を一意に決めない。
+        (amount==='small'&&['cu','fe2','fe3','ni','cr3','mn2','chromate','dichromate','permanganate'].includes(ion)&&!!result.solid)||
+        (amount==='small'&&['chromate/acid','dichromate/oh','cr3/h2o2_basic','mn2/h2o2_basic'].includes(key));
+      if(ambiguous) result.quizSkip=true;
+      if(amount==='small') entry.result=result; else entry.excess=result;
+    }
+  }
+  return rows;
+})();
+
+function chemExpandedResult(ion,reagent,amount){
+  if(amount!=='small'&&amount!=='excess') return null;
+  const entry=CHEM_EXPANDED_ENTRIES.find(x=>x.ion===ion&&x.reagent===reagent);
+  if(!entry) return null;
+  const chosen=amount==='excess'&&entry.excess?entry.excess:entry.result;
+  // 既存9フィールドに、自動出題・観察表示用の任意フィールドだけ追加する。
+  const {solution,liquid,solid,solidName,title,product,equation,detail,source}=chosen;
+  const result={solution,liquid,solid,solidName,title,product,equation,detail,source};
+  if(chosen.quizCondition) result.quizCondition=chosen.quizCondition;
+  if(chosen.quizSkip) result.quizSkip=true;
+  if(chosen.observationOnly) result.observationOnly=true;
+  return result;
+}
+
+const CHEM_EXTRA_ROUTES = [
+  {id:'extra-ethene-hydration',title:'エチレンの水和',nodes:['エチレン CH₂=CH₂','エタノール C₂H₅OH'],edges:[{name:'水和',condition:'H₂O（蒸気）／H₃PO₄触媒／約300℃・加圧',source:CHEM_EXPANDED_SOURCES.hydration}],builtin:true,source:CHEM_EXPANDED_SOURCES.hydration},
+  {id:'extra-ethanol-dehydration',title:'エタノールの脱水',nodes:['エタノール C₂H₅OH','エチレン CH₂=CH₂'],edges:[{name:'分子内脱水',condition:'濃H₂SO₄／約170℃',source:CHEM_EXPANDED_SOURCES.dehydration}],builtin:true,source:CHEM_EXPANDED_SOURCES.dehydration},
+  {id:'extra-ethyl-acetate',title:'酢酸エチルの生成',nodes:['酢酸 CH₃COOH ＋ エタノール C₂H₅OH','酢酸エチル CH₃COOC₂H₅ ＋ 水'],edges:[{name:'エステル化（可逆）',condition:'濃H₂SO₄触媒／加熱',source:CHEM_EXPANDED_SOURCES.ester}],builtin:true,source:CHEM_EXPANDED_SOURCES.ester},
+  {id:'extra-benzene-aniline',title:'ベンゼンからアニリンへ',nodes:['ベンゼン C₆H₆','ニトロベンゼン C₆H₅NO₂','アニリニウム塩 C₆H₅NH₃⁺Cl⁻','アニリン C₆H₅NH₂'],edges:[{name:'ニトロ化',condition:'濃HNO₃／濃H₂SO₄・50℃以下',source:CHEM_EXPANDED_SOURCES.aniline},{name:'還元',condition:'Sn／濃HCl・加熱',source:CHEM_EXPANDED_SOURCES.aniline},{name:'遊離',condition:'NaOH水溶液',source:CHEM_EXPANDED_SOURCES.aniline}],builtin:true,source:CHEM_EXPANDED_SOURCES.aniline},
+  {id:'extra-diazonium-phenol',title:'アニリンからフェノールへ',nodes:['アニリン C₆H₅NH₂','塩化ベンゼンジアゾニウム C₆H₅N₂⁺Cl⁻','フェノール C₆H₅OH'],edges:[{name:'ジアゾ化',condition:'NaNO₂／HCl・0～5℃',source:CHEM_EXPANDED_SOURCES.diazo},{name:'加水分解（N₂発生）',condition:'H₂O／温める',source:CHEM_EXPANDED_SOURCES.diazoReactions}],builtin:true,source:CHEM_EXPANDED_SOURCES.diazo},
+  {id:'extra-diazonium-iodobenzene',title:'ジアゾニウム塩からヨードベンゼンへ',nodes:['塩化ベンゼンジアゾニウム C₆H₅N₂⁺Cl⁻','ヨードベンゼン C₆H₅I'],edges:[{name:'置換（N₂発生）',condition:'KI水溶液／冷時',source:CHEM_EXPANDED_SOURCES.diazoReactions}],builtin:true,source:CHEM_EXPANDED_SOURCES.diazoReactions},
+  {id:'extra-toluene-benzoic',title:'トルエンの側鎖酸化',nodes:['トルエン C₆H₅CH₃','安息香酸イオン C₆H₅COO⁻','安息香酸 C₆H₅COOH'],edges:[{name:'側鎖の酸化',condition:'KMnO₄／塩基性・長時間加熱',source:CHEM_EXPANDED_SOURCES.manganese},{name:'酸性にする',condition:'H₂SO₄',source:CHEM_EXPANDED_SOURCES.manganese}],builtin:true,source:CHEM_EXPANDED_SOURCES.manganese},
+  {id:'extra-ethene-diol',title:'エチレンからエチレングリコールへ',nodes:['エチレン CH₂=CH₂','エチレングリコール HOCH₂CH₂OH'],edges:[{name:'酸化',condition:'KMnO₄／穏やかな塩基性水溶液',source:CHEM_EXPANDED_SOURCES.manganese}],builtin:true,source:CHEM_EXPANDED_SOURCES.manganese}
+];
+
 /* 化学ラボ：登録済みの水溶液反応のみを扱う定性的モデル */
 const CHEM_SOURCE = {
   ions:'https://www.chemguide.uk/14to16/analysis/cations.html',
@@ -2415,14 +2714,16 @@ const CHEM_REAGENTS = [
 ];
 let chemTab='mix', chemIon='cu', chemReagent='oh', chemAmount='small', chemMixed=false;
 let chemRouteId='seed-ethanol', chemEditing=null, chemPractice=null;
+let chemIonQuery='',chemReagentQuery='',chemRefQuery='',chemQuiz=null;
 const CHEM_ROUTE_SEEDS = [
   {id:'seed-ethanol',title:'エタノールの酸化',nodes:['エタノール','アセトアルデヒド','酢酸'],edges:[
-    {name:'酸化',condition:'酸性二クロム酸カリウム／生成物を留出'},
-    {name:'酸化',condition:'酸性二クロム酸カリウム／加熱'}],builtin:true},
+    {name:'酸化',condition:'K₂Cr₂O₇／H₂SO₄／留出'},
+    {name:'酸化',condition:'過剰 K₂Cr₂O₇／H₂SO₄／還流'}],builtin:true,source:CHEM_SOURCE.organic},
   {id:'seed-propanol',title:'第二級アルコールの酸化',nodes:['2-プロパノール','アセトン'],edges:[
-    {name:'酸化',condition:'酸性二クロム酸カリウム／加熱'}],builtin:true}
+    {name:'酸化',condition:'K₂Cr₂O₇／H₂SO₄／加熱'}],builtin:true,source:CHEM_SOURCE.organic}
 ];
 function chemResult(ion,reagent,amount){
+  const extra=chemExpandedResult(ion,reagent,amount);if(extra)return extra;
   const base={solution:'無色（模式表示）',liquid:'#e4f1f5',solid:null,solidName:'なし',source:CHEM_SOURCE.ions};
   const metals={cu:['Cu(OH)₂','水酸化銅(Ⅱ)','#79c8ec','淡青色','Cu²⁺ + 2OH⁻ → Cu(OH)₂↓'],fe2:['Fe(OH)₂','水酸化鉄(Ⅱ)','#86a48a','緑白色','Fe²⁺ + 2OH⁻ → Fe(OH)₂↓'],fe3:['Fe(OH)₃','水酸化鉄(Ⅲ)','#a6502a','赤褐色','Fe³⁺ + 3OH⁻ → Fe(OH)₃↓']};
   if(metals[ion] && (reagent==='oh'||reagent==='nh3')){
@@ -2440,40 +2741,54 @@ function chemResult(ion,reagent,amount){
 function chemVessel(color,solid,label){
   return `<div class="chem-vessel-wrap"><div class="chem-vessel" role="img" aria-label="${escapeHtml(label)}"><div class="chem-liquid" style="background:${color}">${solid?`<div class="chem-solid" style="background:${solid}"></div>`:''}</div><i></i><i></i><i></i></div><span>${escapeHtml(label)}</span></div>`;
 }
-function setChemTab(t){chemTab=t;chemPractice=null;chemEditing=null;renderDeck()}
-function chemPick(type,id){if(type==='ion')chemIon=id;else chemReagent=id;chemMixed=false;renderDeck()}
-function chemSetAmount(v){chemAmount=v;renderDeck()}
+function setChemTab(t){if(!['mix','route','quiz','reference'].includes(t))return;chemTab=t;chemPractice=null;chemEditing=null;renderDeck()}
+function chemText(value){
+  const subs='₀₁₂₃₄₅₆₇₈₉',superMap={'0':'⁰','1':'¹','2':'²','3':'³','4':'⁴','5':'⁵','6':'⁶','7':'⁷','8':'⁸','9':'⁹','+':'⁺','-':'⁻'};
+  const sup=x=>x.split('').map(c=>superMap[c]||c).join('');
+  return escapeHtml(String(value)).replace(/\^([0-9]*[+-])/g,(_,x)=>sup(x)).replace(/\b([A-Z][a-z]?)([2-9])([+-])(?=$|[\s／、→⇌⇄⟶)\]）。，；;:])/g,(_,a,b,c)=>a+sup(b+c)).replace(/([A-Z][a-z]?|\)|\])([0-9]+)/g,(_,a,b)=>a+b.split('').map(x=>subs[+x]).join(''));
+}
+function chemAllIons(){return CHEM_IONS.concat(CHEM_EXTRA_IONS)}
+function chemAllReagents(){return CHEM_REAGENTS.concat(CHEM_EXTRA_REAGENTS)}
+function chemSearchKey(v){return String(v).normalize('NFKC').toLowerCase().replace(/\s/g,'')}
+function chemFilterCards(type,value){
+  if(type==='ion')chemIonQuery=value;else chemReagentQuery=value;
+  const key=chemSearchKey(value);
+  document.querySelectorAll(`[data-chem-type="${type}"]`).forEach(el=>el.hidden=!chemSearchKey(el.dataset.search).includes(key));
+}
+function chemCardList(type,items,selected,query){return `<label class="chem-search">${type==='ion'?'イオン・物質を検索':'試薬を検索'}<input type="search" value="${escapeHtml(query)}" placeholder="化学式・名前" oninput="chemFilterCards('${type}',this.value)"></label><div class="chem-cards chem-card-shelf ${type==='reagent'?'reagents':''}">${items.map(x=>`<button class="chem-card ${selected===x.id?'selected':''}" data-chem-type="${type}" data-search="${escapeHtml(x.f+' '+x.n)}" ${!chemSearchKey(x.f+' '+x.n).includes(chemSearchKey(query))?'hidden':''} aria-pressed="${selected===x.id}" onclick="chemPick('${type}','${x.id}')"><b>${chemText(x.f)}</b><span>${escapeHtml(x.n)}</span></button>`).join('')}</div>`}
+function chemPick(type,id){if(type==='ion'){if(!chemAllIons().some(x=>x.id===id))return;chemIon=id}else{if(!chemAllReagents().some(x=>x.id===id))return;chemReagent=id}chemMixed=false;renderDeck()}
+function chemSetAmount(v){if(!['small','excess'].includes(v))return;chemAmount=v;renderDeck()}
 function chemMix(){chemMixed=true;renderDeck()}
 function chemReset(){chemMixed=false;chemAmount='small';renderDeck()}
 function chemMixHTML(){
-  const ion=CHEM_IONS.find(x=>x.id===chemIon),reagent=CHEM_REAGENTS.find(x=>x.id===chemReagent);
+  const ion=chemAllIons().find(x=>x.id===chemIon),reagent=chemAllReagents().find(x=>x.id===chemReagent);
   const result=chemMixed?chemResult(chemIon,chemReagent,chemAmount):null;
-  return `<div class="chem-intro">物質を選んで、変化を見よう</div><div class="chem-caption">① 水溶液中のイオン</div><div class="chem-cards">${CHEM_IONS.map(x=>`<button class="chem-card ${chemIon===x.id?'selected':''}" aria-pressed="${chemIon===x.id}" onclick="chemPick('ion','${x.id}')"><b>${x.f}</b><span>${x.n}</span></button>`).join('')}</div>
-  <div class="chem-caption">② 加える試薬・イオン</div><div class="chem-cards reagents">${CHEM_REAGENTS.map(x=>`<button class="chem-card ${chemReagent===x.id?'selected':''}" aria-pressed="${chemReagent===x.id}" onclick="chemPick('reagent','${x.id}')"><b>${x.f}</b><span>${x.n}</span></button>`).join('')}</div>
+  return `<div class="chem-intro">物質を選んで、変化を見よう</div><div class="chem-caption">① イオン・物質 <span>選択：${chemText(ion.f)}</span></div>${chemCardList('ion',chemAllIons(),chemIon,chemIonQuery)}
+  <div class="chem-caption">② 加える試薬・イオン <span>選択：${chemText(reagent.f)}</span></div>${chemCardList('reagent',chemAllReagents(),chemReagent,chemReagentQuery)}
   <div class="chem-amount"><span>加える量</span><button class="btn sm ${chemAmount==='small'?'':'ghost'}" onclick="chemSetAmount('small')">少量</button><button class="btn sm ${chemAmount==='excess'?'':'ghost'}" onclick="chemSetAmount('excess')">過剰</button></div>
-  <div class="chem-bench"><div class="chem-caption">${ion.f} ＋ ${reagent.f} <span>／ ${chemAmount==='excess'?'過剰':'少量'}</span></div><div class="chem-observe">${chemVessel(ion.color,null,'反応前：'+ion.label)}<span class="chem-change">→</span>${chemVessel(result?result.liquid:'#e4f1f5',result?.solid,chemMixed?(result?'反応後':'未対応'):'反応後：未確認')}</div><div class="chem-actions"><button class="btn" onclick="chemMix()">組み合わせる</button><button class="btn ghost" onclick="chemReset()">リセット</button></div></div>
-  <div id="chem-result" aria-live="polite">${chemMixed?(result?`<div class="chem-result"><h3>${result.title}</h3><div class="chem-product">${result.product}</div><div class="chem-equation">${result.equation}</div><div class="chem-facts"><span><i style="background:${result.liquid}"></i>溶液：${result.solution}</span><span><i style="background:${result.solid||'transparent'}"></i>沈殿：${result.solidName}</span></div><p>${result.detail}</p><a href="${result.source}" target="_blank" rel="noopener">反応の出典</a></div>`:`<div class="chem-result"><h3>この組み合わせは未対応</h3><p>「反応しない」という意味ではありません。今回は金属イオン＋塩基、銀イオン＋ハロゲン化物イオン、銅(Ⅱ)＋ヨウ化物イオンを収録しています。</p></div>`):'<p class="hint">カードを選び、「組み合わせる」を押してください。</p>'}</div><p class="chem-disclaimer">学習用の模式表示です。色は目安で、濃度・温度・時間・共存イオンは計算していません。液量や反応量も実測値ではありません。実験手順書ではありません。</p>`;
+  <div class="chem-bench"><div class="chem-caption">${chemText(ion.f)} ＋ ${chemText(reagent.f)} <span>／ ${chemAmount==='excess'?'過剰':'少量'}</span></div><div class="chem-observe">${chemVessel(ion.solid?'#e4f1f5':ion.color,ion.solid||null,'反応前：'+ion.label)}<span class="chem-change">→</span>${chemVessel(result?result.liquid:'#e4f1f5',result?.solid,chemMixed?(result?'反応後':'未対応'):'反応後：未確認')}</div><div class="chem-actions"><button class="btn" onclick="chemMix()">組み合わせる</button><button class="btn ghost" onclick="chemReset()">リセット</button></div></div>
+  <div id="chem-result" aria-live="polite">${chemMixed?(result?`<div class="chem-result"><h3>${chemText(result.title)}</h3><div class="chem-product">${chemText(result.product)}</div><div class="chem-equation">${chemText(result.equation)}</div><div class="chem-facts"><span><i style="background:${result.liquid}"></i>溶液：${escapeHtml(result.solution)}</span><span><i style="background:${result.solid||'transparent'}"></i>沈殿：${escapeHtml(result.solidName)}</span></div><p>${chemText(result.detail)}</p><a href="${result.source}" target="_blank" rel="noopener">反応の出典</a></div>`:`<div class="chem-result"><h3>この組み合わせは未対応</h3><p>「反応しない」という意味ではありません。「資料」には対応済みの反応と条件を掲載しています。</p></div>`):'<p class="hint">カードを選び、「組み合わせる」を押してください。</p>'}</div><p class="chem-disclaimer">学習用の模式表示です。色は目安で、濃度・温度・時間・共存イオンは計算していません。液量や反応量も実測値ではありません。実験手順書ではありません。</p>`;
 }
 function chemRoutes(){
   const custom=(state.chemRoutes||[]).filter(x=>x.sid===deckSid);
-  return CHEM_ROUTE_SEEDS.map(x=>custom.find(c=>c.base===x.id)||{...x,sid:deckSid}).concat(custom.filter(x=>!x.base));
+  return CHEM_ROUTE_SEEDS.concat(CHEM_EXTRA_ROUTES).map(x=>custom.find(c=>c.base===x.id)||{...x,sid:deckSid}).concat(custom.filter(x=>!x.base));
 }
 function chemCurrentRoute(){return chemRoutes().find(x=>x.id===chemRouteId)||chemRoutes()[0]}
 function chemSelectRoute(id){chemRouteId=id;chemPractice=null;chemEditing=null;renderDeck()}
 function chemRouteDiagram(r,hidden){
-  return `<div class="chem-route-scroll"><div class="chem-chain">${r.nodes.map((n,i)=>`${i?`<div class="chem-arrow"><span>${escapeHtml(hidden?'？':r.edges[i-1]?.name||'反応名')}</span><b>⟶</b><small>${escapeHtml(hidden?'条件は？':r.edges[i-1]?.condition||'条件未入力')}</small></div>`:''}<div class="chem-node">${escapeHtml(n)}</div>`).join('')}</div></div>`;
+  return `<div class="chem-route-scroll"><div class="chem-chain">${r.nodes.map((n,i)=>`${i?`<div class="chem-arrow"><span>${chemText(hidden?'？':r.edges[i-1]?.name||'反応名')}</span><b>⟶</b><small>${chemText(hidden?'条件は？':r.edges[i-1]?.condition||'条件未入力')}</small></div>`:''}<div class="chem-node">${chemText(n)}</div>`).join('')}</div></div>`;
 }
 function chemRouteHTML(){
   const routes=chemRoutes(),r=chemCurrentRoute();
   if(chemEditing)return chemEditorHTML();
   return `<div class="chem-route-toolbar"><label>反応経路<select onchange="chemSelectRoute(this.value)">${routes.map(x=>`<option value="${escapeHtml(x.id)}" ${x.id===r.id?'selected':''}>${escapeHtml(x.title)}</option>`).join('')}</select></label><button class="btn sm ghost" onclick="chemEditRoute(true)">新しく作る</button></div><h3 class="chem-route-title">${escapeHtml(r.title)}</h3>${chemPractice?chemPracticeHTML(r):chemRouteDiagram(r,false)}
   <div class="chem-actions"><button class="btn" onclick="chemStartPractice()">並べ替え練習</button><button class="btn ghost" onclick="chemEditRoute(false)">経路・矢印を編集</button></div>
-  <p class="hint">矢印の上に反応名、下に酸化剤・触媒・条件を表示します。長い経路は横にスクロールできます。</p>${r.builtin||r.base?`<p class="chem-disclaimer">酸化剤は触媒とは区別して記入。第一級アルコールは条件によりアルデヒドを経てカルボン酸まで酸化されます。<a href="${CHEM_SOURCE.organic}" target="_blank" rel="noopener">出典</a></p>`:'<p class="chem-disclaimer">自作の経路です。内容の自動検証は行いません。</p>'}`;
+   <p class="hint">矢印の上に反応名、下に酸化剤・触媒・条件を表示します。長い経路は横にスクロールできます。</p>${r.builtin||r.base?`<p class="chem-disclaimer">酸化剤と触媒を区別し、反応条件も確認しましょう。${r.builtin?`<a href="${r.source||CHEM_SOURCE.organic}" target="_blank" rel="noopener">出典</a>`:'編集済みの経路です。変更内容の自動検証は行いません。'}</p>`:'<p class="chem-disclaimer">自作の経路です。内容の自動検証は行いません。</p>'}`;
 }
 function chemEditRoute(fresh){
   chemPractice=null;
   chemEditing=fresh?{id:uid(),sid:deckSid,title:'',nodes:['',''],edges:[{name:'',condition:''}]}:JSON.parse(JSON.stringify(chemCurrentRoute()));
-  if(chemEditing.builtin){chemEditing.base=chemEditing.id;chemEditing.id=uid();delete chemEditing.builtin}
+  if(chemEditing.builtin){chemEditing.base=chemEditing.id;chemEditing.id=uid();delete chemEditing.builtin;delete chemEditing.source}
   renderDeck();
 }
 function chemCaptureEditor(){
@@ -2484,7 +2799,7 @@ function chemCaptureEditor(){
 }
 function chemEditorHTML(){
   const e=chemEditing;
-  return `<form class="chem-editor" onsubmit="event.preventDefault();chemSaveRoute()"><label>経路の名前<input id="chem-edit-title" maxlength="80" value="${escapeHtml(e.title)}" placeholder="例：エタノールの酸化" required></label>${e.nodes.map((n,i)=>`${i?`<div class="chem-edit-arrow"><label>矢印の上：反応名<input class="chem-edit-name" maxlength="120" value="${escapeHtml(e.edges[i-1]?.name||'')}" placeholder="例：酸化"></label><div class="chem-editor-arrow">↓</div><label>酸化剤・触媒・条件<input class="chem-edit-condition" maxlength="240" value="${escapeHtml(e.edges[i-1]?.condition||'')}" placeholder="例：酸性二クロム酸カリウム／加熱"></label></div>`:''}<label>物質 ${i+1}<input class="chem-edit-node" value="${escapeHtml(n)}" maxlength="100" placeholder="物質名・化学式" required></label>`).join('')}<div class="chem-actions"><button type="button" class="btn sm ghost" onclick="chemResizeRoute(1)" ${e.nodes.length>=12?'disabled':''}>＋ 次の物質</button><button type="button" class="btn sm ghost" onclick="chemResizeRoute(-1)" ${e.nodes.length<=2?'disabled':''}>最後を外す</button></div><div class="chem-actions"><button type="submit" class="btn">保存する</button><button type="button" class="btn ghost" onclick="chemEditing=null;renderDeck()">キャンセル</button></div><div id="chem-edit-status" role="status" class="hint"></div><p class="hint">端末に保存し、既存のGitHub同期の対象に含めます。自作の内容は自動採点・化学的な検証をしません。</p></form>`;
+  return `<form class="chem-editor" onsubmit="event.preventDefault();chemSaveRoute()"><label>経路の名前<input id="chem-edit-title" maxlength="80" value="${escapeHtml(e.title)}" placeholder="例：エタノールの酸化" required></label>${e.nodes.map((n,i)=>`${i?`<div class="chem-edit-arrow"><label>矢印の上：反応名<input class="chem-edit-name" maxlength="120" value="${escapeHtml(e.edges[i-1]?.name||'')}" placeholder="例：酸化"></label><div class="chem-editor-arrow">↓</div><label>酸化剤・触媒・条件<input class="chem-edit-condition" maxlength="240" value="${escapeHtml(e.edges[i-1]?.condition||'')}" placeholder="例：K2Cr2O7／H2SO4／加熱"></label></div>`:''}<label>物質 ${i+1}<input class="chem-edit-node" value="${escapeHtml(n)}" maxlength="100" placeholder="物質名・化学式" required></label>`).join('')}<div class="chem-actions"><button type="button" class="btn sm ghost" onclick="chemResizeRoute(1)" ${e.nodes.length>=12?'disabled':''}>＋ 次の物質</button><button type="button" class="btn sm ghost" onclick="chemResizeRoute(-1)" ${e.nodes.length<=2?'disabled':''}>最後を外す</button></div><div class="chem-actions"><button type="submit" class="btn">保存する</button><button type="button" class="btn ghost" onclick="chemEditing=null;renderDeck()">キャンセル</button></div><div id="chem-edit-status" role="status" class="hint"></div><p class="hint">K2Cr2O7 のように入力すると、経路図では K₂Cr₂O₇ と表示します。電荷は Fe^3+ のように入力できます。端末に保存し、既存のGitHub同期の対象に含めます。自作の内容は自動採点・化学的な検証をしません。</p></form>`;
 }
 function chemResizeRoute(delta){chemCaptureEditor();if(delta>0&&chemEditing.nodes.length<12){chemEditing.nodes.push('');chemEditing.edges.push({name:'',condition:''})}else if(delta<0&&chemEditing.nodes.length>2){chemEditing.nodes.pop();chemEditing.edges.pop()}renderDeck()}
 function chemSaveRoute(){
@@ -2499,14 +2814,62 @@ function chemPracticePick(i){if(!chemPractice||chemPractice.checked||chemPractic
 function chemPracticeUndo(){if(!chemPractice)return;chemPractice.picked.pop();chemPractice.checked=false;renderDeck()}
 function chemPracticeCheck(){if(chemPractice.picked.length!==chemCurrentRoute().nodes.length)return;chemPractice.checked=true;renderDeck()}
 function chemPracticeHTML(r){
-  const p=chemPractice,done=p.picked.length===r.nodes.length,correct=done&&p.picked.every((v,i)=>v===i);
-  return `<p class="hint">物質カードを、反応が進む順にタップしてください。</p><div class="chem-practice-picked">${p.picked.length?p.picked.map((i,j)=>`<span>${j?' → ':''}${escapeHtml(r.nodes[i])}</span>`).join(''):'ここに選んだ順で並びます'}</div><div class="chem-cards">${p.pool.map(i=>`<button class="chem-card" ${p.picked.includes(i)||p.checked?'disabled':''} onclick="chemPracticePick(${i})"><span>${escapeHtml(r.nodes[i])}</span></button>`).join('')}</div><div class="chem-actions"><button class="btn sm ghost" onclick="chemPracticeUndo()">1つ戻す</button><button class="btn sm" ${!done||p.checked?'disabled':''} onclick="chemPracticeCheck()">答え合わせ</button><button class="btn sm ghost" onclick="chemPractice=null;renderDeck()">練習を終了</button></div>${p.checked?`<div class="chem-feedback" role="status">${correct?'正解！':'順番を確認しよう'}</div>${chemRouteDiagram(r,false)}`:''}`;
+  const p=chemPractice,done=p.picked.length===r.nodes.length,correct=done&&p.picked.every((v,i)=>r.nodes[v]===r.nodes[i]);
+  return `<p class="hint">物質カードを、反応が進む順にタップしてください。</p><div class="chem-practice-picked">${p.picked.length?p.picked.map((i,j)=>`<span>${j?' → ':''}${chemText(r.nodes[i])}</span>`).join(''):'ここに選んだ順で並びます'}</div><div class="chem-cards">${p.pool.map(i=>`<button class="chem-card" ${p.picked.includes(i)||p.checked?'disabled':''} onclick="chemPracticePick(${i})"><span>${chemText(r.nodes[i])}</span></button>`).join('')}</div><div class="chem-actions"><button class="btn sm ghost" onclick="chemPracticeUndo()">1つ戻す</button><button class="btn sm" ${!done||p.checked?'disabled':''} onclick="chemPracticeCheck()">答え合わせ</button><button class="btn sm ghost" onclick="chemPractice=null;renderDeck()">練習を終了</button></div>${p.checked?`<div class="chem-feedback" role="status">${correct?'正解！':'順番を確認しよう'}</div>${chemRouteDiagram(r,false)}`:''}`;
+}
+function chemCatalog(){
+  const rows=[];
+  for(const ion of chemAllIons())for(const reagent of chemAllReagents()){
+    let previous='';
+    for(const amount of ['small','excess']){
+      const result=chemResult(ion.id,reagent.id,amount);if(!result)continue;
+      const signature=JSON.stringify([result.equation,result.solution,result.solidName,result.detail,result.quizCondition]);
+      if(signature===previous)continue;previous=signature;
+      rows.push({ion,reagent,amount,result});
+    }
+  }
+  return rows;
+}
+function chemReferenceFilter(value){chemRefQuery=value;const key=chemSearchKey(value);document.querySelectorAll('.chem-ref-entry').forEach(el=>el.hidden=!chemSearchKey(el.dataset.search).includes(key))}
+function chemOpenCombination(ion,reagent,amount){chemIon=ion;chemReagent=reagent;chemAmount=amount;chemMixed=true;chemTab='mix';chemIonQuery='';chemReagentQuery='';renderDeck()}
+function chemReferenceHTML(){
+  const rows=chemCatalog();
+  const ionNotes=chemAllIons().map(x=>`<div class="chem-ref-ion"><b class="chem-formula">${chemText(x.f)}</b><span>${escapeHtml(x.n)}</span><small>${escapeHtml(x.label)}</small></div>`).join('');
+  return `<h3 class="chem-route-title">反応を引く</h3><p class="hint">${chemAllIons().length}種のイオン・物質／${chemAllReagents().length}種の試薬。${rows.length}件の条件別表示を収録。少量・過剰で説明が異なる場合は別項目です。入試範囲すべてを保証するものではありません。</p><label class="chem-search">化学式・物質名・色で検索<input type="search" value="${escapeHtml(chemRefQuery)}" placeholder="例：Zn、白色、クロム" oninput="chemReferenceFilter(this.value)"></label><div class="chem-reference">${rows.map(row=>{const {ion,reagent,amount,result:r}=row;const search=ion.f+ion.n+reagent.f+reagent.n+r.product+r.solution+r.solidName;return `<details class="chem-ref-entry" data-search="${escapeHtml(search)}" ${!chemSearchKey(search).includes(chemSearchKey(chemRefQuery))?'hidden':''}><summary><span class="chem-formula">${chemText(ion.f)} ＋ ${chemText(reagent.f)}</span><small>${amount==='excess'?'過剰':'少量'} ・ ${escapeHtml(r.solid?'沈殿：'+r.solidName:r.solution)}</small></summary><div class="chem-ref-detail"><b>${chemText(r.product)}</b><div class="chem-equation">${chemText(r.equation)}</div><p>溶液：${escapeHtml(r.solution)}／沈殿：${escapeHtml(r.solidName)}</p><p>${chemText(r.detail)}</p><a href="${r.source}" target="_blank" rel="noopener">出典</a><button class="btn sm ghost" onclick="chemOpenCombination('${ion.id}','${reagent.id}','${amount}')">試験管で見る</button></div></details>`}).join('')}</div><details class="chem-color-guide"><summary>反応前の色・状態の一覧</summary>${ionNotes}<p class="hint">溶液の色は濃度・配位子で変わります。固体カードは固体の色を示します。</p></details><p class="chem-disclaimer">強酸性・塩基性、希薄・濃厚、加熱などは各項目の条件を優先してください。加える量の切替だけで濃度や液性を変更するものではありません。危険な薬品を含みます。実験手順書ではありません。</p>`;
+}
+function chemQuestionBank(){
+  const rows=chemCatalog(),questions=[];
+  for(const row of rows){
+    if(row.result.quizSkip)continue;
+    for(const [field,label] of [['solidName','沈殿の色・有無'],['solution','溶液の色']]){
+      const correct=row.result[field];
+      if(correct.includes('模式')||correct.includes('条件')||correct.includes('未確定'))continue;
+      const others=[...new Set(rows.map(x=>x.result[field]))].filter(x=>x!==correct&&!x.includes('模式')&&!x.includes('条件')&&!x.includes('未確定'));
+      shuffle(others);if(others.length<3)continue;
+      const options=[correct,...others.slice(0,3)];shuffle(options);
+      questions.push({...row,field,label,options,correct});
+    }
+  }
+  return questions;
+}
+function chemStartQuiz(){const pool=chemQuestionBank();shuffle(pool);chemQuiz={questions:pool.slice(0,10),index:0,answers:[],selected:null};renderDeck()}
+function chemAnswerQuiz(index){if(!chemQuiz||chemQuiz.selected!==null)return;const q=chemQuiz.questions[chemQuiz.index];if(!q||!Number.isInteger(index)||index<0||index>=q.options.length)return;chemQuiz.selected=index;chemQuiz.answers.push({correct:q.options[index]===q.correct});renderDeck()}
+function chemNextQuiz(){if(!chemQuiz||chemQuiz.selected===null)return;chemQuiz.index++;chemQuiz.selected=null;renderDeck()}
+function chemQuizHTML(){
+  const total=chemQuiz?0:chemQuestionBank().length;
+  if(!chemQuiz)return `<h3 class="chem-route-title">色と沈殿を確認</h3><p class="hint">収録反応から作った${total}題の候補から、10問を出題します。実際の入試過去問ではなく、このラボの確認問題です。</p><button class="btn" onclick="chemStartQuiz()">10問はじめる</button><p class="chem-disclaimer">試薬カードの液性・濃度と、解説の条件を含めた問題です。履歴はこの画面内のみで、学習時間や既存の単語テストには加算しません。</p>`;
+  const quiz=chemQuiz;
+  if(quiz.index>=quiz.questions.length){const score=quiz.answers.filter(x=>x.correct).length;return `<h3 class="chem-route-title">${score} / ${quiz.questions.length} 問正解</h3><p class="hint">間違えた反応は「資料」や試験管でも確かめよう。</p><div class="chem-reference">${quiz.questions.map((q,i)=>`<details class="chem-ref-entry"><summary>${quiz.answers[i]?.correct?'正解':'復習'}：${chemText(q.ion.f)} ＋ ${chemText(q.reagent.f)}<small>${q.amount==='excess'?'過剰':'少量'} ・ ${q.label}：${escapeHtml(q.correct)}</small></summary><div class="chem-ref-detail"><p>${chemText(q.result.quizCondition||'試薬に明示された条件で考える。')}</p><p>${chemText(q.result.detail)}</p><div class="chem-equation">${chemText(q.result.equation||'新しい反応式ではなく、指定条件での観察結果です。')}</div><a href="${q.result.source}" target="_blank" rel="noopener">出典</a></div></details>`).join('')}</div><button class="btn" onclick="chemStartQuiz()">もう10問</button>`}
+  const q=quiz.questions[quiz.index],answered=quiz.selected!==null;
+  return `<p class="chem-caption">${quiz.index+1} / ${quiz.questions.length} 問</p><h3 class="chem-route-title">${q.label}は？</h3><div class="chem-quiz-prompt"><b>${chemText(q.ion.f)} ＋ ${chemText(q.reagent.f)}</b><p>${escapeHtml(q.ion.n)} ＋ ${escapeHtml(q.reagent.n)}</p><span>${q.amount==='excess'?'過剰':'少量'}に加える。${q.result.quizCondition?chemText(q.result.quizCondition):'試薬に明示された条件で考える。'}</span></div><div class="chem-quiz-options">${q.options.map((option,i)=>`<button class="chem-answer ${answered?(option===q.correct?'correct':i===quiz.selected?'wrong':''):''}" ${answered?'disabled':''} onclick="chemAnswerQuiz(${i})">${escapeHtml(option)}</button>`).join('')}</div>${answered?`<div class="chem-result" role="status"><h3>${q.options[quiz.selected]===q.correct?'正解！':'正解：'+escapeHtml(q.correct)}</h3><div class="chem-product">${chemText(q.result.product)}</div><div class="chem-equation">${chemText(q.result.equation)}</div><p>${chemText(q.result.detail)}</p><a href="${q.result.source}" target="_blank" rel="noopener">出典</a></div><button class="btn" onclick="chemNextQuiz()">${quiz.index+1===quiz.questions.length?'結果を見る':'次の問題'}</button>`:''}<button class="btn ghost" onclick="chemQuiz=null;renderDeck()">終了する</button>`;
 }
 function renderChemDeck(s){
+   const shelfPositions=Array.from(document.querySelectorAll('.chem-card-shelf')).map(el=>el.scrollTop);
   document.getElementById('deck-title').textContent=s.name+' ラボ';
   document.getElementById('deck-head').innerHTML='';
-  document.getElementById('deck-tabs').innerHTML=[['mix','組み合わせ'],['route','反応経路']].map(([id,label])=>`<button class="${chemTab===id?'on':''}" onclick="setChemTab('${id}')">${label}</button>`).join('');
-  document.getElementById('deck-pane').innerHTML=`<div class="chem-lab">${chemTab==='mix'?chemMixHTML():chemRouteHTML()}</div>`;
+   document.getElementById('deck-tabs').innerHTML=[['mix','組み合わせ'],['route','反応経路'],['quiz','確認問題'],['reference','資料']].map(([id,label])=>`<button class="${chemTab===id?'on':''}" onclick="setChemTab('${id}')">${label}</button>`).join('');
+   document.getElementById('deck-pane').innerHTML=`<div class="chem-lab">${chemTab==='mix'?chemMixHTML():chemTab==='route'?chemRouteHTML():chemTab==='quiz'?chemQuizHTML():chemReferenceHTML()}</div>`;
+   document.querySelectorAll('.chem-card-shelf').forEach((el,i)=>el.scrollTop=shelfPositions[i]||0);
 }
 
 const SRS_STEPS = [0,1,2,4,7,14,30,60];
