@@ -579,6 +579,47 @@ function loadGameFont(){}
 .chem-lab [hidden]{display:none!important}.chem-card-shelf{max-height:258px;overflow-y:auto;padding:2px;overscroll-behavior-y:contain;scrollbar-width:thin}.chem-cards.reagents{grid-template-columns:repeat(2,minmax(0,1fr))}.chem-search{display:block;font-size:11px;color:var(--text-mute);margin:10px 0}.chem-search input{display:block;width:100%;padding:10px 12px;margin-top:5px;border:1px solid var(--line);border-radius:10px;background:var(--bg-elev);color:var(--text);font:inherit;font-size:14px}.chem-equation{white-space:nowrap;overflow-x:auto;overflow-wrap:normal;padding-bottom:4px;font-family:inherit}.chem-arrow{width:auto;min-width:146px}.chem-arrow small,.chem-arrow span{white-space:nowrap;overflow-wrap:normal;max-width:none}.chem-node{width:auto;min-width:116px;white-space:nowrap;overflow-wrap:normal}.chem-formula{white-space:nowrap}.chem-ref-entry{border:1px solid var(--line);border-radius:12px;background:var(--bg-elev);margin:8px 0;overflow:hidden}.chem-ref-entry summary{padding:13px 12px;cursor:pointer;font-size:14px;line-height:1.7}.chem-ref-entry summary small{display:block;margin-left:15px;color:var(--text-mute);font-size:11px}.chem-ref-detail{padding:0 14px 16px;font-size:12px;line-height:1.8}.chem-ref-detail a{color:var(--chem-accent);text-decoration:underline;margin-right:16px}.chem-ref-detail button{margin-top:8px}.chem-color-guide{margin-top:20px;font-size:13px}.chem-color-guide summary{cursor:pointer;padding:12px 0}.chem-ref-ion{display:flex;align-items:center;gap:10px;border-top:1px solid var(--line);padding:10px 0;font-size:12px}.chem-ref-ion small{margin-left:auto;color:var(--text-mute)}.chem-quiz-prompt{padding:18px 14px;border:1px solid var(--line);border-radius:14px;background:var(--bg-elev);font-size:13px;line-height:1.8;margin-bottom:18px}.chem-quiz-prompt>b{font-size:19px;white-space:nowrap;display:block;overflow-x:auto}.chem-quiz-prompt p{font-size:11px;color:var(--text-mute)}.chem-quiz-options{display:grid;gap:8px}.chem-answer{min-height:52px;border:1px solid var(--line);border-radius:12px;font-size:15px;font-weight:600;color:var(--text);background:var(--bg-elev);text-align:left;padding:12px 14px}.chem-answer.correct{background:#16a34a!important;color:#fff!important;border-color:#16a34a!important}.chem-answer.wrong{background:#dc2626!important;color:#fff!important;border-color:#dc2626!important}.chem-quiz-options~.btn{margin-top:14px}@media(min-width:600px){.chem-cards.reagents{grid-template-columns:repeat(4,minmax(0,1fr))}.chem-card-shelf{max-height:300px}}#deck-tabs:has(button[onclick*="setChemTab"]) button{white-space:nowrap;font-size:12px;padding-left:3px;padding-right:3px}
 .chem-bench>.chem-caption{white-space:nowrap;overflow-x:auto;font-family:inherit}.chem-ref-entry summary>.chem-formula{display:inline-block;vertical-align:top;max-width:calc(100% - 20px);overflow-x:auto}.chem-lab{min-width:0}.chem-route-scroll{max-width:100%}.chem-ref-ion>b{flex-shrink:0}.chem-ref-ion span{min-width:0}.chem-color-guide .chem-ref-ion{align-items:flex-start}
 html:has(#deck-view.show .chem-lab){overflow:hidden}body:has(#deck-view.show .chem-lab){height:100dvh;min-height:0;overflow:hidden}#deck-view:has(.chem-lab){isolation:isolate;overflow:hidden}#deck-view:has(.chem-lab)>.deck-body{min-height:0;overscroll-behavior-y:contain}
+/* 選択棚だけをスクロールし、観察台と結果は画面内に残す。 */
+#deck-view:has(.chem-compact)>.deck-body{display:flex;flex-direction:column;overflow:hidden;padding:8px 12px calc(8px + env(safe-area-inset-bottom))}
+#deck-view:has(.chem-compact) #deck-head{display:none}
+#deck-view:has(.chem-compact) .deck-tabs{flex-shrink:0;margin:0 0 8px}
+#deck-view:has(.chem-compact) #deck-pane{flex:1;min-height:0;display:flex}
+.chem-lab.chem-compact{flex:1;min-height:0;padding:0;display:flex}
+.chem-workspace{width:100%;min-width:0;min-height:0;display:grid;grid-template-rows:minmax(120px,1fr) auto 130px;gap:8px}
+.chem-pickers{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;min-height:0}
+.chem-picker{display:flex;flex-direction:column;min-width:0;min-height:0}
+.chem-compact .chem-caption{margin:0 0 5px;font-size:11px;display:flex;gap:4px;align-items:center;min-width:0}
+.chem-picker>.chem-caption{white-space:nowrap}.chem-picker>.chem-caption span{margin-left:auto;overflow:auto;max-width:48%}
+.chem-compact .chem-search{margin:0 0 5px;font-size:0}
+.chem-compact .chem-search input{margin:0;padding:7px 9px;min-height:34px;font-size:13px}
+.chem-compact .chem-card-shelf{flex:1;min-height:0;max-height:none;grid-template-columns:1fr;align-content:start;gap:5px}
+.chem-compact .chem-card{padding:7px 9px;min-height:52px;border-radius:9px}
+.chem-compact .chem-card b{font-size:16px;margin-bottom:2px;line-height:1.2}
+.chem-compact .chem-card span{font-size:10px;line-height:1.4}
+.chem-compact .chem-bench{padding:8px 12px;border-radius:14px;min-width:0}
+.chem-bench-top{display:flex;align-items:center;gap:6px;min-width:0}
+.chem-bench-top>.chem-caption{flex:1;display:block;white-space:nowrap;overflow-x:auto;font-size:13px;margin:0}
+.chem-compact .chem-amount{gap:4px;margin:0;flex-shrink:0}
+.chem-compact .chem-amount .btn{min-height:34px;padding:5px 9px;font-size:12px}
+.chem-compact .chem-observe{margin:7px 0;grid-template-columns:1fr 28px 1fr}
+.chem-compact .chem-vessel{width:48px;height:70px;border-radius:0 0 17px 17px}
+.chem-compact .chem-vessel-wrap{gap:4px}.chem-compact .chem-vessel-wrap>span{font-size:10px;min-height:15px;line-height:1.5}
+.chem-compact .chem-vessel>i{top:18px}.chem-compact .chem-vessel>i:nth-last-child(2){top:32px}.chem-compact .chem-vessel>i:last-child{top:46px}
+.chem-compact .chem-actions{margin:0;flex-wrap:nowrap;gap:8px}
+.chem-compact .chem-actions .btn{min-height:38px;padding:7px 10px;font-size:13px}
+.chem-compact #chem-result{min-height:0;overflow-y:auto;overscroll-behavior-y:contain;scrollbar-width:thin;border-radius:10px;background:var(--chem-soft)}
+.chem-compact .chem-result{margin:0;padding:8px 10px;min-height:100%;border-radius:0;border-left-width:2px}
+.chem-compact .chem-result h3{font-size:15px;line-height:1.4;margin:0 0 4px}
+.chem-compact .chem-facts{display:flex;flex-wrap:wrap;gap:3px 12px;font-size:11px;line-height:1.5}
+.chem-compact .chem-facts i{width:10px;height:10px;margin-right:4px}
+.chem-compact .chem-equation{font-size:12px;margin:4px 0;line-height:1.6;padding-bottom:2px}
+.chem-more summary{font-size:11px;color:var(--chem-accent);cursor:pointer;padding:4px 0;min-height:26px}
+.chem-compact .chem-result p{margin:5px 0;font-size:11px;line-height:1.7}
+.chem-ready{height:100%;display:flex;flex-direction:column;justify-content:center;gap:5px;padding:10px 12px;font-size:12px}.chem-ready span{font-size:10px;color:var(--text-mute);line-height:1.5}
+@media(min-width:650px){.chem-compact .chem-card-shelf{grid-template-columns:repeat(2,minmax(0,1fr))}.chem-compact .chem-vessel{width:64px;height:88px}.chem-workspace{grid-template-rows:minmax(120px,1fr) auto 136px}}
+@media(max-height:700px){.chem-workspace{grid-template-rows:minmax(100px,1fr) auto 116px;gap:6px}.chem-compact .chem-vessel{height:52px;width:40px}.chem-compact .chem-observe{margin:4px 0}.chem-compact .chem-bench{padding:6px 10px}.chem-compact .chem-card{min-height:46px;padding:5px 8px}}
+@media(max-height:500px) and (min-width:600px){.chem-workspace{grid-template-columns:1fr 1fr;grid-template-rows:minmax(100px,1fr) 104px}.chem-pickers{grid-row:1 / 3}.chem-compact .chem-card-shelf{grid-template-columns:1fr}}
+@media(max-height:460px) and (max-width:599px){#deck-view:has(.chem-compact)>.deck-body{overflow-y:auto}#deck-view:has(.chem-compact) #deck-pane{flex:none;height:440px}}
 
 </style>
 </head>
@@ -857,7 +898,7 @@ html:has(#deck-view.show .chem-lab){overflow:hidden}body:has(#deck-view.show .ch
 
     <button class="btn" style="position:relative;width:100%;margin-top:12px;padding:16px 0 14px;border-radius:13px;border:1px solid #c9a24a;background:radial-gradient(130% 180% at 50% 0%,#2a2213 0%,#14100a 58%,#0a0806 100%);color:#f3e3bd;font-size:15px;letter-spacing:.24em;font-weight:700;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;cursor:pointer;box-shadow:0 0 0 1px rgba(201,162,74,.25),inset 0 0 18px rgba(201,162,74,.07)" onclick="location.href='cards.html'"><span style="display:block;font-size:9.5px;letter-spacing:.34em;color:#c9a24a;margin-bottom:6px">CARD BATTLE</span>学府の絵札</button>
 
-    <div class="hint" style="text-align:center;margin-top:16px">StudyTime v3.26 · ローカル保存＋GitHub自動バックアップ</div>
+    <div class="hint" style="text-align:center;margin-top:16px">StudyTime v3.27 · ローカル保存＋GitHub自動バックアップ</div>
   </div>
 
   <!-- ================= DESIGN ================= -->
@@ -2763,11 +2804,10 @@ function chemReset(){chemMixed=false;chemAmount='small';renderDeck()}
 function chemMixHTML(){
   const ion=chemAllIons().find(x=>x.id===chemIon),reagent=chemAllReagents().find(x=>x.id===chemReagent);
   const result=chemMixed?chemResult(chemIon,chemReagent,chemAmount):null;
-  return `<div class="chem-intro">物質を選んで、変化を見よう</div><div class="chem-caption">① イオン・物質 <span>選択：${chemText(ion.f)}</span></div>${chemCardList('ion',chemAllIons(),chemIon,chemIonQuery)}
-  <div class="chem-caption">② 加える試薬・イオン <span>選択：${chemText(reagent.f)}</span></div>${chemCardList('reagent',chemAllReagents(),chemReagent,chemReagentQuery)}
-  <div class="chem-amount"><span>加える量</span><button class="btn sm ${chemAmount==='small'?'':'ghost'}" onclick="chemSetAmount('small')">少量</button><button class="btn sm ${chemAmount==='excess'?'':'ghost'}" onclick="chemSetAmount('excess')">過剰</button></div>
-  <div class="chem-bench"><div class="chem-caption">${chemText(ion.f)} ＋ ${chemText(reagent.f)} <span>／ ${chemAmount==='excess'?'過剰':'少量'}</span></div><div class="chem-observe">${chemVessel(ion.solid?'#e4f1f5':ion.color,ion.solid||null,'反応前：'+ion.label)}<span class="chem-change">→</span>${chemVessel(result?result.liquid:'#e4f1f5',result?.solid,chemMixed?(result?'反応後':'未対応'):'反応後：未確認')}</div><div class="chem-actions"><button class="btn" onclick="chemMix()">組み合わせる</button><button class="btn ghost" onclick="chemReset()">リセット</button></div></div>
-  <div id="chem-result" aria-live="polite">${chemMixed?(result?`<div class="chem-result"><h3>${chemText(result.title)}</h3><div class="chem-product">${chemText(result.product)}</div><div class="chem-equation">${chemText(result.equation)}</div><div class="chem-facts"><span><i style="background:${result.liquid}"></i>溶液：${escapeHtml(result.solution)}</span><span><i style="background:${result.solid||'transparent'}"></i>沈殿：${escapeHtml(result.solidName)}</span></div><p>${chemText(result.detail)}</p><a href="${result.source}" target="_blank" rel="noopener">反応の出典</a></div>`:`<div class="chem-result"><h3>この組み合わせは未対応</h3><p>「反応しない」という意味ではありません。「資料」には対応済みの反応と条件を掲載しています。</p></div>`):'<p class="hint">カードを選び、「組み合わせる」を押してください。</p>'}</div><p class="chem-disclaimer">学習用の模式表示です。色は目安で、濃度・温度・時間・共存イオンは計算していません。液量や反応量も実測値ではありません。実験手順書ではありません。</p>`;
+  return `<div class="chem-workspace"><div class="chem-pickers"><section class="chem-picker" aria-label="イオン・物質の選択"><div class="chem-caption">① イオン・物質 <span>${chemText(ion.f)}</span></div>${chemCardList('ion',chemAllIons(),chemIon,chemIonQuery)}</section>
+   <section class="chem-picker" aria-label="試薬の選択"><div class="chem-caption">② 試薬 <span>${chemText(reagent.f)}</span></div>${chemCardList('reagent',chemAllReagents(),chemReagent,chemReagentQuery)}</section></div>
+   <div class="chem-bench"><div class="chem-bench-top"><div class="chem-caption">${chemText(ion.f)} ＋ ${chemText(reagent.f)}</div><div class="chem-amount" aria-label="加える量"><button class="btn sm ${chemAmount==='small'?'':'ghost'}" aria-pressed="${chemAmount==='small'}" onclick="chemSetAmount('small')">少量</button><button class="btn sm ${chemAmount==='excess'?'':'ghost'}" aria-pressed="${chemAmount==='excess'}" onclick="chemSetAmount('excess')">過剰</button></div></div><div class="chem-observe">${chemVessel(ion.solid?'#e4f1f5':ion.color,ion.solid||null,'反応前：'+ion.label)}<span class="chem-change">→</span>${chemVessel(result?result.liquid:'#e4f1f5',result?.solid,chemMixed?(result?'反応後':'未対応'):'反応後：未確認')}</div><div class="chem-actions"><button class="btn" onclick="chemMix()">組み合わせる</button><button class="btn ghost" onclick="chemReset()">リセット</button></div></div>
+   <div id="chem-result" aria-live="polite">${chemMixed?(result?`<div class="chem-result"><h3>${chemText(result.title)}</h3><div class="chem-facts"><span><i style="background:${result.liquid}"></i>溶液：${escapeHtml(result.solution)}</span><span><i style="background:${result.solid||'transparent'}"></i>沈殿：${escapeHtml(result.solidName)}</span></div>${result.equation?`<div class="chem-equation">${chemText(result.equation)}</div>`:''}<details class="chem-more"><summary>解説・出典・表示の注意</summary><div class="chem-product">${chemText(result.product)}</div><p>${chemText(result.detail)}</p><a href="${result.source}" target="_blank" rel="noopener">反応の出典</a><p class="chem-disclaimer">学習用の模式表示です。色は目安で、濃度・温度・時間・共存イオンは計算していません。液量や反応量も実測値ではありません。実験手順書ではありません。</p></details></div>`:`<div class="chem-result"><h3>この組み合わせは未対応</h3><p>「反応しない」という意味ではありません。「資料」で対応済みの反応を確認できます。</p></div>`):'<div class="chem-ready"><b>カードを選んで、組み合わせる</b><span>結果はここに表示。色は学習用の目安です。</span><span>濃度・温度等は計算しません。実験手順書ではありません。</span></div>'}</div></div>`;
 }
 function chemRoutes(){
   const custom=(state.chemRoutes||[]).filter(x=>x.sid===deckSid);
@@ -2868,7 +2908,7 @@ function renderChemDeck(s){
   document.getElementById('deck-title').textContent=s.name+' ラボ';
   document.getElementById('deck-head').innerHTML='';
    document.getElementById('deck-tabs').innerHTML=[['mix','組み合わせ'],['route','反応経路'],['quiz','確認問題'],['reference','資料']].map(([id,label])=>`<button class="${chemTab===id?'on':''}" onclick="setChemTab('${id}')">${label}</button>`).join('');
-   document.getElementById('deck-pane').innerHTML=`<div class="chem-lab">${chemTab==='mix'?chemMixHTML():chemTab==='route'?chemRouteHTML():chemTab==='quiz'?chemQuizHTML():chemReferenceHTML()}</div>`;
+    document.getElementById('deck-pane').innerHTML=`<div class="chem-lab ${chemTab==='mix'?'chem-compact':''}">${chemTab==='mix'?chemMixHTML():chemTab==='route'?chemRouteHTML():chemTab==='quiz'?chemQuizHTML():chemReferenceHTML()}</div>`;
    document.querySelectorAll('.chem-card-shelf').forEach((el,i)=>el.scrollTop=shelfPositions[i]||0);
 }
 
