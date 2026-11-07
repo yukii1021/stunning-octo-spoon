@@ -507,7 +507,7 @@ body.dw .drawer{transform:none}
 
       <!-- 点数の推移 -->
       <div class="card c8">
-        <div class="ch"><span class="tt">SCORE HISTORY</span><div class="sp"></div><span class="mini">年度別</span></div>
+        <div class="ch"><span class="tt">SCORE HISTORY</span><div class="sp"></div><span class="mini">年度別・本試験のみ</span></div>
         <svg class="chart" viewBox="0 0 660 200" preserveAspectRatio="none" id="chart"></svg>
         <div class="lgd" id="chartLgd"></div>
       </div>
@@ -1833,7 +1833,7 @@ function renderWeek(){
 function renderChart2(A){
   var el=document.getElementById('chart'); if(!el) return;
   var lg=document.getElementById('chartLgd');
-  var YRS2=[], y, years=(MAN||[]).concat((A&&A.runs)||[]).map(function(r){return Number(r.y);}).filter(function(v){return Number.isFinite(v);});
+  var YRS2=[], y, years=(MAN||[]).filter(function(r){return r&&r.exam!=='follow';}).concat(((A&&A.runs)||[]).filter(function(r){return r&&r.exam!=='follow';})).map(function(r){return Number(r.y);}).filter(function(v){return Number.isFinite(v);}); /* SCORE HISTORYは本試験のみ（追試の年度は軸にも出さない） */
   var ymin=years.length?Math.min.apply(null,years):2024, ymax=years.length?Math.max.apply(null,years):2026;
   if(ymin===ymax){ymin--;ymax++;}
   for(y=ymin;y<=ymax;y++) YRS2.push(y);
@@ -1847,7 +1847,7 @@ function renderChart2(A){
   }
   for(var i=0;i<YRS2.length;i++){ if(YRS2.length>8 && i%Math.ceil(YRS2.length/8)!==0 && i!==YRS2.length-1) continue; s+='<text x="'+X(i)+'" y="'+(H-7)+'" fill="var(--mute)" font-size="10" font-family="monospace" text-anchor="middle">'+YRS2[i]+'</text>'; }
   s+='<line x1="'+pl+'" y1="'+Yv(80)+'" x2="'+(W-pr)+'" y2="'+Yv(80)+'" stroke="var(--acc2)" stroke-width="1.4" stroke-dasharray="6 5"/>';
-  var runs=(A&&A.runs)||[], subs=[];
+  var runs=((A&&A.runs)||[]).filter(function(r){return r&&r.exam!=='follow';}), subs=[]; /* 本試験のみ反映（追試の記録は除く） */
   runs.forEach(function(r){ if(r&&r.subj&&subs.indexOf(r.subj)<0) subs.push(r.subj); });
   subs.sort(sortSubs);
   var PAL=['var(--acc)','var(--cy)','var(--acc2)','#7bd88f','#c58cff','#ffb454','#4ad4c6','#ff6fa5','#8fa6ff','#b9c3d1'];
