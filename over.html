@@ -1836,7 +1836,7 @@ function renderChart2(A){
   var YRS2=[], y, years=(MAN||[]).filter(function(r){return r&&r.exam!=='follow';}).concat(((A&&A.runs)||[]).filter(function(r){return r&&r.exam!=='follow';})).map(function(r){return Number(r.y);}).filter(function(v){return Number.isFinite(v);}); /* SCORE HISTORYは本試験のみ（追試の年度は軸にも出さない） */
   var ymin=years.length?Math.min.apply(null,years):2024, ymax=years.length?Math.max.apply(null,years):2026;
   if(ymin===ymax){ymin--;ymax++;}
-  for(y=ymin;y<=ymax;y++) YRS2.push(y);
+  for(y=ymax;y>=ymin;y--) YRS2.push(y); /* 左端が最新年度、右へ遡る */
   var W=660,H=176,pl=44,pr=14,pt=14,pb=26,mn=0,mx=100;
   function X(i){ return pl+(W-pl-pr)*i/(YRS2.length-1); }
   function Yv(v){ return pt+(H-pt-pb)*(1-(v-mn)/(mx-mn)); }
@@ -1865,7 +1865,7 @@ function renderChart2(A){
     s+='<path d="'+d+'" fill="none" stroke="'+col+'" stroke-width="2.4" stroke-linejoin="round"/>';
     pts.forEach(function(p){ s+='<circle cx="'+p[0]+'" cy="'+p[1]+'" r="3.2" fill="var(--card3)" stroke="'+col+'" stroke-width="2.2"/>'; });
     var last=null;
-    for(k=arr.length-1;k>=0;k--){ if(arr[k]!=null){ last=arr[k]; break; } }
+    for(k=0;k<arr.length;k++){ if(arr[k]!=null){ last=arr[k]; break; } } /* 先頭＝最新年度 */
     lh+='<span><i style="background:'+col+'"></i>'+soName(sk)+(last==null?'':' '+last+'%')+'</span>';
   });
   if(!any) s+='<text x="'+(W/2)+'" y="'+(H/2)+'" fill="var(--mute)" font-size="13" text-anchor="middle">採点するとここに推移が出ます</text>';
