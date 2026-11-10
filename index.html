@@ -3932,8 +3932,15 @@ function quizWeekKey(dstr){
 }
 function gradeQuizAnswer(cur, ok){
   if(cardKind(cur)==='card'||cardKind(cur)==='juk'){
-    bumpStreak(cur.sid);   // テストモードは暗記モードのbox・due・覚えた判定に影響しない
-    if(!ok){
+    bumpStreak(cur.sid);   // テストモードは暗記モードのbox・覚えた判定に影響しない
+    const t=todayKey();
+    if(ok){
+      if((cur.due||'0000-01-01')<=t){   // 今日の分に含まれるカードはここで消化（覚えたにはしない）
+        cur.due = ((cur.box||0)>=1)
+          ? (((cur.box||0)>=SRS_MASTER) ? addDaysKey(srsFix().d) : addDaysKey(SRS_STEPS[Math.min(cur.box||0,SRS_STEPS.length-1)]))
+          : addDaysKey(1);
+      }
+    }else{
       const wk=quizWeekKey();
       cur.quizWrong=(cur.quizWrongWeek===wk)?(cur.quizWrong||0)+1:1;   // 苦手ピックアップは週ごとに数え直す
       cur.quizWrongWeek=wk; cur.quizWrongAt=Date.now();
