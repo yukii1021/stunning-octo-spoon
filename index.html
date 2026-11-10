@@ -3306,13 +3306,14 @@ function renderDeck(){
 }
 function sect(t){ return `<div class="sect">${t}<i></i></div>` }
 function weakQuizCards(sid, kind){
-  return subjCards(sid,kind||'card').filter(c=>(c.quizWrong||0)>0).sort((a,b)=>
+  const wk=quizWeekKey();
+  return subjCards(sid,kind||'card').filter(c=>(c.quizWrong||0)>0&&c.quizWrongWeek===wk).sort((a,b)=>
     (b.quizWrong||0)-(a.quizWrong||0) || (a.box||0)-(b.box||0) || (b.quizWrongAt||0)-(a.quizWrongAt||0) || String(a.id).localeCompare(String(b.id)));
 }
 function weakQuizSection(kind){
   const weak = weakQuizCards(deckSid,kind), total=subjCards(deckSid,kind).length;
   return `<div class="card" style="margin-top:18px"><h2>苦手ピックアップ</h2>
-    <div class="hint">${weak.length?`誤答回数が多い順に最大20問 · 対象 ${weak.length}件`:'テストで間違えた単語・熟語がここに集まります'}</div>
+    <div class="hint">${weak.length?`誤答回数が多い順に最大20問 · 対象 ${weak.length}件 · 集計は週ごとにリセット`:'テストで間違えた単語・熟語がここに集まります（集計は週ごとにリセット）'}</div>
     ${weak.length?`<ol class="quiz-review-list">${weak.slice(0,5).map(c=>`<li><span class="quiz-review-front">${escapeHtml(c.f)}</span><span class="hint" style="display:block">誤答 ${c.quizWrong}回</span></li>`).join('')}</ol>`:''}
     <button class="btn block" style="margin-top:12px" ${weak.length&&total>=4?'':'disabled'} onclick="startQuiz('${deckSid}','${kind}',true)">苦手だけテストする</button></div>`;
 }
@@ -3924,7 +3925,22 @@ function renderSess(){
 }
 function flipCard(){ if(typeof memDragged!=="undefined" && memDragged){ memDragged=false; return } if(!sess) return; sess.flip = !sess.flip; renderSess() }
 function revealAnswer(){ if(!sess) return; sess.revealed = true; renderSess() }
+function quizWeekKey(dstr){
+  const p=String(dstr||todayKey()).split('-').map(Number);
+  const x=new Date(p[0],p[1]-1,p[2]), wd=(x.getDay()+6)%7;      // 週の起点は月曜
+  return todayKey(new Date(p[0],p[1]-1,p[2]-wd));
+}
 function gradeQuizAnswer(cur, ok){
+  if(cardKind(cur)==='card'||cardKind(cur)==='juk'){
+    bumpStreak(cur.sid);   // テストモードは暗記モードのbox・due・覚えた判定に影響しない
+    if(!ok){
+      const wk=quizWeekKey();
+      cur.quizWrong=(cur.quizWrongWeek===wk)?(cur.quizWrong||0)+1:1;   // 苦手ピックアップは週ごとに数え直す
+      cur.quizWrongWeek=wk; cur.quizWrongAt=Date.now();
+    }
+    saveState();
+    return;
+  }
   if(!ok){cur.quizWrong=(cur.quizWrong||0)+1;cur.quizWrongAt=Date.now();}
   gradeCard(cur,ok?'ok':'no');
 }
