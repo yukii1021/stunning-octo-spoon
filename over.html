@@ -642,7 +642,7 @@ body.dw .drawer{transform:none}
     <div class="stat"><span class="k">収録</span><span class="v">2024–2026</span><span class="k">年度</span></div>
   </div>
   <div class="body">
-    <button class="exBtn" onclick="openManual()" style="margin-bottom:16px">紙で解いた点数を入力する</button>
+    <button class="exBtn" onclick="openManual()" style="margin-bottom:16px">点数を入力・修正する</button>
     <div class="yrbar" id="yrbar"></div>
     <div class="yrbar" id="exbar"></div>
     <div class="sgrid" id="sgrid"></div>
@@ -686,7 +686,7 @@ body.dw .drawer{transform:none}
         <div id="manualMsg" role="status" aria-live="polite"></div>
       </form>
     </div>
-    <div class="card" style="margin-top:18px"><div class="lbl">手入力した記録</div><div id="manualHistory"></div></div>
+    <div class="card" style="margin-top:18px"><div class="lbl">保存済みの点数 ／ 修正・削除</div><div id="manualHistory"></div></div>
   </div></div>
 </section>
 
@@ -851,8 +851,14 @@ var UGROUP={ Math_III:[['極限',['数列の極限','無限級数','漸化式と
   English_Reading:[['文法・語法',['文法・語法','熟語・語い・会話表現','正誤問題']],['英作文',['整序英作文']]]
 };
 ;
-function soRuns(){ try{ var a=JSON.parse(localStorage.getItem(SO_KEY)||'[]'); return (a&&a.length)?a:[]; }catch(e){ return []; } }
-function soPush(r){ var a=soRuns(); a.push(r); if(a.length>500) a=a.slice(-500); try{ localStorage.setItem(SO_KEY,JSON.stringify(a)); }catch(e){} }
+function soRuns(){ try{ var a=JSON.parse(localStorage.getItem(SO_KEY)||'[]'); if(!Array.isArray(a))return []; a.forEach(function(r,i){if(r&&!r.id)r.id='legacy_'+r.t+'_'+i;}); return a; }catch(e){ return []; } }
+function soSamePaper(a,b){return Number(a.y)===Number(b.y)&&(a.exam||'main')===(b.exam||'main')&&a.subj===b.subj;}
+function soReplace(a,r){
+  var old=a.filter(function(x){return soSamePaper(x,r);}).sort(function(x,y){return y.t-x.t;})[0];
+  if(!r.id)r.id=old&&old.id||('r'+Date.now().toString(36)+Math.random().toString(36).slice(2));
+  a=a.filter(function(x){return x.id!==r.id&&!soSamePaper(x,r);});a.push(r);return a.slice(-500);
+}
+function soPush(r){ var a=soReplace(soRuns(),r); try{ localStorage.setItem(SO_KEY,JSON.stringify(a)); return true; }catch(e){alert('点数を保存できませんでした。端末の保存容量やブラウザの設定を確認してください。');return false;} }
 function soClear(){ try{ localStorage.removeItem(SO_KEY); }catch(e){} renderHome(); renderGoal(); }
 function soGoal(){ var g=0; try{ g=parseInt(localStorage.getItem('so_goal')||'780',10); }catch(e){} return (g>0?g:780); }
 function soSetGoal(v){ try{ localStorage.setItem('so_goal',String(v)); }catch(e){} renderGoal(); renderHome(); }
@@ -1056,8 +1062,13 @@ var FLAT=[], PAGES=[], curSec=0, marks={}, clockT=null, left=70*60, PDF='', GRAD
 function splitL(x){ if(Array.isArray(x)) return x.slice();
   var t=String(x==null?'':x); if(t.indexOf('，')>=0) return t.split('，'); if(t.indexOf(',')>=0) return t.split(','); return [t]; }
 function normalizePaper(d){ if(!d||!d.sections) return d;
-  d.sections.forEach(function(sec){ (sec.g||[]).forEach(function(g){
-    var sy=splitL(g[0]), an=splitL(g[1]);
+  d.sections.forEach(function(sec,si){ (sec.g||[]).forEach(function(g){
+    var sy=splitL(g[0]), an=splitL(g[1]).map(function(v){return String(v).trim().replace(/[−－﹣]/g,'-');});
+    if(d.key==='2025_main_Math_IIBC'){
+      var symbols=sy.join('');
+      if(si===2&&(symbols==='ウエ'||symbols==='クケ')){an=['-','1'];g[4]=0;}
+      if(si===3&&symbols==='シスセソ'){an=['3','-','3','2'];g[4]=0;}
+    }
     g[0]=sy;
     if(g[4]){ g[1]=an.join(''); } else { g[1]=an; }
   }); });
@@ -1303,7 +1314,7 @@ function gradeExam(){
   });
   h+='</div>';
   h+='<div class="resfoot"><button class="exBtn gh" onclick="closeRes()">解答用紙に戻る</button>'+
-     '<button class="exBtn" onclick="startExam()">もう一度解く</button>'+
+      '<button class="exBtn" onclick="startExam()">もう一度解く</button>'+
      '<button class="exBtn gh" onclick="backHome()">ホームへ戻る</button></div>';
   document.getElementById('resin').innerHTML=h;
   document.getElementById('res').classList.add('on');
@@ -1880,6 +1891,7 @@ var manualEditId=null;
 function manualSubjects(){
   var out=[];
   (MAN||[]).forEach(function(p){if(p.subj&&out.indexOf(p.subj)<0)out.push(p.subj);});
+  soRuns().forEach(function(r){if(r.subj&&out.indexOf(r.subj)<0)out.push(r.subj);});
   Object.keys(SUBJM).forEach(function(k){if(k!=='Math_III'&&out.indexOf(k)<0)out.push(k);});
   out.sort(function(a,b){var order=Object.keys(SUBJM),ia=order.indexOf(a),ib=order.indexOf(b);return (ia<0?99:ia)-(ib<0?99:ib);});
   return out;
@@ -1903,16 +1915,16 @@ function openManual(){
   document.getElementById('manualExam').value=selExam||'main';
   document.getElementById('manualDate').value=soDayKey(new Date());
   document.getElementById('manualDate').max=soDayKey(new Date());
-  document.getElementById('manualTitle').textContent='紙で解いた点数を入力';
+  document.getElementById('manualTitle').textContent='点数を入力・修正';
   document.getElementById('manualSave').textContent='点数を記録する';
   document.getElementById('manualMsg').textContent='';
   manualRenderRows(false);manualHistory();go('scManual');
 }
 function manualHistory(){
-  var rows=soRuns().filter(function(r){return r.source==='manual';}).sort(function(a,b){return b.t-a.t;});
+  var rows=soRuns().sort(function(a,b){return b.t-a.t;});
   document.getElementById('manualHistory').innerHTML=rows.length?rows.map(function(r){
     return '<div class="manual-record"><div class="detail">'+esc(r.y+'年度 '+examLabel(r.exam)+' ／ '+soName(r.subj,r.name))+'<small>'+esc(soDayKey(new Date(r.t)))+' ／ '+r.got+' / '+r.total+'点</small></div><div class="tools"><button class="exBtn gh" type="button" onclick="manualEdit(\''+esc(r.id)+'\')">修正</button><button class="exBtn gh" type="button" onclick="manualDelete(\''+esc(r.id)+'\')">削除</button></div></div>';
-  }).join(''):'<div class="desc">手入力した記録はまだありません。</div>';
+  }).join(''):'<div class="desc">点数の記録はまだありません。</div>';
 }
 function manualWrite(runs){
   try{localStorage.setItem(SO_KEY,JSON.stringify(runs));return true;}
@@ -1938,26 +1950,31 @@ function manualSave(event){
   if(manualEditId&&entries.length!==1){msg.textContent='修正する1科目だけ入力してください。';return;}
   var runs=soRuns();
   if(manualEditId){
-    var idx=runs.findIndex(function(r){return r.id===manualEditId&&r.source==='manual';});
+    var idx=runs.findIndex(function(r){return r.id===manualEditId;});
     if(idx<0){msg.textContent='修正する記録が見つかりません。画面を開き直してください。';return;}
-    runs[idx]=entries[0];
-  }else runs=runs.concat(entries);
+    var prev=runs[idx], entry=entries[0];
+    if(soSamePaper(prev,entry)&&prev.got===entry.got&&prev.total===entry.total){
+      entries[0]=Object.assign({},prev,{t:entry.t,updatedAt:Date.now()});
+    }else entries[0].updatedAt=Date.now();
+    runs=soReplace(runs,entries[0]);
+  }else entries.forEach(function(r){runs=soReplace(runs,r);});
   if(!manualWrite(runs))return;
   var edited=!!manualEditId;openManual();renderHome();
   document.getElementById('manualMsg').textContent=edited?'記録を修正しました。':entries.length+'科目の点数を記録しました。';
 }
 function manualEdit(id){
-  var r=soRuns().find(function(r){return r.id===id&&r.source==='manual';});if(!r)return;
+  var r=soRuns().find(function(r){return r.id===id;});if(!r)return;
   openManual();manualEditId=id;
   document.getElementById('manualYear').value=r.y;document.getElementById('manualExam').value=r.exam;document.getElementById('manualDate').value=soDayKey(new Date(r.t));
   manualRenderRows(false);
   document.querySelectorAll('.manual-score').forEach(function(row){if(row.dataset.subj===r.subj){row.querySelector('.manualGot').value=r.got;row.querySelector('.manualTotal').value=r.total;}});
   document.getElementById('manualTitle').textContent='点数の記録を修正';document.getElementById('manualSave').textContent='修正を保存する';
+  if(r.source!=='manual')document.getElementById('manualMsg').textContent='点数を変更した場合、大問別・単元別の内訳は解除され、点数のみの記録になります。';
   document.querySelector('#scManual .body').scrollTop=0;
 }
 function manualDelete(id){
-  if(!confirm('この手入力の記録を削除しますか？'))return;
-  if(!manualWrite(soRuns().filter(function(r){return !(r.source==='manual'&&r.id===id);})))return;
+  if(!confirm('この点数の記録を削除しますか？'))return;
+  if(!manualWrite(soRuns().filter(function(r){return r.id!==id;})))return;
   if(manualEditId===id)openManual();else manualHistory();renderHome();
   document.getElementById('manualMsg').textContent='記録を削除しました。';
 }
