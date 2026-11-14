@@ -11,7 +11,7 @@
 <link rel="manifest" href="./manifest.webmanifest" />
 <link rel="apple-touch-icon" href="./apple-touch-icon.png" />
 <link rel="icon" type="image/png" sizes="64x64" href="./favicon-64.png" />
-<script>(function(){try{var s=(JSON.parse(localStorage.getItem("studytime.v1")||"{}").settings)||{};var d=s.design||((s.game==="game")?"game":(s.game==="ice")?"soya":(s.game==="huaxu")?"soya-light":((s.theme==="light"||s.theme==="auto")?s.theme:"dark"));if(d==="ice")d="soya";if(d==="huaxu")d="soya-light";if(d==="yakari")d="soya";if(d==="yakari-light")d="soya-light";var t=(d==="game")?"dark":(d==="soya")?"dark":(d==="soya-light")?"light":(d==="shiden")?"dark":(d==="auto")?"auto":(d==="light"?"light":"dark");var g=(d==="soya"||d==="soya-light")?"soya":(d==="shiden")?"shiden":(d==="game")?"game":"none";if(t==="auto")t=(window.matchMedia&&matchMedia("(prefers-color-scheme: light)").matches)?"light":"dark";document.documentElement.dataset.theme=t;document.documentElement.dataset.game=g;var m=document.querySelector("meta[name=theme-color]");if(m)m.content=(g==="soya")?((t==="light")?"#e9eef7":"#0a1020"):(g==="shiden")?"#120a1e":(g==="game")?"#0e0c12":(t==="light")?"#f4f6fb":"#0b0d12";}catch(e){}})();</script>
+<script>(function(){try{var s=(JSON.parse(localStorage.getItem("studytime.v1")||"{}").settings)||{};var mig={yakari:"ruri","yakari-light":"haku",soya:"ruri","soya-light":"haku",shiden:"sumi",ice:"ruri",huaxu:"haku"};var gmap={"ruri":"ruri","sumi":"sumi","hi":"hi","hisui":"hisui","haku":"haku","game":"game"};var d=s.design?mig[s.design]||s.design:((s.game==="game")?"game":(s.game==="ice")?"ruri":(s.game==="huaxu")?"haku":((s.theme==="light"||s.theme==="auto")?s.theme:"dark"));var darks={ruri:1,sumi:1,hi:1,hisui:1,game:1,dark:1};var t=(d==="haku")?"light":(d==="auto")?"auto":darks[d]?"dark":(d==="light"?"light":"dark");if(t==="auto")t=(window.matchMedia&&matchMedia("(prefers-color-scheme: light)").matches)?"light":"dark";var g=gmap[d]||"none";document.documentElement.dataset.theme=t;document.documentElement.dataset.game=g;var m=document.querySelector("meta[name=theme-color]");if(m)m.content=({ruri:"#060915",sumi:"#08080a",hi:"#150507",hisui:"#04100c"})[g]||(g==="haku")?"#efe8da":(g==="game")?"#0e0c12":(t==="light")?"#f4f6fb":"#0b0d12";}catch(e){}})();</script>
 <title>StudyTime — 24時間・勉強管理</title>
 <style>
 :root{
@@ -2948,7 +2948,7 @@ function chemMixHTML(){
   return `<div class="chem-workspace"><div class="chem-pickers"><section class="chem-picker" aria-label="イオン・物質の選択"><div class="chem-caption">① イオン・物質 <span>${chemText(ion.f)}</span></div>${chemCardList('ion',chemAllIons(),chemIon,chemIonQuery)}</section>
    <section class="chem-picker" aria-label="試薬の選択"><div class="chem-caption">② 試薬 <span>${chemText(reagent.f)}</span></div>${chemCardList('reagent',chemAllReagents(),chemReagent,chemReagentQuery)}</section></div>
    <div class="chem-bench"><div class="chem-bench-top"><div class="chem-caption">${chemText(ion.f)} ＋ ${chemText(reagent.f)}</div><div class="chem-amount" aria-label="加える量"><button class="btn sm ${chemAmount==='small'?'':'ghost'}" aria-pressed="${chemAmount==='small'}" onclick="chemSetAmount('small')">少量</button><button class="btn sm ${chemAmount==='excess'?'':'ghost'}" aria-pressed="${chemAmount==='excess'}" onclick="chemSetAmount('excess')">過剰</button></div></div><div class="chem-observe">${chemVessel(ion.solid?'#e4f1f5':ion.color,ion.solid||null,'反応前：'+ion.label)}<span class="chem-change">→</span>${chemVessel(result?result.liquid:'#e4f1f5',result?.solid,chemMixed?(result?'反応後':'未対応'):'反応後：未確認')}</div><div class="chem-actions"><button class="btn" onclick="chemMix()">組み合わせる</button><button class="btn ghost" onclick="chemReset()">リセット</button></div></div>
-   <div id="chem-result" aria-live="polite">${chemMixed?(result?`<div class="chem-result"><h3>${chemText(result.title)}</h3><div class="chem-facts"><span><i style="background:${result.liquid}"></i>溶液：${escapeHtml(result.solution)}</span><span><i style="background:${result.solid||'transparent'}"></i>沈殿：${escapeHtml(result.solidName)}</span></div>${result.equation?`<div class="chem-equation">${chemText(result.equation)}</div>`:''}<details class="chem-more"><summary>解説・出典・表示の注意</summary><div class="chem-product">${chemText(result.product)}</div><p>${chemText(result.detail)}</p><a href="${result.source}" target="_blank" rel="noopener">反応の出典</a><p class="chem-disclaimer">学習用の模式表示です。色は目安で、濃度・温度・時間・共存イオンは計算していません。液量や反応量も実測値ではありません。実験手順書ではありません。</p></details></div>`:`<div class="chem-result"><h3>この組み合わせは未対応</h3><p>「反応しない」という意味ではありません。「資料」で対応済みの反応を確認できます。</p></div>`):'<div class="chem-ready"><b>カードを選んで、組み合わせる</b><span>結果はここに表示。色は学習用の目安です。</span><span>濃度・温度等は計算しません。実験手順書ではありません。</span></div>'}</div></div>`;
+   <div id="chem-result" aria-live="polite">${chemMixed?(result?`<div class="chem-result"><h3>${chemText(result.title)}</h3><div class="chem-facts"><span><i style="background:${result.liquid}"></i>溶液：${escapeHtml(result.solution)}</span><span><i style="background:${result.solid||'transparent'}"></i>沈殿：${escapeHtml(result.solidName)}</span></div>${result.equation?`<div class="chem-equation">${chemText(result.equation)}</div>`:''}<details class="chem-more"><summary>解説・出典・表示の注意</summary><div class="chem-product">${chemText(result.product)}</div><p>${chemText(result.detail)}</p><p class="chem-disclaimer">学習用の模式表示です。色は目安で、濃度・温度・時間・共存イオンは計算していません。液量や反応量も実測値ではありません。実験手順書ではありません。</p></details></div>`:`<div class="chem-result"><h3>この組み合わせは未対応</h3><p>「反応しない」という意味ではありません。「資料」で対応済みの反応を確認できます。</p></div>`):'<div class="chem-ready"><b>カードを選んで、組み合わせる</b><span>結果はここに表示。色は学習用の目安です。</span><span>濃度・温度等は計算しません。実験手順書ではありません。</span></div>'}</div></div>`;
 }
 function chemRoutes(){
   const custom=(state.chemRoutes||[]).filter(x=>x.sid===deckSid);
@@ -2989,7 +2989,7 @@ function chemRouteHTML(){
   if(chemRouteMode==='lookup')return modebar+chemLookupHTML();
   return modebar+`<div class="chem-route-toolbar"><label>反応経路<select onchange="chemSelectRoute(this.value)">${routes.map(x=>`<option value="${escapeHtml(x.id)}" ${x.id===r.id?'selected':''}>${escapeHtml(x.title)}</option>`).join('')}</select></label><button class="btn sm ghost" onclick="chemEditRoute(true)">新しく作る</button></div><h3 class="chem-route-title">${escapeHtml(r.title)}</h3>${chemPractice?chemPracticeHTML(r):chemRouteDiagram(r,false)}
   <div class="chem-actions"><button class="btn" onclick="chemStartPractice()">並べ替え練習</button><button class="btn ghost" onclick="chemEditRoute(false)">経路・矢印を編集</button></div>
-   <p class="hint">矢印の上に反応名、下に酸化剤・触媒・条件を表示します。長い経路は横にスクロールできます。「物質から調べる」で物質を軸に反応を引けます。</p>${r.builtin||r.base?`<p class="chem-disclaimer">酸化剤と触媒を区別し、反応条件も確認しましょう。${r.builtin?`<a href="${r.source||CHEM_SOURCE.organic}" target="_blank" rel="noopener">出典</a>`:'編集済みの経路です。変更内容の自動検証は行いません。'}</p>`:'<p class="chem-disclaimer">自作の経路です。内容の自動検証は行いません。</p>'}`;
+   <p class="hint">矢印の上に反応名、下に酸化剤・触媒・条件を表示します。長い経路は横にスクロールできます。「物質から調べる」で物質を軸に反応を引けます。</p>${r.builtin||r.base?`<p class="chem-disclaimer">酸化剤と触媒を区別し、反応条件も確認しましょう。${r.builtin?``:'編集済みの経路です。変更内容の自動検証は行いません。'}</p>`:'<p class="chem-disclaimer">自作の経路です。内容の自動検証は行いません。</p>'}`;
 }
 function chemEditRoute(fresh){
   chemPractice=null;
@@ -3041,7 +3041,7 @@ function chemOpenCombination(ion,reagent,amount){chemIon=ion;chemReagent=reagent
 function chemReferenceHTML(){
   const rows=chemCatalog();
   const ionNotes=chemAllIons().map(x=>`<div class="chem-ref-ion"><b class="chem-formula">${chemText(x.f)}</b><span>${escapeHtml(x.n)}</span><small>${escapeHtml(x.label)}</small></div>`).join('');
-  return `<h3 class="chem-route-title">反応を引く</h3><p class="hint">${chemAllIons().length}種のイオン・物質／${chemAllReagents().length}種の試薬。${rows.length}件の条件別表示を収録。少量・過剰で説明が異なる場合は別項目です。入試範囲すべてを保証するものではありません。</p><label class="chem-search">化学式・物質名・色で検索<input type="search" value="${escapeHtml(chemRefQuery)}" placeholder="例：Zn、白色、クロム" oninput="chemReferenceFilter(this.value)"></label><div class="chem-reference">${rows.map(row=>{const {ion,reagent,amount,result:r}=row;const search=ion.f+ion.n+reagent.f+reagent.n+r.product+r.solution+r.solidName;return `<details class="chem-ref-entry" data-search="${escapeHtml(search)}" ${!chemSearchKey(search).includes(chemSearchKey(chemRefQuery))?'hidden':''}><summary><span class="chem-formula">${chemText(ion.f)} ＋ ${chemText(reagent.f)}</span><small>${amount==='excess'?'過剰':'少量'} ・ ${escapeHtml(r.solid?'沈殿：'+r.solidName:r.solution)}</small></summary><div class="chem-ref-detail"><b>${chemText(r.product)}</b><div class="chem-equation">${chemText(r.equation)}</div><p>溶液：${escapeHtml(r.solution)}／沈殿：${escapeHtml(r.solidName)}</p><p>${chemText(r.detail)}</p><a href="${r.source}" target="_blank" rel="noopener">出典</a><button class="btn sm ghost" onclick="chemOpenCombination('${ion.id}','${reagent.id}','${amount}')">試験管で見る</button></div></details>`}).join('')}</div><details class="chem-color-guide"><summary>反応前の色・状態の一覧</summary>${ionNotes}<p class="hint">溶液の色は濃度・配位子で変わります。固体カードは固体の色を示します。</p></details><p class="chem-disclaimer">強酸性・塩基性、希薄・濃厚、加熱などは各項目の条件を優先してください。加える量の切替だけで濃度や液性を変更するものではありません。危険な薬品を含みます。実験手順書ではありません。</p>`;
+  return `<h3 class="chem-route-title">反応を引く</h3><p class="hint">${chemAllIons().length}種のイオン・物質／${chemAllReagents().length}種の試薬。${rows.length}件の条件別表示を収録。少量・過剰で説明が異なる場合は別項目です。入試範囲すべてを保証するものではありません。</p><label class="chem-search">化学式・物質名・色で検索<input type="search" value="${escapeHtml(chemRefQuery)}" placeholder="例：Zn、白色、クロム" oninput="chemReferenceFilter(this.value)"></label><div class="chem-reference">${rows.map(row=>{const {ion,reagent,amount,result:r}=row;const search=ion.f+ion.n+reagent.f+reagent.n+r.product+r.solution+r.solidName;return `<details class="chem-ref-entry" data-search="${escapeHtml(search)}" ${!chemSearchKey(search).includes(chemSearchKey(chemRefQuery))?'hidden':''}><summary><span class="chem-formula">${chemText(ion.f)} ＋ ${chemText(reagent.f)}</span><small>${amount==='excess'?'過剰':'少量'} ・ ${escapeHtml(r.solid?'沈殿：'+r.solidName:r.solution)}</small></summary><div class="chem-ref-detail"><b>${chemText(r.product)}</b><div class="chem-equation">${chemText(r.equation)}</div><p>溶液：${escapeHtml(r.solution)}／沈殿：${escapeHtml(r.solidName)}</p><p>${chemText(r.detail)}</p><button class="btn sm ghost" onclick="chemOpenCombination('${ion.id}','${reagent.id}','${amount}')">試験管で見る</button></div></details>`}).join('')}</div><details class="chem-color-guide"><summary>反応前の色・状態の一覧</summary>${ionNotes}<p class="hint">溶液の色は濃度・配位子で変わります。固体カードは固体の色を示します。</p></details><p class="chem-disclaimer">強酸性・塩基性、希薄・濃厚、加熱などは各項目の条件を優先してください。加える量の切替だけで濃度や液性を変更するものではありません。危険な薬品を含みます。実験手順書ではありません。</p>`;
 }
 function chemQuestionBank(){
   const rows=chemCatalog(),questions=[];
@@ -3109,16 +3109,16 @@ function chemDailyFlowHTML(){
   if(q.kind==='route')body=`<h3 class="chem-route-title">${escapeHtml(q.label)}</h3><div class="chem-quiz-prompt"><b>${chemText(q.prompt)}</b></div>`;
   else body=`<h3 class="chem-route-title">${escapeHtml(q.label)}は？</h3><div class="chem-quiz-prompt"><b>${chemText(q.ion.f)} ＋ ${chemText(q.reagent.f)}</b><p>${escapeHtml(q.ion.n)} ＋ ${escapeHtml(q.reagent.n)}</p><span>${q.amount==='excess'?'過剰':'少量'}に加える。${q.result.quizCondition?chemText(q.result.quizCondition):'試薬に明示された条件で考える。'}</span></div>`;
   const opts=`<div class="chem-quiz-options">${q.options.map((o,i)=>`<button class="chem-answer ${answered?(o===q.correct?'correct':i===run.sel?'wrong':''):''}" ${answered?'disabled':''} onclick="chemAnswerDaily(${i})">${escapeHtml(o)}</button>`).join('')}</div>`;
-  const fb=answered?`<div class="chem-result" role="status"><h3>${run.answers[run.i]?'正解！':'正解：'+escapeHtml(q.correct)}</h3>${q.kind==='route'?chemRouteReviewHTML(q):`<div class="chem-product">${chemText(q.result.product)}</div><div class="chem-equation">${chemText(q.result.equation)}</div><p>${chemText(q.result.detail)}</p><a href="${q.result.source}" target="_blank" rel="noopener">出典</a>`}</div><button class="btn" onclick="chemNextDaily()">${run.i+1===run.qs.length?'結果を見る':'次の問題'}</button>`:'';
+  const fb=answered?`<div class="chem-result" role="status"><h3>${run.answers[run.i]?'正解！':'正解：'+escapeHtml(q.correct)}</h3>${q.kind==='route'?chemRouteReviewHTML(q):`<div class="chem-product">${chemText(q.result.product)}</div><div class="chem-equation">${chemText(q.result.equation)}</div><p>${chemText(q.result.detail)}</p>`}</div><button class="btn" onclick="chemNextDaily()">${run.i+1===run.qs.length?'結果を見る':'次の問題'}</button>`:'';
   return `<p class="chem-caption">今日のテスト ${run.i+1} / ${run.qs.length} 問</p>`+body+opts+fb+`<button class="btn ghost" onclick="chemDailyRun=null;renderDeck()">やめる</button>`;
 }
 function chemQuizHTML(){
   const total=chemQuiz?0:chemQuestionBank().length;
   if(!chemQuiz)return (chemDailyRun?chemDailyFlowHTML():chemDailyCardHTML())+`<h3 class="chem-route-title" style="margin-top:22px">自由練習 ／ 色と沈殿を確認</h3><p class="hint">収録反応から作った${total}題の候補から、10問を出題します。実際の入試過去問ではなく、このラボの確認問題です。</p><button class="btn" onclick="chemStartQuiz()">10問はじめる</button><p class="chem-disclaimer">試薬カードの液性・濃度と、解説の条件を含めた問題です。履歴はこの画面内のみで、学習時間や既存の単語テストには加算しません。</p>`;
   const quiz=chemQuiz;
-  if(quiz.index>=quiz.questions.length){const score=quiz.answers.filter(x=>x.correct).length;return `<h3 class="chem-route-title">${score} / ${quiz.questions.length} 問正解</h3><p class="hint">間違えた反応は「資料」や試験管でも確かめよう。</p><div class="chem-reference">${quiz.questions.map((q,i)=>`<details class="chem-ref-entry"><summary>${quiz.answers[i]?.correct?'正解':'復習'}：${chemText(q.ion.f)} ＋ ${chemText(q.reagent.f)}<small>${q.amount==='excess'?'過剰':'少量'} ・ ${q.label}：${escapeHtml(q.correct)}</small></summary><div class="chem-ref-detail"><p>${chemText(q.result.quizCondition||'試薬に明示された条件で考える。')}</p><p>${chemText(q.result.detail)}</p><div class="chem-equation">${chemText(q.result.equation||'新しい反応式ではなく、指定条件での観察結果です。')}</div><a href="${q.result.source}" target="_blank" rel="noopener">出典</a></div></details>`).join('')}</div><button class="btn" onclick="chemStartQuiz()">もう10問</button>`}
+  if(quiz.index>=quiz.questions.length){const score=quiz.answers.filter(x=>x.correct).length;return `<h3 class="chem-route-title">${score} / ${quiz.questions.length} 問正解</h3><p class="hint">間違えた反応は「資料」や試験管でも確かめよう。</p><div class="chem-reference">${quiz.questions.map((q,i)=>`<details class="chem-ref-entry"><summary>${quiz.answers[i]?.correct?'正解':'復習'}：${chemText(q.ion.f)} ＋ ${chemText(q.reagent.f)}<small>${q.amount==='excess'?'過剰':'少量'} ・ ${q.label}：${escapeHtml(q.correct)}</small></summary><div class="chem-ref-detail"><p>${chemText(q.result.quizCondition||'試薬に明示された条件で考える。')}</p><p>${chemText(q.result.detail)}</p><div class="chem-equation">${chemText(q.result.equation||'新しい反応式ではなく、指定条件での観察結果です。')}</div></div></details>`).join('')}</div><button class="btn" onclick="chemStartQuiz()">もう10問</button>`}
   const q=quiz.questions[quiz.index],answered=quiz.selected!==null;
-  return `<p class="chem-caption">${quiz.index+1} / ${quiz.questions.length} 問</p><h3 class="chem-route-title">${q.label}は？</h3><div class="chem-quiz-prompt"><b>${chemText(q.ion.f)} ＋ ${chemText(q.reagent.f)}</b><p>${escapeHtml(q.ion.n)} ＋ ${escapeHtml(q.reagent.n)}</p><span>${q.amount==='excess'?'過剰':'少量'}に加える。${q.result.quizCondition?chemText(q.result.quizCondition):'試薬に明示された条件で考える。'}</span></div><div class="chem-quiz-options">${q.options.map((option,i)=>`<button class="chem-answer ${answered?(option===q.correct?'correct':i===quiz.selected?'wrong':''):''}" ${answered?'disabled':''} onclick="chemAnswerQuiz(${i})">${escapeHtml(option)}</button>`).join('')}</div>${answered?`<div class="chem-result" role="status"><h3>${q.options[quiz.selected]===q.correct?'正解！':'正解：'+escapeHtml(q.correct)}</h3><div class="chem-product">${chemText(q.result.product)}</div><div class="chem-equation">${chemText(q.result.equation)}</div><p>${chemText(q.result.detail)}</p><a href="${q.result.source}" target="_blank" rel="noopener">出典</a></div><button class="btn" onclick="chemNextQuiz()">${quiz.index+1===quiz.questions.length?'結果を見る':'次の問題'}</button>`:''}<button class="btn ghost" onclick="chemQuiz=null;renderDeck()">終了する</button>`;
+  return `<p class="chem-caption">${quiz.index+1} / ${quiz.questions.length} 問</p><h3 class="chem-route-title">${q.label}は？</h3><div class="chem-quiz-prompt"><b>${chemText(q.ion.f)} ＋ ${chemText(q.reagent.f)}</b><p>${escapeHtml(q.ion.n)} ＋ ${escapeHtml(q.reagent.n)}</p><span>${q.amount==='excess'?'過剰':'少量'}に加える。${q.result.quizCondition?chemText(q.result.quizCondition):'試薬に明示された条件で考える。'}</span></div><div class="chem-quiz-options">${q.options.map((option,i)=>`<button class="chem-answer ${answered?(option===q.correct?'correct':i===quiz.selected?'wrong':''):''}" ${answered?'disabled':''} onclick="chemAnswerQuiz(${i})">${escapeHtml(option)}</button>`).join('')}</div>${answered?`<div class="chem-result" role="status"><h3>${q.options[quiz.selected]===q.correct?'正解！':'正解：'+escapeHtml(q.correct)}</h3><div class="chem-product">${chemText(q.result.product)}</div><div class="chem-equation">${chemText(q.result.equation)}</div><p>${chemText(q.result.detail)}</p></div><button class="btn" onclick="chemNextQuiz()">${quiz.index+1===quiz.questions.length?'結果を見る':'次の問題'}</button>`:''}<button class="btn ghost" onclick="chemQuiz=null;renderDeck()">終了する</button>`;
 }
 function renderChemDeck(s){
   if((chemTab==='mix'&&chemMixMode==='ref')||(chemTab==='route'&&chemRouteMode==='ref')){
@@ -4471,26 +4471,28 @@ const DESIGNS=[
   {id:'dark',  name:'ダーク', pv:{bg:'linear-gradient(180deg,#161a20,#0b0d12)', panel:'#1b1f26', line:'#2c333d', acc:'#7cc4ff', txt:'#e8ecf2'}},
   {id:'auto',  name:'自動',   pv:{bg:'linear-gradient(115deg,#f6f8fc 0 50%,#0b0d12 50% 100%)', panel:'rgba(150,160,176,.6)', line:'rgba(255,255,255,.4)', acc:'#1f7ae0', txt:'#9aa3b2'}},
   {id:'game',  name:'金襴',   pv:{bg:'linear-gradient(180deg,#1d2026,#0d0e11)', panel:'#1a1d22', line:'rgba(255,255,255,.28)', acc:'#e6b450', txt:'#ffffff'}},
-  {id:'soya', name:'蒼夜（そうや）', pv:{bg:'linear-gradient(180deg,#080e17 0%,#0e1724 46%,#152b4a 78%,#070c12 100%)', panel:'rgba(14,21,30,.88)', line:'rgba(108,157,226,.44)', acc:'#4b8ae2', txt:'#d8e2f1'}},
-  {id:'soya-light', name:'蒼夜・昼', pv:{bg:'linear-gradient(180deg,#e3eaf4 0%,#d2deef 44%,#a4bde0 74%,#cfd8cf 100%)', panel:'rgba(244,249,255,.92)', line:'rgba(68,92,126,.44)', acc:'#1c56a8', txt:'#131a24'}},
-  {id:'shiden', name:'紫電（しでん）', pv:{bg:'linear-gradient(180deg,#130817 0%,#1e0e24 46%,#3d154a 78%,#0f0712 100%)', panel:'rgba(26,14,30,.88)', line:'rgba(196,108,226,.44)', acc:'#bc4be2', txt:'#ebd8f1'}},
+  {id:'ruri', name:'瑠璃', pv:{bg:'linear-gradient(180deg,#060915 0%,#0d1330 46%,#1a2650 78%,#05060e 100%)', panel:'rgba(10,14,30,.88)', line:'rgba(150,160,220,.44)', acc:'#caa96d', txt:'#dcd8e8'}},
+  {id:'haku', name:'白亜', pv:{bg:'linear-gradient(180deg,#f5efe2 0%,#e8ddc8 44%,#d9cbb0 74%,#efe6d4 100%)', panel:'rgba(250,246,236,.94)', line:'rgba(120,100,60,.44)', acc:'#8a6a2f', txt:'#241c10'}},
+  {id:'sumi', name:'墨', pv:{bg:'linear-gradient(180deg,#060607 0%,#0d0d0f 46%,#151518 78%,#050506 100%)', panel:'rgba(12,12,14,.9)', line:'rgba(190,170,120,.35)', acc:'#c8a866', txt:'#e2ddd2'}},
+  {id:'hi', name:'緋', pv:{bg:'linear-gradient(180deg,#150507 0%,#260a10 46%,#4a0f1a 78%,#120406 100%)', panel:'rgba(24,8,12,.88)', line:'rgba(220,120,140,.44)', acc:'#d2a26a', txt:'#f0dce0'}},
+  {id:'hisui', name:'翡翠', pv:{bg:'linear-gradient(180deg,#04100c 0%,#0a1f18 46%,#123a2c 78%,#030b08 100%)', panel:'rgba(6,18,14,.88)', line:'rgba(110,200,160,.44)', acc:'#cfc08e', txt:'#d8e8de'}}
 ];
 function designById(d){ for(var i=0;i<DESIGNS.length;i++){ if(DESIGNS[i].id===d) return DESIGNS[i] } return DESIGNS[1] }
 function currentDesign(){
   const s=state.settings||{};
-  if(s.design) return s.design;
+  const mig={yakari:'ruri','yakari-light':'haku',soya:'ruri','soya-light':'haku',shiden:'sumi',ice:'ruri',huaxu:'haku'};
+  if(s.design) return mig[s.design]||s.design;
   if(s.game==='game') return 'game';
   if(s.design==='yakari') return 'soya';
   if(s.design==='yakari-light') return 'soya-light';
-  if(s.game==='ice') return 'soya';
-  if(s.game==='huaxu') return 'soya-light';
+  if(s.game==='ice') return 'ruri';
+  if(s.game==='huaxu') return 'haku';
   return (s.theme==='light'||s.theme==='auto')?s.theme:'dark';
 }
 function designSpec(d){
   if(d==='game') return {theme:'dark', game:'game'};
-  if(d==='ice'||d==='yakari'||d==='soya') return {theme:'dark', game:'soya'};
-  if(d==='huaxu'||d==='yakari-light'||d==='soya-light') return {theme:'light', game:'soya'};
-  if(d==='shiden') return {theme:'dark', game:'shiden'};
+  if(d==='ruri'||d==='sumi'||d==='hi'||d==='hisui') return {theme:'dark', game:d};
+  if(d==='haku') return {theme:'light', game:'haku'};
   if(d==='light') return {theme:'light', game:'none'};
   if(d==='auto') return {theme:'auto', game:'none'};
   return {theme:'dark', game:'none'};
@@ -4522,7 +4524,7 @@ function applyTheme(){
   document.documentElement.dataset.theme=t;
   document.documentElement.dataset.game=sp.game;
   if(sp.game!=='none'){ try{loadGameFont()}catch(e){} }
-  try{ var m=document.querySelector('meta[name=theme-color]'); if(m) m.content=(sp.game==='soya')?((t==='light')?'#e9eef7':'#0a1020'):(sp.game==='shiden')?'#120a1e':(sp.game==='game')?'#0e0c12':(t==='light'?'#f4f6fb':'#0b0d12'); }catch(e){}
+  try{ var m=document.querySelector('meta[name=theme-color]'); if(m) m.content=(sp.game==='haku')?'#efe8da':({ruri:'#060915',sumi:'#08080a',hi:'#150507',hisui:'#04100c'})[sp.game]||(sp.game==='game')?'#0e0c12':(t==='light'?'#f4f6fb':'#0b0d12'); }catch(e){}
   try{ var dc=document.getElementById('design-current'); if(dc) dc.textContent=designById(d).name; }catch(e){}
   try{ var sw=document.getElementById('design-swatch'); if(sw){ var p=designById(d).pv; sw.style.background=p.bg; sw.style.borderColor=p.line; sw.style.boxShadow='inset 0 0 0 3px '+p.panel; } }catch(e){}
   try{ renderDesignGrid(); }catch(e){}
@@ -4886,300 +4888,742 @@ function syncSrsUI(){
 window.syncSrsUI = syncSrsUI;
 document.addEventListener('DOMContentLoaded', syncSrsUI);
 </script>
-<style id="gm-theme3">
+<style id="gm-theme-ruri">/* StudyTime テーマ: 瑠璃 - 瑠璃の夜と金彩（ダーク） */
 /* ==================================================================
    夜灯（やあかり）― 墨と灯りの勉強机テーマ（ダーク既定・ライト別版）
    ================================================================== */
 @import url("https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&family=Marcellus&family=Shippori+Mincho:wght@400;500;600;700&display=swap");
-html[data-game="soya"]{
+html[data-game="ruri"]{
   --gserif:"Shippori Mincho","Yu Mincho","YuMincho","Hiragino Mincho ProN","Noto Serif JP",serif;
   --glat:"Marcellus","Cinzel",Georgia,serif;
   --gnum:"Cinzel",ui-monospace,Menlo,monospace;
-  --bg:#0b0f15;--bg-elev:rgba(14,20,28,.80);--bg-elev-2:rgba(19,27,38,.86);
-  --line:rgba(120,162,220,.22);--line-strong:rgba(138,179,236,.46);
-  --text:#d8e2f1;--text-dim:#9caec8;--text-mute:#6e7f96;
-  --accent:#4b8ae2;--accent-2:#7fa38c;--on-accent:#09111d;
-  --ok:#6fbf95;--warn:#5c93df;--bad:#d97e76;
-  --nav-bg:rgba(9,14,20,.84);--accent-soft:rgba(75,138,226,.13);
-  --advice-bg:linear-gradient(135deg,rgba(75,138,226,.14),rgba(9,14,20,.76));
-  --advice-line:rgba(120,162,220,.26);--danger-line:rgba(217,126,118,.42);
-  --shadow:0 16px 38px rgba(0,0,0,.55);--overlay:rgba(5,8,12,.76);
-  --unrec:#151e2a;--status-bg:#070a0e;--radius:16px;color-scheme:dark;
-  --lamp:#4b8ae2;--lamp-hi:#93bcf6;--washi:#d2deef;
+  --bg:#0b0d15;--bg-elev:rgba(14,17,28,.80);--bg-elev-2:rgba(19,23,38,.86);
+  --line:rgba(217,189,123,.22);--line-strong:rgba(224,202,150,.46);
+  --text:#d8ddf1;--text-dim:#9ca5c8;--text-mute:#6e7696;
+  --accent:#d0ad5d;--accent-2:#7f86a3;--on-accent:#090d1d;
+  --ok:#c5a969;--warn:#d3b368;--bad:#d8bb77;
+  --nav-bg:rgba(9,11,20,.84);--accent-soft:rgba(208,173,93,.13);
+  --advice-bg:linear-gradient(135deg,rgba(208,173,93,.14),rgba(9,11,20,.76));
+  --advice-line:rgba(217,189,123,.26);--danger-line:rgba(216,187,119,.42);
+  --shadow:0 16px 38px rgba(0,0,0,.55);--overlay:rgba(5,6,12,.76);
+  --unrec:#15192a;--status-bg:#07080e;--radius:16px;color-scheme:dark;
+  --lamp:#d0ad5d;--lamp-hi:#e5d1a4;--washi:#d2d8ef;
 }
-html[data-game="soya"] body{background:#0b0f15}
-html[data-game="soya"] .bgfx{
-  display:block;position:fixed;inset:0;z-index:0;pointer-events:none;background-color:#0b0f15;
+html[data-game="ruri"] body{background:#0b0d15}
+html[data-game="ruri"] .bgfx{
+  display:block;position:fixed;inset:0;z-index:0;pointer-events:none;background-color:#0b0d15;
   background-image:
-    radial-gradient(90% 46% at 50% -6%, rgba(147,188,246,.20) 0%, rgba(147,188,246,.07) 38%, rgba(11,15,21,0) 72%),
-    radial-gradient(140% 90% at 50% 108%, rgba(4,6,10,.85) 0%, rgba(11,15,21,0) 60%);
+    radial-gradient(90% 46% at 50% -6%, rgba(229,209,164,.20) 0%, rgba(229,209,164,.07) 38%, rgba(11,13,21,0) 72%),
+    radial-gradient(140% 90% at 50% 108%, rgba(4,5,10,.85) 0%, rgba(11,13,21,0) 60%);
   box-shadow:inset 0 0 120px rgba(0,0,0,.45);
 }
-html[data-game="soya"] .header{
-  border-bottom:1px solid rgba(120,162,220,.20);
-  background:linear-gradient(180deg,rgba(9,14,20,.72),rgba(9,14,20,.28) 64%,rgba(9,14,20,0));
+html[data-game="ruri"] .header{
+  border-bottom:1px solid rgba(217,189,123,.20);
+  background:linear-gradient(180deg,rgba(9,11,20,.72),rgba(9,11,20,.28) 64%,rgba(9,11,20,0));
   -webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px)}
-html[data-game="soya"] .header h1{color:#d9e5f6;text-shadow:0 0 20px rgba(75,138,226,.45),0 1px 0 rgba(0,0,0,.6)}
-html[data-game="soya"] .header .sub{color:#7a8ca5}
-html[data-game="soya"] .card{
-  background:linear-gradient(180deg,rgba(16,23,34,.60),rgba(9,13,19,.70));
-  border:1px solid rgba(120,162,220,.20);border-radius:16px;
-  box-shadow:0 18px 40px rgba(0,0,0,.5),inset 0 1px 0 rgba(147,188,246,.10);
+html[data-game="ruri"] .header h1{color:#d9dff6;text-shadow:0 0 20px rgba(208,173,93,.45),0 1px 0 rgba(0,0,0,.6)}
+html[data-game="ruri"] .header .sub{color:#7a83a5}
+html[data-game="ruri"] .card{
+  background:linear-gradient(180deg,rgba(16,20,34,.60),rgba(9,11,19,.70));
+  border:1px solid rgba(217,189,123,.20);border-radius:16px;
+  box-shadow:0 18px 40px rgba(0,0,0,.5),inset 0 1px 0 rgba(229,209,164,.10);
   -webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px)}
-html[data-game="soya"] .card h2{color:#ccdbef;padding-left:12px;position:relative}
-html[data-game="soya"] .card h2::before{content:'';position:absolute;left:0;top:.16em;bottom:.16em;width:2px;border-radius:2px;
+html[data-game="ruri"] .card h2{color:#ccd3ef;padding-left:12px;position:relative}
+html[data-game="ruri"] .card h2::before{content:'';position:absolute;left:0;top:.16em;bottom:.16em;width:2px;border-radius:2px;
   background:linear-gradient(180deg,var(--lamp-hi),var(--lamp) 55%,var(--accent-2));
-  box-shadow:0 0 10px rgba(75,138,226,.55)}
-html[data-game="soya"] .btn{
-  background:linear-gradient(180deg,rgba(26,38,56,.78),rgba(13,19,28,.82));
-  border:1px solid rgba(120,162,220,.24);color:#c6d6ec;border-radius:13px;
-  box-shadow:0 5px 16px rgba(0,0,0,.4),inset 0 1px 0 rgba(147,188,246,.10)}
-html[data-game="soya"] .btn.primary{
-  background:linear-gradient(180deg,#93bcf6,#3e7fd9 62%,#2863b6);
-  border:1px solid rgba(147,188,246,.55);color:#09111d;font-weight:700;
-  box-shadow:0 10px 26px rgba(50,108,190,.38),inset 0 1px 0 rgba(255,255,255,.5)}
-html[data-game="soya"] .btn.danger{color:#efa09a;border-color:var(--danger-line);background:linear-gradient(180deg,rgba(66,28,26,.72),rgba(30,14,12,.78))}
-html[data-game="soya"] .btn.ghost{background:transparent;border-color:rgba(120,162,220,.26)}
-html[data-game="soya"] .chip{background:rgba(255,255,255,.05);border-color:var(--line);color:#9caec8}
-html[data-game="soya"] .seg{background:rgba(8,12,18,.64);border:1px solid rgba(120,162,220,.22);border-radius:13px;
+  box-shadow:0 0 10px rgba(208,173,93,.55)}
+html[data-game="ruri"] .btn{
+  background:linear-gradient(180deg,rgba(26,32,56,.78),rgba(13,16,28,.82));
+  border:1px solid rgba(217,189,123,.24);color:#c6ceec;border-radius:13px;
+  box-shadow:0 5px 16px rgba(0,0,0,.4),inset 0 1px 0 rgba(229,209,164,.10)}
+html[data-game="ruri"] .btn.primary{
+  background:linear-gradient(180deg,#e5d1a4,#cba54c 62%,#ac8732);
+  border:1px solid rgba(229,209,164,.55);color:#090d1d;font-weight:700;
+  box-shadow:0 10px 26px rgba(186,146,54,.38),inset 0 1px 0 rgba(255,255,255,.5)}
+html[data-game="ruri"] .btn.danger{color:#e5d1a4;border-color:var(--danger-line);background:linear-gradient(180deg,rgba(66,54,26,.72),rgba(30,25,12,.78))}
+html[data-game="ruri"] .btn.ghost{background:transparent;border-color:rgba(217,189,123,.26)}
+html[data-game="ruri"] .chip{background:rgba(255,255,255,.05);border-color:var(--line);color:#9ca5c8}
+html[data-game="ruri"] .seg{background:rgba(8,10,18,.64);border:1px solid rgba(217,189,123,.22);border-radius:13px;
   -webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px)}
-html[data-game="soya"] .seg button{color:#6e7f96;border-radius:10px;font-family:var(--gserif);letter-spacing:.05em}
-html[data-game="soya"] .seg button.on{background:linear-gradient(180deg,rgba(52,97,160,.66),rgba(28,56,96,.66));
-  color:#d9e5f6;outline:1px solid rgba(138,179,236,.45);box-shadow:0 0 18px rgba(75,138,226,.25)}
-html[data-game="soya"] .group-tab{background:rgba(11,16,24,.68);border:1px solid rgba(120,162,220,.22);
-  color:#8ca2c0;font-family:var(--gserif);letter-spacing:.04em;
+html[data-game="ruri"] .seg button{color:#6e7696;border-radius:10px;font-family:var(--gserif);letter-spacing:.05em}
+html[data-game="ruri"] .seg button.on{background:linear-gradient(180deg,rgba(164,129,48,.66),rgba(28,42,96,.66));
+  color:#d9dff6;outline:1px solid rgba(224,202,150,.45);box-shadow:0 0 18px rgba(208,173,93,.25)}
+html[data-game="ruri"] .group-tab{background:rgba(11,14,24,.68);border:1px solid rgba(217,189,123,.22);
+  color:#8c96c0;font-family:var(--gserif);letter-spacing:.04em;
   -webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px)}
-html[data-game="soya"] .group-tab.active{background:linear-gradient(180deg,#93bcf6,#3e7fd9);color:#09111d;border-color:rgba(147,188,246,.6)}
-html[data-game="soya"] .nav{
-  background:linear-gradient(180deg,rgba(10,15,22,.62),rgba(4,6,10,.94));
-  border-top:1px solid rgba(138,179,236,.34);
-  box-shadow:0 -16px 38px rgba(0,0,0,.62),inset 0 1px 0 rgba(147,188,246,.10);
+html[data-game="ruri"] .group-tab.active{background:linear-gradient(180deg,#e5d1a4,#cba54c);color:#090d1d;border-color:rgba(229,209,164,.6)}
+html[data-game="ruri"] .nav{
+  background:linear-gradient(180deg,rgba(10,12,22,.62),rgba(4,5,10,.94));
+  border-top:1px solid rgba(224,202,150,.34);
+  box-shadow:0 -16px 38px rgba(0,0,0,.62),inset 0 1px 0 rgba(229,209,164,.10);
   -webkit-backdrop-filter:blur(20px) saturate(1.1);backdrop-filter:blur(20px) saturate(1.1)}
-html[data-game="soya"] .nav button{color:#6e7f96;position:relative;font-family:var(--gserif);letter-spacing:.09em}
-html[data-game="soya"] .nav button.active{color:#d9e5f6;text-shadow:0 0 14px rgba(75,138,226,.75)}
-html[data-game="soya"] .nav button.active svg{filter:drop-shadow(0 0 8px rgba(75,138,226,.8))}
-html[data-game="soya"] .nav button.active::before{content:'';position:absolute;top:0;left:50%;
+html[data-game="ruri"] .nav button{color:#6e7696;position:relative;font-family:var(--gserif);letter-spacing:.09em}
+html[data-game="ruri"] .nav button.active{color:#d9dff6;text-shadow:0 0 14px rgba(208,173,93,.75)}
+html[data-game="ruri"] .nav button.active svg{filter:drop-shadow(0 0 8px rgba(208,173,93,.8))}
+html[data-game="ruri"] .nav button.active::before{content:'';position:absolute;top:0;left:50%;
   transform:translateX(-50%);width:30px;height:2px;border-radius:0 0 4px 4px;
-  background:linear-gradient(90deg,rgba(75,138,226,0),#93bcf6 50%,rgba(75,138,226,0));
-  box-shadow:0 0 14px rgba(75,138,226,.9)}
-html[data-game="soya"] .now-card{
-  background:linear-gradient(160deg,rgba(17,26,38,.62),rgba(9,13,19,.72));
-  border:1px solid rgba(120,162,220,.24);border-radius:18px;
-  box-shadow:0 20px 46px rgba(0,0,0,.5),inset 0 1px 0 rgba(147,188,246,.12);
+  background:linear-gradient(90deg,rgba(208,173,93,0),#e5d1a4 50%,rgba(208,173,93,0));
+  box-shadow:0 0 14px rgba(208,173,93,.9)}
+html[data-game="ruri"] .now-card{
+  background:linear-gradient(160deg,rgba(17,21,38,.62),rgba(9,11,19,.72));
+  border:1px solid rgba(217,189,123,.24);border-radius:18px;
+  box-shadow:0 20px 46px rgba(0,0,0,.5),inset 0 1px 0 rgba(229,209,164,.12);
   -webkit-backdrop-filter:blur(16px);backdrop-filter:blur(16px)}
-html[data-game="soya"] .now-label{color:#6e7f96}
-html[data-game="soya"] .now-name{color:#d9e5f6;font-family:var(--gserif);font-weight:600;letter-spacing:.04em}
-html[data-game="soya"] .now-time{font-family:var(--gnum);font-weight:600;color:#dce8f8;letter-spacing:.04em;
-  text-shadow:0 0 24px rgba(75,138,226,.5)}
-html[data-game="soya"] .now-sub{color:#9caec8}
-html[data-game="soya"] .stat{
-  background:linear-gradient(180deg,rgba(16,23,34,.56),rgba(9,13,19,.66));
-  border:1px solid rgba(120,162,220,.20);border-radius:16px;
-  box-shadow:0 10px 26px rgba(0,0,0,.42),inset 0 1px 0 rgba(147,188,246,.09);
+html[data-game="ruri"] .now-label{color:#6e7696}
+html[data-game="ruri"] .now-name{color:#d9dff6;font-family:var(--gserif);font-weight:600;letter-spacing:.04em}
+html[data-game="ruri"] .now-time{font-family:var(--gnum);font-weight:600;color:#dce2f8;letter-spacing:.04em;
+  text-shadow:0 0 24px rgba(208,173,93,.5)}
+html[data-game="ruri"] .now-sub{color:#9ca5c8}
+html[data-game="ruri"] .stat{
+  background:linear-gradient(180deg,rgba(16,20,34,.56),rgba(9,11,19,.66));
+  border:1px solid rgba(217,189,123,.20);border-radius:16px;
+  box-shadow:0 10px 26px rgba(0,0,0,.42),inset 0 1px 0 rgba(229,209,164,.09);
   -webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px)}
-html[data-game="soya"] .stat .label{color:#6e7f96}
-html[data-game="soya"] .stat .value{color:#d6e3f4;font-family:var(--gnum);letter-spacing:.03em}
-html[data-game="soya"] .stat .sub{color:#9caec8}
-html[data-game="soya"] .pill{border-color:rgba(120,162,220,.22);background:rgba(255,255,255,.05)}
-html[data-game="soya"] .hint{color:#6e7f96}
-html[data-game="soya"] .sync-badge{color:#9caec8}
-html[data-game="soya"] .flip{background:linear-gradient(180deg,rgba(16,23,34,.62),rgba(9,13,19,.72));border-color:rgba(120,162,220,.24)}
-html[data-game="soya"] .hist{border-bottom-color:rgba(120,162,220,.16)}
-html[data-game="soya"] .act-btn{background:rgba(13,19,28,.58);border-color:rgba(120,162,220,.20);
+html[data-game="ruri"] .stat .label{color:#6e7696}
+html[data-game="ruri"] .stat .value{color:#d6dcf4;font-family:var(--gnum);letter-spacing:.03em}
+html[data-game="ruri"] .stat .sub{color:#9ca5c8}
+html[data-game="ruri"] .pill{border-color:rgba(217,189,123,.22);background:rgba(255,255,255,.05)}
+html[data-game="ruri"] .hint{color:#6e7696}
+html[data-game="ruri"] .sync-badge{color:#9ca5c8}
+html[data-game="ruri"] .flip{background:linear-gradient(180deg,rgba(16,20,34,.62),rgba(9,11,19,.72));border-color:rgba(217,189,123,.24)}
+html[data-game="ruri"] .hist{border-bottom-color:rgba(217,189,123,.16)}
+html[data-game="ruri"] .act-btn{background:rgba(13,16,28,.58);border-color:rgba(217,189,123,.20);
   -webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px)}
-html[data-game="soya"] .act-btn.current{border-color:var(--lamp);background:rgba(75,138,226,.15);
-  box-shadow:0 0 20px rgba(75,138,226,.24)}
-html[data-game="soya"] input,html[data-game="soya"] select,html[data-game="soya"] textarea{
-  background:rgba(9,13,19,.74);border:1px solid rgba(120,162,220,.24);border-radius:12px;color:var(--text)}
-html[data-game="soya"] .dcard{background:rgba(11,16,24,.72);border-color:rgba(120,162,220,.22)}
+html[data-game="ruri"] .act-btn.current{border-color:var(--lamp);background:rgba(208,173,93,.15);
+  box-shadow:0 0 20px rgba(208,173,93,.24)}
+html[data-game="ruri"] input,html[data-game="ruri"] select,html[data-game="ruri"] textarea{
+  background:rgba(9,11,19,.74);border:1px solid rgba(217,189,123,.24);border-radius:12px;color:var(--text)}
+html[data-game="ruri"] .dcard{background:rgba(11,14,24,.72);border-color:rgba(217,189,123,.22)}
 
 /* ―― 夜灯・昼（わざ寅色の和紙） ―― */
-html[data-game="soya"][data-theme="light"]{
-  --bg:#dfe7f2;--bg-elev:rgba(244,249,255,.90);--bg-elev-2:rgba(228,236,248,.94);
-  --line:rgba(68,92,126,.30);--line-strong:rgba(68,92,126,.52);
-  --text:#131a24;--text-dim:#3f4957;--text-mute:#637185;
-  --accent:#1c56a8;--accent-2:#4f7a68;--on-accent:#f1f7ff;
-  --ok:#2f7d5f;--warn:#2c60a8;--bad:#b5493d;
-  --nav-bg:rgba(233,240,250,.86);--accent-soft:rgba(28,86,168,.10);
-  --advice-bg:linear-gradient(135deg,rgba(28,86,168,.12),rgba(244,249,255,.80));
-  --advice-line:rgba(68,92,126,.30);--danger-line:#9eb8dc;
-  --shadow:0 12px 30px rgba(44,66,96,.14);--overlay:rgba(24,32,43,.42);
-  --unrec:#c4d2e6;--status-bg:#131a24;color-scheme:light;
+html[data-game="ruri"][data-theme="light"]{
+  --bg:#dfe3f2;--bg-elev:rgba(244,246,255,.90);--bg-elev-2:rgba(228,232,248,.94);
+  --line:rgba(68,80,126,.30);--line-strong:rgba(68,80,126,.52);
+  --text:#131624;--text-dim:#3f4457;--text-mute:#636a85;
+  --accent:#98782c;--accent-2:#4f587a;--on-accent:#f1f4ff;
+  --ok:#2f3f7d;--warn:#a48130;--bad:#bc9436;
+  --nav-bg:rgba(233,236,250,.86);--accent-soft:rgba(152,120,44,.10);
+  --advice-bg:linear-gradient(135deg,rgba(152,120,44,.12),rgba(244,246,255,.80));
+  --advice-line:rgba(68,80,126,.30);--danger-line:#e1cb99;
+  --shadow:0 12px 30px rgba(44,54,96,.14);--overlay:rgba(24,28,43,.42);
+  --unrec:#c4cbe6;--status-bg:#131624;color-scheme:light;
 }
-html[data-game="soya"][data-theme="light"] body{background:#dfe7f2}
-html[data-game="soya"][data-theme="light"] .bgfx{
-  display:block;position:fixed;inset:0;z-index:0;pointer-events:none;background-color:#dfe7f2;
+html[data-game="ruri"][data-theme="light"] body{background:#dfe3f2}
+html[data-game="ruri"][data-theme="light"] .bgfx{
+  display:block;position:fixed;inset:0;z-index:0;pointer-events:none;background-color:#dfe3f2;
   background-image:
-    radial-gradient(90% 46% at 50% -6%, rgba(214,231,255,.85) 0%, rgba(200,221,250,.35) 40%, rgba(223,231,242,0) 74%),
-    radial-gradient(140% 90% at 50% 110%, rgba(102,134,178,.16) 0%, rgba(223,231,242,0) 60%);
+    radial-gradient(90% 46% at 50% -6%, rgba(214,222,255,.85) 0%, rgba(200,210,250,.35) 40%, rgba(223,227,242,0) 74%),
+    radial-gradient(140% 90% at 50% 110%, rgba(184,157,96,.16) 0%, rgba(223,227,242,0) 60%);
 }
-html[data-game="soya"][data-theme="light"] .header{border-bottom:1px solid rgba(68,92,126,.24);background:linear-gradient(180deg,rgba(233,240,250,.9),rgba(233,240,250,.4) 64%,rgba(233,240,250,0))}
-html[data-game="soya"][data-theme="light"] .header h1{color:#141d2a;text-shadow:none}
-html[data-game="soya"][data-theme="light"] .header .sub{color:#637185}
-html[data-game="soya"][data-theme="light"] .card{background:rgba(244,249,255,.86);border:1px solid rgba(68,92,126,.26);box-shadow:0 10px 26px rgba(44,66,96,.10)}
-html[data-game="soya"][data-theme="light"] .card h2{color:#1a2433}
-html[data-game="soya"][data-theme="light"] .btn{background:linear-gradient(180deg,#eaf1fb,#d0ddf0);border:1px solid rgba(68,92,126,.34);color:#202b3a}
-html[data-game="soya"][data-theme="light"] .btn.primary{background:linear-gradient(180deg,#3e78c9,#1c56a8);border-color:rgba(28,86,168,.6);color:#f1f7ff}
-html[data-game="soya"][data-theme="light"] .btn.ghost{background:transparent}
-html[data-game="soya"][data-theme="light"] .seg{background:rgba(224,232,244,.8);border:1px solid rgba(68,92,126,.26)}
-html[data-game="soya"][data-theme="light"] .seg button{color:#637185}
-html[data-game="soya"][data-theme="light"] .seg button.on{background:linear-gradient(180deg,#3e78c9,#1c56a8);color:#f1f7ff;outline:1px solid rgba(28,86,168,.5)}
-html[data-game="soya"][data-theme="light"] .nav{background:linear-gradient(180deg,rgba(233,240,250,.92),rgba(212,224,240,.96));border-top:1px solid rgba(68,92,126,.34)}
-html[data-game="soya"][data-theme="light"] .nav button{color:#637185}
-html[data-game="soya"][data-theme="light"] .nav button.active{color:#141d2a;text-shadow:none}
-html[data-game="soya"][data-theme="light"] .nav button.active::before{background:linear-gradient(90deg,rgba(28,86,168,0),#1c56a8 50%,rgba(28,86,168,0))}
-html[data-game="soya"][data-theme="light"] .now-time{color:#141d2a;text-shadow:none}
-html[data-game="soya"][data-theme="light"] .stat .value{color:#141d2a}
-html[data-game="soya"][data-theme="light"] input,html[data-game="soya"][data-theme="light"] select,html[data-game="soya"][data-theme="light"] textarea{background:rgba(244,249,255,.9);border:1px solid rgba(68,92,126,.32);color:var(--text)}
-
-</style>
-<style id="gm-theme3b">
+html[data-game="ruri"][data-theme="light"] .header{border-bottom:1px solid rgba(68,80,126,.24);background:linear-gradient(180deg,rgba(233,236,250,.9),rgba(233,236,250,.4) 64%,rgba(233,236,250,0))}
+html[data-game="ruri"][data-theme="light"] .header h1{color:#14182a;text-shadow:none}
+html[data-game="ruri"][data-theme="light"] .header .sub{color:#636a85}
+html[data-game="ruri"][data-theme="light"] .card{background:rgba(244,246,255,.86);border:1px solid rgba(68,80,126,.26);box-shadow:0 10px 26px rgba(44,54,96,.10)}
+html[data-game="ruri"][data-theme="light"] .card h2{color:#1a1f33}
+html[data-game="ruri"][data-theme="light"] .btn{background:linear-gradient(180deg,#eaedfb,#d0d6f0);border:1px solid rgba(68,80,126,.34);color:#20253a}
+html[data-game="ruri"][data-theme="light"] .btn.primary{background:linear-gradient(180deg,#c79f40,#98782c);border-color:rgba(152,120,44,.6);color:#f1f4ff}
+html[data-game="ruri"][data-theme="light"] .btn.ghost{background:transparent}
+html[data-game="ruri"][data-theme="light"] .seg{background:rgba(224,228,244,.8);border:1px solid rgba(68,80,126,.26)}
+html[data-game="ruri"][data-theme="light"] .seg button{color:#636a85}
+html[data-game="ruri"][data-theme="light"] .seg button.on{background:linear-gradient(180deg,#c79f40,#98782c);color:#f1f4ff;outline:1px solid rgba(152,120,44,.5)}
+html[data-game="ruri"][data-theme="light"] .nav{background:linear-gradient(180deg,rgba(233,236,250,.92),rgba(212,218,240,.96));border-top:1px solid rgba(68,80,126,.34)}
+html[data-game="ruri"][data-theme="light"] .nav button{color:#636a85}
+html[data-game="ruri"][data-theme="light"] .nav button.active{color:#14182a;text-shadow:none}
+html[data-game="ruri"][data-theme="light"] .nav button.active::before{background:linear-gradient(90deg,rgba(152,120,44,0),#98782c 50%,rgba(152,120,44,0))}
+html[data-game="ruri"][data-theme="light"] .now-time{color:#14182a;text-shadow:none}
+html[data-game="ruri"][data-theme="light"] .stat .value{color:#14182a}
+html[data-game="ruri"][data-theme="light"] input,html[data-game="ruri"][data-theme="light"] select,html[data-game="ruri"][data-theme="light"] textarea{background:rgba(244,246,255,.9);border:1px solid rgba(68,80,126,.32);color:var(--text)}
+/* ===== ruri（瑠璃） ===== */
+html[data-game="ruri"]{--gserif:"Zen Old Mincho","Yu Mincho","YuMincho","Hiragino Mincho ProN","Noto Serif JP",serif;--glat:"Cormorant Garamond","Times New Roman",Georgia,serif;--gnum:"Cormorant Garamond","Times New Roman",Georgia,serif;--accent:#caa96d;--accent-soft:rgba(202,169,109,.13)}
+html[data-game="ruri"] .dcard.on{border-color:#caa96d;box-shadow:0 0 0 1px #caa96d}</style><style id="gm-theme-sumi">/* StudyTime テーマ: 墨 - 墨色と金（ダーク） */
 /* ==================================================================
    夜灯（やあかり）― 墨と灯りの勉強机テーマ（ダーク既定・ライト別版）
    ================================================================== */
 @import url("https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&family=Marcellus&family=Shippori+Mincho:wght@400;500;600;700&display=swap");
-html[data-game="shiden"]{
+html[data-game="sumi"]{
   --gserif:"Shippori Mincho","Yu Mincho","YuMincho","Hiragino Mincho ProN","Noto Serif JP",serif;
   --glat:"Marcellus","Cinzel",Georgia,serif;
   --gnum:"Cinzel",ui-monospace,Menlo,monospace;
-  --bg:#120b15;--bg-elev:rgba(24,14,28,.80);--bg-elev-2:rgba(33,19,38,.86);
-  --line:rgba(195,120,220,.22);--line-strong:rgba(212,138,236,.46);
-  --text:#ebd8f1;--text-dim:#bd9cc8;--text-mute:#8c6e96;
-  --accent:#bc4be2;--accent-2:#7fa38c;--on-accent:#18091d;
-  --ok:#6fbf95;--warn:#be5cdf;--bad:#d97e76;
-  --nav-bg:rgba(17,9,20,.84);--accent-soft:rgba(188,75,226,.13);
-  --advice-bg:linear-gradient(135deg,rgba(188,75,226,.14),rgba(17,9,20,.76));
-  --advice-line:rgba(195,120,220,.26);--danger-line:rgba(217,126,118,.42);
-  --shadow:0 16px 38px rgba(0,0,0,.55);--overlay:rgba(10,5,12,.76);
-  --unrec:#25152a;--status-bg:#0c070e;--radius:16px;color-scheme:dark;
-  --lamp:#bc4be2;--lamp-hi:#dd93f6;--washi:#e8d2ef;
+  --bg:#0c0c0e;--bg-elev:rgba(19,20,23,.80);--bg-elev-2:rgba(26,28,31,.86);
+  --line:rgba(162,167,179,.22);--line-strong:rgba(194,190,180,.46);
+  --text:#b0b4be;--text-dim:#838b9a;--text-mute:#606570;
+  --accent:#847d6c;--accent-2:#6b717d;--on-accent:#0e0f11;
+  --ok:#6d7585;--warn:#8b8371;--bad:#928b7a;
+  --nav-bg:rgba(13,14,16,.84);--accent-soft:rgba(161,155,140,.13);
+  --advice-bg:linear-gradient(135deg,rgba(161,155,140,.14),rgba(13,14,16,.76));
+  --advice-line:rgba(162,167,179,.26);--danger-line:rgba(176,171,159,.42);
+  --shadow:0 16px 38px rgba(0,0,0,.55);--overlay:rgba(8,8,9,.76);
+  --unrec:#17181c;--status-bg:#080809;--radius:16px;color-scheme:dark;
+  --lamp:#847d6c;--lamp-hi:#a7a193;--washi:#acb1bb;
 }
-html[data-game="shiden"] body{background:#120b15}
-html[data-game="shiden"] .bgfx{
-  display:block;position:fixed;inset:0;z-index:0;pointer-events:none;background-color:#120b15;
+html[data-game="sumi"] body{background:#0c0c0e}
+html[data-game="sumi"] .bgfx{
+  display:block;position:fixed;inset:0;z-index:0;pointer-events:none;background-color:#0c0c0e;
   background-image:
-    radial-gradient(90% 46% at 50% -6%, rgba(221,147,246,.20) 0%, rgba(221,147,246,.07) 38%, rgba(18,11,21,0) 72%),
-    radial-gradient(140% 90% at 50% 108%, rgba(8,4,10,.85) 0%, rgba(18,11,21,0) 60%);
+    radial-gradient(90% 46% at 50% -6%, rgba(202,199,191,.20) 0%, rgba(202,199,191,.07) 38%, rgba(14,15,18,0) 72%),
+    radial-gradient(140% 90% at 50% 108%, rgba(6,7,8,.85) 0%, rgba(14,15,18,0) 60%);
   box-shadow:inset 0 0 120px rgba(0,0,0,.45);
 }
-html[data-game="shiden"] .header{
-  border-bottom:1px solid rgba(195,120,220,.20);
-  background:linear-gradient(180deg,rgba(17,9,20,.72),rgba(17,9,20,.28) 64%,rgba(17,9,20,0));
+html[data-game="sumi"] .header{
+  border-bottom:1px solid rgba(162,167,179,.20);
+  background:linear-gradient(180deg,rgba(13,14,16,.72),rgba(13,14,16,.28) 64%,rgba(13,14,16,0));
   -webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px)}
-html[data-game="shiden"] .header h1{color:#efd9f6;text-shadow:0 0 20px rgba(188,75,226,.45),0 1px 0 rgba(0,0,0,.6)}
-html[data-game="shiden"] .header .sub{color:#9a7aa5}
-html[data-game="shiden"] .card{
-  background:linear-gradient(180deg,rgba(30,16,34,.60),rgba(16,9,19,.70));
-  border:1px solid rgba(195,120,220,.20);border-radius:16px;
-  box-shadow:0 18px 40px rgba(0,0,0,.5),inset 0 1px 0 rgba(221,147,246,.10);
+html[data-game="sumi"] .header h1{color:#b2b7c0;text-shadow:0 0 20px rgba(161,155,140,.45),0 1px 0 rgba(0,0,0,.6)}
+html[data-game="sumi"] .header .sub{color:#686f7e}
+html[data-game="sumi"] .card{
+  background:linear-gradient(180deg,rgba(22,24,28,.60),rgba(13,14,15,.70));
+  border:1px solid rgba(162,167,179,.20);border-radius:16px;
+  box-shadow:0 18px 40px rgba(0,0,0,.5),inset 0 1px 0 rgba(202,199,191,.10);
   -webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px)}
-html[data-game="shiden"] .card h2{color:#e6ccef;padding-left:12px;position:relative}
-html[data-game="shiden"] .card h2::before{content:'';position:absolute;left:0;top:.16em;bottom:.16em;width:2px;border-radius:2px;
+html[data-game="sumi"] .card h2{color:#a9afb9;padding-left:12px;position:relative}
+html[data-game="sumi"] .card h2::before{content:'';position:absolute;left:0;top:.16em;bottom:.16em;width:2px;border-radius:2px;
   background:linear-gradient(180deg,var(--lamp-hi),var(--lamp) 55%,var(--accent-2));
-  box-shadow:0 0 10px rgba(188,75,226,.55)}
-html[data-game="shiden"] .btn{
-  background:linear-gradient(180deg,rgba(48,26,56,.78),rgba(24,13,28,.82));
-  border:1px solid rgba(195,120,220,.24);color:#e3c6ec;border-radius:13px;
-  box-shadow:0 5px 16px rgba(0,0,0,.4),inset 0 1px 0 rgba(221,147,246,.10)}
-html[data-game="shiden"] .btn.primary{
-  background:linear-gradient(180deg,#dd93f6,#b23ed9 62%,#9228b6);
-  border:1px solid rgba(221,147,246,.55);color:#18091d;font-weight:700;
-  box-shadow:0 10px 26px rgba(155,50,190,.38),inset 0 1px 0 rgba(255,255,255,.5)}
-html[data-game="shiden"] .btn.danger{color:#efa09a;border-color:var(--danger-line);background:linear-gradient(180deg,rgba(66,28,26,.72),rgba(30,14,12,.78))}
-html[data-game="shiden"] .btn.ghost{background:transparent;border-color:rgba(195,120,220,.26)}
-html[data-game="shiden"] .chip{background:rgba(255,255,255,.05);border-color:var(--line);color:#bd9cc8}
-html[data-game="shiden"] .seg{background:rgba(16,8,18,.64);border:1px solid rgba(195,120,220,.22);border-radius:13px;
+  box-shadow:0 0 10px rgba(161,155,140,.55)}
+html[data-game="sumi"] .btn{
+  background:linear-gradient(180deg,rgba(37,40,45,.78),rgba(18,20,23,.82));
+  border:1px solid rgba(162,167,179,.24);color:#a5abb6;border-radius:13px;
+  box-shadow:0 5px 16px rgba(0,0,0,.4),inset 0 1px 0 rgba(202,199,191,.10)}
+html[data-game="sumi"] .btn.primary{
+  background:linear-gradient(180deg,#a7a193,#7b7464 62%,#625c50);
+  border:1px solid rgba(202,199,191,.55);color:#0e0f11;font-weight:700;
+  box-shadow:0 10px 26px rgba(108,116,132,.38),inset 0 1px 0 rgba(255,255,255,.5)}
+html[data-game="sumi"] .btn.danger{color:#a7a193;border-color:var(--danger-line);background:linear-gradient(180deg,rgba(51,48,41,.72),rgba(23,22,19,.78))}
+html[data-game="sumi"] .btn.ghost{background:transparent;border-color:rgba(162,167,179,.26)}
+html[data-game="sumi"] .chip{background:rgba(255,255,255,.05);border-color:var(--line);color:#838b9a}
+html[data-game="sumi"] .seg{background:rgba(12,13,14,.64);border:1px solid rgba(162,167,179,.22);border-radius:13px;
   -webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px)}
-html[data-game="shiden"] .seg button{color:#8c6e96;border-radius:10px;font-family:var(--gserif);letter-spacing:.05em}
-html[data-game="shiden"] .seg button.on{background:linear-gradient(180deg,rgba(133,52,160,.66),rgba(79,28,96,.66));
-  color:#efd9f6;outline:1px solid rgba(212,138,236,.45);box-shadow:0 0 18px rgba(188,75,226,.25)}
-html[data-game="shiden"] .group-tab{background:rgba(21,11,24,.68);border:1px solid rgba(195,120,220,.22);
-  color:#b38cc0;font-family:var(--gserif);letter-spacing:.04em;
+html[data-game="sumi"] .seg button{color:#606570;border-radius:10px;font-family:var(--gserif);letter-spacing:.05em}
+html[data-game="sumi"] .seg button.on{background:linear-gradient(180deg,rgba(95,102,117,.66),rgba(56,60,68,.66));
+  color:#b2b7c0;outline:1px solid rgba(194,190,180,.45);box-shadow:0 0 18px rgba(161,155,140,.25)}
+html[data-game="sumi"] .group-tab{background:rgba(16,17,19,.68);border:1px solid rgba(162,167,179,.22);
+  color:#798191;font-family:var(--gserif);letter-spacing:.04em;
   -webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px)}
-html[data-game="shiden"] .group-tab.active{background:linear-gradient(180deg,#dd93f6,#b23ed9);color:#18091d;border-color:rgba(221,147,246,.6)}
-html[data-game="shiden"] .nav{
-  background:linear-gradient(180deg,rgba(19,10,22,.62),rgba(8,4,10,.94));
-  border-top:1px solid rgba(212,138,236,.34);
-  box-shadow:0 -16px 38px rgba(0,0,0,.62),inset 0 1px 0 rgba(221,147,246,.10);
+html[data-game="sumi"] .group-tab.active{background:linear-gradient(180deg,#a7a193,#7b7464);color:#0e0f11;border-color:rgba(202,199,191,.6)}
+html[data-game="sumi"] .nav{
+  background:linear-gradient(180deg,rgba(14,15,18,.62),rgba(6,7,8,.94));
+  border-top:1px solid rgba(194,190,180,.34);
+  box-shadow:0 -16px 38px rgba(0,0,0,.62),inset 0 1px 0 rgba(202,199,191,.10);
   -webkit-backdrop-filter:blur(20px) saturate(1.1);backdrop-filter:blur(20px) saturate(1.1)}
-html[data-game="shiden"] .nav button{color:#8c6e96;position:relative;font-family:var(--gserif);letter-spacing:.09em}
-html[data-game="shiden"] .nav button.active{color:#efd9f6;text-shadow:0 0 14px rgba(188,75,226,.75)}
-html[data-game="shiden"] .nav button.active svg{filter:drop-shadow(0 0 8px rgba(188,75,226,.8))}
-html[data-game="shiden"] .nav button.active::before{content:'';position:absolute;top:0;left:50%;
+html[data-game="sumi"] .nav button{color:#606570;position:relative;font-family:var(--gserif);letter-spacing:.09em}
+html[data-game="sumi"] .nav button.active{color:#b2b7c0;text-shadow:0 0 14px rgba(161,155,140,.75)}
+html[data-game="sumi"] .nav button.active svg{filter:drop-shadow(0 0 8px rgba(161,155,140,.8))}
+html[data-game="sumi"] .nav button.active::before{content:'';position:absolute;top:0;left:50%;
   transform:translateX(-50%);width:30px;height:2px;border-radius:0 0 4px 4px;
-  background:linear-gradient(90deg,rgba(188,75,226,0),#dd93f6 50%,rgba(188,75,226,0));
-  box-shadow:0 0 14px rgba(188,75,226,.9)}
-html[data-game="shiden"] .now-card{
-  background:linear-gradient(160deg,rgba(33,17,38,.62),rgba(16,9,19,.72));
-  border:1px solid rgba(195,120,220,.24);border-radius:18px;
-  box-shadow:0 20px 46px rgba(0,0,0,.5),inset 0 1px 0 rgba(221,147,246,.12);
+  background:linear-gradient(90deg,rgba(161,155,140,0),#a7a193 50%,rgba(161,155,140,0));
+  box-shadow:0 0 14px rgba(161,155,140,.9)}
+html[data-game="sumi"] .now-card{
+  background:linear-gradient(160deg,rgba(25,27,30,.62),rgba(13,14,15,.72));
+  border:1px solid rgba(162,167,179,.24);border-radius:18px;
+  box-shadow:0 20px 46px rgba(0,0,0,.5),inset 0 1px 0 rgba(202,199,191,.12);
   -webkit-backdrop-filter:blur(16px);backdrop-filter:blur(16px)}
-html[data-game="shiden"] .now-label{color:#8c6e96}
-html[data-game="shiden"] .now-name{color:#efd9f6;font-family:var(--gserif);font-weight:600;letter-spacing:.04em}
-html[data-game="shiden"] .now-time{font-family:var(--gnum);font-weight:600;color:#f1dcf8;letter-spacing:.04em;
-  text-shadow:0 0 24px rgba(188,75,226,.5)}
-html[data-game="shiden"] .now-sub{color:#bd9cc8}
-html[data-game="shiden"] .stat{
-  background:linear-gradient(180deg,rgba(30,16,34,.56),rgba(16,9,19,.66));
-  border:1px solid rgba(195,120,220,.20);border-radius:16px;
-  box-shadow:0 10px 26px rgba(0,0,0,.42),inset 0 1px 0 rgba(221,147,246,.09);
+html[data-game="sumi"] .now-label{color:#606570}
+html[data-game="sumi"] .now-name{color:#b2b7c0;font-family:var(--gserif);font-weight:600;letter-spacing:.04em}
+html[data-game="sumi"] .now-time{font-family:var(--gnum);font-weight:600;color:#b4b9c2;letter-spacing:.04em;
+  text-shadow:0 0 24px rgba(161,155,140,.5)}
+html[data-game="sumi"] .now-sub{color:#838b9a}
+html[data-game="sumi"] .stat{
+  background:linear-gradient(180deg,rgba(22,24,28,.56),rgba(13,14,15,.66));
+  border:1px solid rgba(162,167,179,.20);border-radius:16px;
+  box-shadow:0 10px 26px rgba(0,0,0,.42),inset 0 1px 0 rgba(202,199,191,.09);
   -webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px)}
-html[data-game="shiden"] .stat .label{color:#8c6e96}
-html[data-game="shiden"] .stat .value{color:#ecd6f4;font-family:var(--gnum);letter-spacing:.03em}
-html[data-game="shiden"] .stat .sub{color:#bd9cc8}
-html[data-game="shiden"] .pill{border-color:rgba(195,120,220,.22);background:rgba(255,255,255,.05)}
-html[data-game="shiden"] .hint{color:#8c6e96}
-html[data-game="shiden"] .sync-badge{color:#bd9cc8}
-html[data-game="shiden"] .flip{background:linear-gradient(180deg,rgba(30,16,34,.62),rgba(16,9,19,.72));border-color:rgba(195,120,220,.24)}
-html[data-game="shiden"] .hist{border-bottom-color:rgba(195,120,220,.16)}
-html[data-game="shiden"] .act-btn{background:rgba(24,13,28,.58);border-color:rgba(195,120,220,.20);
+html[data-game="sumi"] .stat .label{color:#606570}
+html[data-game="sumi"] .stat .value{color:#b0b5be;font-family:var(--gnum);letter-spacing:.03em}
+html[data-game="sumi"] .stat .sub{color:#838b9a}
+html[data-game="sumi"] .pill{border-color:rgba(162,167,179,.22);background:rgba(255,255,255,.05)}
+html[data-game="sumi"] .hint{color:#606570}
+html[data-game="sumi"] .sync-badge{color:#838b9a}
+html[data-game="sumi"] .flip{background:linear-gradient(180deg,rgba(22,24,28,.62),rgba(13,14,15,.72));border-color:rgba(162,167,179,.24)}
+html[data-game="sumi"] .hist{border-bottom-color:rgba(162,167,179,.16)}
+html[data-game="sumi"] .act-btn{background:rgba(18,20,23,.58);border-color:rgba(162,167,179,.20);
   -webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px)}
-html[data-game="shiden"] .act-btn.current{border-color:var(--lamp);background:rgba(188,75,226,.15);
-  box-shadow:0 0 20px rgba(188,75,226,.24)}
-html[data-game="shiden"] input,html[data-game="shiden"] select,html[data-game="shiden"] textarea{
-  background:rgba(16,9,19,.74);border:1px solid rgba(195,120,220,.24);border-radius:12px;color:var(--text)}
-html[data-game="shiden"] .dcard{background:rgba(21,11,24,.72);border-color:rgba(195,120,220,.22)}
+html[data-game="sumi"] .act-btn.current{border-color:var(--lamp);background:rgba(161,155,140,.15);
+  box-shadow:0 0 20px rgba(161,155,140,.24)}
+html[data-game="sumi"] input,html[data-game="sumi"] select,html[data-game="sumi"] textarea{
+  background:rgba(13,14,15,.74);border:1px solid rgba(162,167,179,.24);border-radius:12px;color:var(--text)}
+html[data-game="sumi"] .dcard{background:rgba(16,17,19,.72);border-color:rgba(162,167,179,.22)}
 
 /* ―― 夜灯・昼（わざ寅色の和紙） ―― */
-html[data-game="shiden"][data-theme="light"]{
-  --bg:#eddff2;--bg-elev:rgba(252,244,255,.90);--bg-elev-2:rgba(243,228,248,.94);
-  --line:rgba(112,68,126,.30);--line-strong:rgba(112,68,126,.52);
-  --text:#201324;--text-dim:#513f57;--text-mute:#7d6385;
-  --accent:#851ca8;--accent-2:#4f7a68;--on-accent:#fcf1ff;
-  --ok:#2f7d5f;--warn:#892ca8;--bad:#b5493d;
-  --nav-bg:rgba(246,233,250,.86);--accent-soft:rgba(133,28,168,.10);
-  --advice-bg:linear-gradient(135deg,rgba(133,28,168,.12),rgba(252,244,255,.80));
-  --advice-line:rgba(112,68,126,.30);--danger-line:#cc9edc;
-  --shadow:0 12px 30px rgba(83,44,96,.14);--overlay:rgba(38,24,43,.42);
-  --unrec:#dec4e6;--status-bg:#201324;color-scheme:light;
+html[data-game="sumi"][data-theme="light"]{
+  --bg:#b3b8c1;--bg-elev:rgba(249,249,250,.90);--bg-elev-2:rgba(236,237,240,.94);
+  --line:rgba(87,94,107,.30);--line-strong:rgba(87,94,107,.52);
+  --text:#141518;--text-dim:#373a41;--text-mute:#565b64;
+  --accent:#565247;--accent-2:#484e58;--on-accent:#c1c5cc;
+  --ok:#3e434c;--warn:#4c525d;--bad:#6a6557;
+  --nav-bg:rgba(240,241,243,.86);--accent-soft:rgba(108,102,88,.10);
+  --advice-bg:linear-gradient(135deg,rgba(108,102,88,.12),rgba(249,249,250,.80));
+  --advice-line:rgba(87,94,107,.30);--danger-line:#8d94a2;
+  --shadow:0 12px 30px rgba(63,68,77,.14);--overlay:rgba(30,32,37,.42);
+  --unrec:#a2a8b3;--status-bg:#141518;color-scheme:light;
 }
-html[data-game="shiden"][data-theme="light"] body{background:#eddff2}
-html[data-game="shiden"][data-theme="light"] .bgfx{
-  display:block;position:fixed;inset:0;z-index:0;pointer-events:none;background-color:#eddff2;
+html[data-game="sumi"][data-theme="light"] body{background:#b3b8c1}
+html[data-game="sumi"][data-theme="light"] .bgfx{
+  display:block;position:fixed;inset:0;z-index:0;pointer-events:none;background-color:#b3b8c1;
   background-image:
-    radial-gradient(90% 46% at 50% -6%, rgba(245,214,255,.85) 0%, rgba(238,200,250,.35) 40%, rgba(237,223,242,0) 74%),
-    radial-gradient(140% 90% at 50% 110%, rgba(159,102,178,.16) 0%, rgba(237,223,242,0) 60%);
+    radial-gradient(90% 46% at 50% -6%, rgba(232,234,237,.85) 0%, rgba(222,224,228,.35) 40%, rgba(230,232,235,0) 74%),
+    radial-gradient(140% 90% at 50% 110%, rgba(129,136,152,.16) 0%, rgba(230,232,235,0) 60%);
 }
-html[data-game="shiden"][data-theme="light"] .header{border-bottom:1px solid rgba(112,68,126,.24);background:linear-gradient(180deg,rgba(246,233,250,.9),rgba(246,233,250,.4) 64%,rgba(246,233,250,0))}
-html[data-game="shiden"][data-theme="light"] .header h1{color:#25142a;text-shadow:none}
-html[data-game="shiden"][data-theme="light"] .header .sub{color:#7d6385}
-html[data-game="shiden"][data-theme="light"] .card{background:rgba(252,244,255,.86);border:1px solid rgba(112,68,126,.26);box-shadow:0 10px 26px rgba(83,44,96,.10)}
-html[data-game="shiden"][data-theme="light"] .card h2{color:#2d1a33}
-html[data-game="shiden"][data-theme="light"] .btn{background:linear-gradient(180deg,#f7eafb,#e8d0f0);border:1px solid rgba(112,68,126,.34);color:#34203a}
-html[data-game="shiden"][data-theme="light"] .btn.primary{background:linear-gradient(180deg,#a63ec9,#851ca8);border-color:rgba(133,28,168,.6);color:#fcf1ff}
-html[data-game="shiden"][data-theme="light"] .btn.ghost{background:transparent}
-html[data-game="shiden"][data-theme="light"] .seg{background:rgba(239,224,244,.8);border:1px solid rgba(112,68,126,.26)}
-html[data-game="shiden"][data-theme="light"] .seg button{color:#7d6385}
-html[data-game="shiden"][data-theme="light"] .seg button.on{background:linear-gradient(180deg,#a63ec9,#851ca8);color:#fcf1ff;outline:1px solid rgba(133,28,168,.5)}
-html[data-game="shiden"][data-theme="light"] .nav{background:linear-gradient(180deg,rgba(246,233,250,.92),rgba(233,212,240,.96));border-top:1px solid rgba(112,68,126,.34)}
-html[data-game="shiden"][data-theme="light"] .nav button{color:#7d6385}
-html[data-game="shiden"][data-theme="light"] .nav button.active{color:#25142a;text-shadow:none}
-html[data-game="shiden"][data-theme="light"] .nav button.active::before{background:linear-gradient(90deg,rgba(133,28,168,0),#851ca8 50%,rgba(133,28,168,0))}
-html[data-game="shiden"][data-theme="light"] .now-time{color:#25142a;text-shadow:none}
-html[data-game="shiden"][data-theme="light"] .stat .value{color:#25142a}
-html[data-game="shiden"][data-theme="light"] input,html[data-game="shiden"][data-theme="light"] select,html[data-game="shiden"][data-theme="light"] textarea{background:rgba(252,244,255,.9);border:1px solid rgba(112,68,126,.32);color:var(--text)}
+html[data-game="sumi"][data-theme="light"] .header{border-bottom:1px solid rgba(87,94,107,.24);background:linear-gradient(180deg,rgba(240,241,243,.9),rgba(240,241,243,.4) 64%,rgba(240,241,243,0))}
+html[data-game="sumi"][data-theme="light"] .header h1{color:#16181b;text-shadow:none}
+html[data-game="sumi"][data-theme="light"] .header .sub{color:#565b64}
+html[data-game="sumi"][data-theme="light"] .card{background:rgba(249,249,250,.86);border:1px solid rgba(87,94,107,.26);box-shadow:0 10px 26px rgba(63,68,77,.10)}
+html[data-game="sumi"][data-theme="light"] .card h2{color:#1c1e22}
+html[data-game="sumi"][data-theme="light"] .btn{background:linear-gradient(180deg,#bcc0c8,#acb1bb);border:1px solid rgba(87,94,107,.34);color:#202328}
+html[data-game="sumi"][data-theme="light"] .btn.primary{background:linear-gradient(180deg,#5f6674,#565247);border-color:rgba(108,102,88,.6);color:#c1c5cc}
+html[data-game="sumi"][data-theme="light"] .btn.ghost{background:transparent}
+html[data-game="sumi"][data-theme="light"] .seg{background:rgba(232,233,236,.8);border:1px solid rgba(87,94,107,.26)}
+html[data-game="sumi"][data-theme="light"] .seg button{color:#565b64}
+html[data-game="sumi"][data-theme="light"] .seg button.on{background:linear-gradient(180deg,#5f6674,#565247);color:#c1c5cc;outline:1px solid rgba(108,102,88,.5)}
+html[data-game="sumi"][data-theme="light"] .nav{background:linear-gradient(180deg,rgba(240,241,243,.92),rgba(223,225,229,.96));border-top:1px solid rgba(87,94,107,.34)}
+html[data-game="sumi"][data-theme="light"] .nav button{color:#565b64}
+html[data-game="sumi"][data-theme="light"] .nav button.active{color:#16181b;text-shadow:none}
+html[data-game="sumi"][data-theme="light"] .nav button.active::before{background:linear-gradient(90deg,rgba(108,102,88,0),#565247 50%,rgba(108,102,88,0))}
+html[data-game="sumi"][data-theme="light"] .now-time{color:#16181b;text-shadow:none}
+html[data-game="sumi"][data-theme="light"] .stat .value{color:#16181b}
+html[data-game="sumi"][data-theme="light"] input,html[data-game="sumi"][data-theme="light"] select,html[data-game="sumi"][data-theme="light"] textarea{background:rgba(249,249,250,.9);border:1px solid rgba(87,94,107,.32);color:var(--text)}
+/* ===== sumi（墨） ===== */
+html[data-game="sumi"]{--gserif:"Shippori Mincho B1","Yu Mincho","YuMincho","Hiragino Mincho ProN","Noto Serif JP",serif;--glat:"Playfair Display","Times New Roman",Georgia,serif;--gnum:"Playfair Display","Times New Roman",Georgia,serif;--accent:#c8a866;--accent-soft:rgba(200,168,102,.12)}
+html[data-game="sumi"] .dcard.on{border-color:#c8a866;box-shadow:0 0 0 1px #c8a866}</style><style id="gm-theme-hi">/* StudyTime テーマ: 緋 - 緋色の闇と金（ダーク） */
+/* ==================================================================
+   夜灯（やあかり）― 墨と灯りの勉強机テーマ（ダーク既定・ライト別版）
+   ================================================================== */
+@import url("https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&family=Marcellus&family=Shippori+Mincho:wght@400;500;600;700&display=swap");
+html[data-game="hi"]{
+  --gserif:"Shippori Mincho","Yu Mincho","YuMincho","Hiragino Mincho ProN","Noto Serif JP",serif;
+  --glat:"Marcellus","Cinzel",Georgia,serif;
+  --gnum:"Cinzel",ui-monospace,Menlo,monospace;
+  --bg:#150b0d;--bg-elev:rgba(28,14,17,.80);--bg-elev-2:rgba(38,19,24,.86);
+  --line:rgba(217,189,123,.22);--line-strong:rgba(224,202,150,.46);
+  --text:#f1d8de;--text-dim:#c89ca7;--text-mute:#966e78;
+  --accent:#d0ad5d;--accent-2:#a37f88;--on-accent:#1d090e;
+  --ok:#c5a969;--warn:#d3b368;--bad:#d8bb77;
+  --nav-bg:rgba(20,9,12,.84);--accent-soft:rgba(208,173,93,.13);
+  --advice-bg:linear-gradient(135deg,rgba(208,173,93,.14),rgba(20,9,12,.76));
+  --advice-line:rgba(217,189,123,.26);--danger-line:rgba(216,187,119,.42);
+  --shadow:0 16px 38px rgba(0,0,0,.55);--overlay:rgba(12,5,7,.76);
+  --unrec:#2a151a;--status-bg:#0e0709;--radius:16px;color-scheme:dark;
+  --lamp:#d0ad5d;--lamp-hi:#e5d1a4;--washi:#efd2d9;
+}
+html[data-game="hi"] body{background:#150b0d}
+html[data-game="hi"] .bgfx{
+  display:block;position:fixed;inset:0;z-index:0;pointer-events:none;background-color:#150b0d;
+  background-image:
+    radial-gradient(90% 46% at 50% -6%, rgba(229,209,164,.20) 0%, rgba(229,209,164,.07) 38%, rgba(21,11,13,0) 72%),
+    radial-gradient(140% 90% at 50% 108%, rgba(10,4,5,.85) 0%, rgba(21,11,13,0) 60%);
+  box-shadow:inset 0 0 120px rgba(0,0,0,.45);
+}
+html[data-game="hi"] .header{
+  border-bottom:1px solid rgba(217,189,123,.20);
+  background:linear-gradient(180deg,rgba(20,9,12,.72),rgba(20,9,12,.28) 64%,rgba(20,9,12,0));
+  -webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px)}
+html[data-game="hi"] .header h1{color:#f6d9e0;text-shadow:0 0 20px rgba(208,173,93,.45),0 1px 0 rgba(0,0,0,.6)}
+html[data-game="hi"] .header .sub{color:#a57a85}
+html[data-game="hi"] .card{
+  background:linear-gradient(180deg,rgba(34,16,20,.60),rgba(19,9,11,.70));
+  border:1px solid rgba(217,189,123,.20);border-radius:16px;
+  box-shadow:0 18px 40px rgba(0,0,0,.5),inset 0 1px 0 rgba(229,209,164,.10);
+  -webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px)}
+html[data-game="hi"] .card h2{color:#efccd5;padding-left:12px;position:relative}
+html[data-game="hi"] .card h2::before{content:'';position:absolute;left:0;top:.16em;bottom:.16em;width:2px;border-radius:2px;
+  background:linear-gradient(180deg,var(--lamp-hi),var(--lamp) 55%,var(--accent-2));
+  box-shadow:0 0 10px rgba(208,173,93,.55)}
+html[data-game="hi"] .btn{
+  background:linear-gradient(180deg,rgba(56,26,33,.78),rgba(28,13,17,.82));
+  border:1px solid rgba(217,189,123,.24);color:#ecc6d0;border-radius:13px;
+  box-shadow:0 5px 16px rgba(0,0,0,.4),inset 0 1px 0 rgba(229,209,164,.10)}
+html[data-game="hi"] .btn.primary{
+  background:linear-gradient(180deg,#e5d1a4,#cba54c 62%,#ac8732);
+  border:1px solid rgba(229,209,164,.55);color:#1d090e;font-weight:700;
+  box-shadow:0 10px 26px rgba(186,146,54,.38),inset 0 1px 0 rgba(255,255,255,.5)}
+html[data-game="hi"] .btn.danger{color:#e5d1a4;border-color:var(--danger-line);background:linear-gradient(180deg,rgba(66,54,26,.72),rgba(30,25,12,.78))}
+html[data-game="hi"] .btn.ghost{background:transparent;border-color:rgba(217,189,123,.26)}
+html[data-game="hi"] .chip{background:rgba(255,255,255,.05);border-color:var(--line);color:#c89ca7}
+html[data-game="hi"] .seg{background:rgba(18,8,10,.64);border:1px solid rgba(217,189,123,.22);border-radius:13px;
+  -webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px)}
+html[data-game="hi"] .seg button{color:#966e78;border-radius:10px;font-family:var(--gserif);letter-spacing:.05em}
+html[data-game="hi"] .seg button.on{background:linear-gradient(180deg,rgba(164,129,48,.66),rgba(96,28,45,.66));
+  color:#f6d9e0;outline:1px solid rgba(224,202,150,.45);box-shadow:0 0 18px rgba(208,173,93,.25)}
+html[data-game="hi"] .group-tab{background:rgba(24,11,14,.68);border:1px solid rgba(217,189,123,.22);
+  color:#c08c99;font-family:var(--gserif);letter-spacing:.04em;
+  -webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px)}
+html[data-game="hi"] .group-tab.active{background:linear-gradient(180deg,#e5d1a4,#cba54c);color:#1d090e;border-color:rgba(229,209,164,.6)}
+html[data-game="hi"] .nav{
+  background:linear-gradient(180deg,rgba(22,10,13,.62),rgba(10,4,5,.94));
+  border-top:1px solid rgba(224,202,150,.34);
+  box-shadow:0 -16px 38px rgba(0,0,0,.62),inset 0 1px 0 rgba(229,209,164,.10);
+  -webkit-backdrop-filter:blur(20px) saturate(1.1);backdrop-filter:blur(20px) saturate(1.1)}
+html[data-game="hi"] .nav button{color:#966e78;position:relative;font-family:var(--gserif);letter-spacing:.09em}
+html[data-game="hi"] .nav button.active{color:#f6d9e0;text-shadow:0 0 14px rgba(208,173,93,.75)}
+html[data-game="hi"] .nav button.active svg{filter:drop-shadow(0 0 8px rgba(208,173,93,.8))}
+html[data-game="hi"] .nav button.active::before{content:'';position:absolute;top:0;left:50%;
+  transform:translateX(-50%);width:30px;height:2px;border-radius:0 0 4px 4px;
+  background:linear-gradient(90deg,rgba(208,173,93,0),#e5d1a4 50%,rgba(208,173,93,0));
+  box-shadow:0 0 14px rgba(208,173,93,.9)}
+html[data-game="hi"] .now-card{
+  background:linear-gradient(160deg,rgba(38,17,22,.62),rgba(19,9,11,.72));
+  border:1px solid rgba(217,189,123,.24);border-radius:18px;
+  box-shadow:0 20px 46px rgba(0,0,0,.5),inset 0 1px 0 rgba(229,209,164,.12);
+  -webkit-backdrop-filter:blur(16px);backdrop-filter:blur(16px)}
+html[data-game="hi"] .now-label{color:#966e78}
+html[data-game="hi"] .now-name{color:#f6d9e0;font-family:var(--gserif);font-weight:600;letter-spacing:.04em}
+html[data-game="hi"] .now-time{font-family:var(--gnum);font-weight:600;color:#f8dce3;letter-spacing:.04em;
+  text-shadow:0 0 24px rgba(208,173,93,.5)}
+html[data-game="hi"] .now-sub{color:#c89ca7}
+html[data-game="hi"] .stat{
+  background:linear-gradient(180deg,rgba(34,16,20,.56),rgba(19,9,11,.66));
+  border:1px solid rgba(217,189,123,.20);border-radius:16px;
+  box-shadow:0 10px 26px rgba(0,0,0,.42),inset 0 1px 0 rgba(229,209,164,.09);
+  -webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px)}
+html[data-game="hi"] .stat .label{color:#966e78}
+html[data-game="hi"] .stat .value{color:#f4d6de;font-family:var(--gnum);letter-spacing:.03em}
+html[data-game="hi"] .stat .sub{color:#c89ca7}
+html[data-game="hi"] .pill{border-color:rgba(217,189,123,.22);background:rgba(255,255,255,.05)}
+html[data-game="hi"] .hint{color:#966e78}
+html[data-game="hi"] .sync-badge{color:#c89ca7}
+html[data-game="hi"] .flip{background:linear-gradient(180deg,rgba(34,16,20,.62),rgba(19,9,11,.72));border-color:rgba(217,189,123,.24)}
+html[data-game="hi"] .hist{border-bottom-color:rgba(217,189,123,.16)}
+html[data-game="hi"] .act-btn{background:rgba(28,13,17,.58);border-color:rgba(217,189,123,.20);
+  -webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px)}
+html[data-game="hi"] .act-btn.current{border-color:var(--lamp);background:rgba(208,173,93,.15);
+  box-shadow:0 0 20px rgba(208,173,93,.24)}
+html[data-game="hi"] input,html[data-game="hi"] select,html[data-game="hi"] textarea{
+  background:rgba(19,9,11,.74);border:1px solid rgba(217,189,123,.24);border-radius:12px;color:var(--text)}
+html[data-game="hi"] .dcard{background:rgba(24,11,14,.72);border-color:rgba(217,189,123,.22)}
 
-</style>
+/* ―― 夜灯・昼（わざ寅色の和紙） ―― */
+html[data-game="hi"][data-theme="light"]{
+  --bg:#f2dfe4;--bg-elev:rgba(255,244,247,.90);--bg-elev-2:rgba(248,228,233,.94);
+  --line:rgba(126,68,82,.30);--line-strong:rgba(126,68,82,.52);
+  --text:#241317;--text-dim:#573f45;--text-mute:#85636c;
+  --accent:#98782c;--accent-2:#7a4f5a;--on-accent:#fff1f4;
+  --ok:#7d2f42;--warn:#a48130;--bad:#bc9436;
+  --nav-bg:rgba(250,233,237,.86);--accent-soft:rgba(152,120,44,.10);
+  --advice-bg:linear-gradient(135deg,rgba(152,120,44,.12),rgba(255,244,247,.80));
+  --advice-line:rgba(126,68,82,.30);--danger-line:#e1cb99;
+  --shadow:0 12px 30px rgba(96,44,57,.14);--overlay:rgba(43,24,29,.42);
+  --unrec:#e6c4cc;--status-bg:#241317;color-scheme:light;
+}
+html[data-game="hi"][data-theme="light"] body{background:#f2dfe4}
+html[data-game="hi"][data-theme="light"] .bgfx{
+  display:block;position:fixed;inset:0;z-index:0;pointer-events:none;background-color:#f2dfe4;
+  background-image:
+    radial-gradient(90% 46% at 50% -6%, rgba(255,214,224,.85) 0%, rgba(250,200,212,.35) 40%, rgba(242,223,228,0) 74%),
+    radial-gradient(140% 90% at 50% 110%, rgba(184,157,96,.16) 0%, rgba(242,223,228,0) 60%);
+}
+html[data-game="hi"][data-theme="light"] .header{border-bottom:1px solid rgba(126,68,82,.24);background:linear-gradient(180deg,rgba(250,233,237,.9),rgba(250,233,237,.4) 64%,rgba(250,233,237,0))}
+html[data-game="hi"][data-theme="light"] .header h1{color:#2a1419;text-shadow:none}
+html[data-game="hi"][data-theme="light"] .header .sub{color:#85636c}
+html[data-game="hi"][data-theme="light"] .card{background:rgba(255,244,247,.86);border:1px solid rgba(126,68,82,.26);box-shadow:0 10px 26px rgba(96,44,57,.10)}
+html[data-game="hi"][data-theme="light"] .card h2{color:#331a20}
+html[data-game="hi"][data-theme="light"] .btn{background:linear-gradient(180deg,#fbeaee,#f0d0d8);border:1px solid rgba(126,68,82,.34);color:#3a2026}
+html[data-game="hi"][data-theme="light"] .btn.primary{background:linear-gradient(180deg,#c79f40,#98782c);border-color:rgba(152,120,44,.6);color:#fff1f4}
+html[data-game="hi"][data-theme="light"] .btn.ghost{background:transparent}
+html[data-game="hi"][data-theme="light"] .seg{background:rgba(244,224,229,.8);border:1px solid rgba(126,68,82,.26)}
+html[data-game="hi"][data-theme="light"] .seg button{color:#85636c}
+html[data-game="hi"][data-theme="light"] .seg button.on{background:linear-gradient(180deg,#c79f40,#98782c);color:#fff1f4;outline:1px solid rgba(152,120,44,.5)}
+html[data-game="hi"][data-theme="light"] .nav{background:linear-gradient(180deg,rgba(250,233,237,.92),rgba(240,212,219,.96));border-top:1px solid rgba(126,68,82,.34)}
+html[data-game="hi"][data-theme="light"] .nav button{color:#85636c}
+html[data-game="hi"][data-theme="light"] .nav button.active{color:#2a1419;text-shadow:none}
+html[data-game="hi"][data-theme="light"] .nav button.active::before{background:linear-gradient(90deg,rgba(152,120,44,0),#98782c 50%,rgba(152,120,44,0))}
+html[data-game="hi"][data-theme="light"] .now-time{color:#2a1419;text-shadow:none}
+html[data-game="hi"][data-theme="light"] .stat .value{color:#2a1419}
+html[data-game="hi"][data-theme="light"] input,html[data-game="hi"][data-theme="light"] select,html[data-game="hi"][data-theme="light"] textarea{background:rgba(255,244,247,.9);border:1px solid rgba(126,68,82,.32);color:var(--text)}
+/* ===== hi（緋） ===== */
+html[data-game="hi"]{--gserif:"Noto Serif JP","Yu Mincho","YuMincho","Hiragino Mincho ProN","Noto Serif JP",serif;--glat:"EB Garamond","Times New Roman",Georgia,serif;--gnum:"EB Garamond","Times New Roman",Georgia,serif;--accent:#d2a26a;--accent-soft:rgba(210,162,106,.13)}
+html[data-game="hi"] .dcard.on{border-color:#d2a26a;box-shadow:0 0 0 1px #d2a26a}</style><style id="gm-theme-hisui">/* StudyTime テーマ: 翡翠 - 翡翠の深緑と香槟金（ダーク） */
+/* ==================================================================
+   夜灯（やあかり）― 墨と灯りの勉強机テーマ（ダーク既定・ライト別版）
+   ================================================================== */
+@import url("https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&family=Marcellus&family=Shippori+Mincho:wght@400;500;600;700&display=swap");
+html[data-game="hisui"]{
+  --gserif:"Shippori Mincho","Yu Mincho","YuMincho","Hiragino Mincho ProN","Noto Serif JP",serif;
+  --glat:"Marcellus","Cinzel",Georgia,serif;
+  --gnum:"Cinzel",ui-monospace,Menlo,monospace;
+  --bg:#0b1512;--bg-elev:rgba(14,28,24,.80);--bg-elev-2:rgba(19,38,33,.86);
+  --line:rgba(217,189,123,.22);--line-strong:rgba(224,202,150,.46);
+  --text:#d8f1eb;--text-dim:#9cc8bd;--text-mute:#6e968c;
+  --accent:#d0ad5d;--accent-2:#7fa39a;--on-accent:#091d18;
+  --ok:#c5a969;--warn:#d3b368;--bad:#d8bb77;
+  --nav-bg:rgba(9,20,17,.84);--accent-soft:rgba(208,173,93,.13);
+  --advice-bg:linear-gradient(135deg,rgba(208,173,93,.14),rgba(9,20,17,.76));
+  --advice-line:rgba(217,189,123,.26);--danger-line:rgba(216,187,119,.42);
+  --shadow:0 16px 38px rgba(0,0,0,.55);--overlay:rgba(5,12,10,.76);
+  --unrec:#152a25;--status-bg:#070e0c;--radius:16px;color-scheme:dark;
+  --lamp:#d0ad5d;--lamp-hi:#e5d1a4;--washi:#d2efe8;
+}
+html[data-game="hisui"] body{background:#0b1512}
+html[data-game="hisui"] .bgfx{
+  display:block;position:fixed;inset:0;z-index:0;pointer-events:none;background-color:#0b1512;
+  background-image:
+    radial-gradient(90% 46% at 50% -6%, rgba(229,209,164,.20) 0%, rgba(229,209,164,.07) 38%, rgba(11,21,18,0) 72%),
+    radial-gradient(140% 90% at 50% 108%, rgba(4,10,8,.85) 0%, rgba(11,21,18,0) 60%);
+  box-shadow:inset 0 0 120px rgba(0,0,0,.45);
+}
+html[data-game="hisui"] .header{
+  border-bottom:1px solid rgba(217,189,123,.20);
+  background:linear-gradient(180deg,rgba(9,20,17,.72),rgba(9,20,17,.28) 64%,rgba(9,20,17,0));
+  -webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px)}
+html[data-game="hisui"] .header h1{color:#d9f6ef;text-shadow:0 0 20px rgba(208,173,93,.45),0 1px 0 rgba(0,0,0,.6)}
+html[data-game="hisui"] .header .sub{color:#7aa59a}
+html[data-game="hisui"] .card{
+  background:linear-gradient(180deg,rgba(16,34,30,.60),rgba(9,19,16,.70));
+  border:1px solid rgba(217,189,123,.20);border-radius:16px;
+  box-shadow:0 18px 40px rgba(0,0,0,.5),inset 0 1px 0 rgba(229,209,164,.10);
+  -webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px)}
+html[data-game="hisui"] .card h2{color:#ccefe6;padding-left:12px;position:relative}
+html[data-game="hisui"] .card h2::before{content:'';position:absolute;left:0;top:.16em;bottom:.16em;width:2px;border-radius:2px;
+  background:linear-gradient(180deg,var(--lamp-hi),var(--lamp) 55%,var(--accent-2));
+  box-shadow:0 0 10px rgba(208,173,93,.55)}
+html[data-game="hisui"] .btn{
+  background:linear-gradient(180deg,rgba(26,56,48,.78),rgba(13,28,24,.82));
+  border:1px solid rgba(217,189,123,.24);color:#c6ece3;border-radius:13px;
+  box-shadow:0 5px 16px rgba(0,0,0,.4),inset 0 1px 0 rgba(229,209,164,.10)}
+html[data-game="hisui"] .btn.primary{
+  background:linear-gradient(180deg,#e5d1a4,#cba54c 62%,#ac8732);
+  border:1px solid rgba(229,209,164,.55);color:#091d18;font-weight:700;
+  box-shadow:0 10px 26px rgba(186,146,54,.38),inset 0 1px 0 rgba(255,255,255,.5)}
+html[data-game="hisui"] .btn.danger{color:#e5d1a4;border-color:var(--danger-line);background:linear-gradient(180deg,rgba(66,54,26,.72),rgba(30,25,12,.78))}
+html[data-game="hisui"] .btn.ghost{background:transparent;border-color:rgba(217,189,123,.26)}
+html[data-game="hisui"] .chip{background:rgba(255,255,255,.05);border-color:var(--line);color:#9cc8bd}
+html[data-game="hisui"] .seg{background:rgba(8,18,16,.64);border:1px solid rgba(217,189,123,.22);border-radius:13px;
+  -webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px)}
+html[data-game="hisui"] .seg button{color:#6e968c;border-radius:10px;font-family:var(--gserif);letter-spacing:.05em}
+html[data-game="hisui"] .seg button.on{background:linear-gradient(180deg,rgba(164,129,48,.66),rgba(28,96,79,.66));
+  color:#d9f6ef;outline:1px solid rgba(224,202,150,.45);box-shadow:0 0 18px rgba(208,173,93,.25)}
+html[data-game="hisui"] .group-tab{background:rgba(11,24,21,.68);border:1px solid rgba(217,189,123,.22);
+  color:#8cc0b3;font-family:var(--gserif);letter-spacing:.04em;
+  -webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px)}
+html[data-game="hisui"] .group-tab.active{background:linear-gradient(180deg,#e5d1a4,#cba54c);color:#091d18;border-color:rgba(229,209,164,.6)}
+html[data-game="hisui"] .nav{
+  background:linear-gradient(180deg,rgba(10,22,19,.62),rgba(4,10,8,.94));
+  border-top:1px solid rgba(224,202,150,.34);
+  box-shadow:0 -16px 38px rgba(0,0,0,.62),inset 0 1px 0 rgba(229,209,164,.10);
+  -webkit-backdrop-filter:blur(20px) saturate(1.1);backdrop-filter:blur(20px) saturate(1.1)}
+html[data-game="hisui"] .nav button{color:#6e968c;position:relative;font-family:var(--gserif);letter-spacing:.09em}
+html[data-game="hisui"] .nav button.active{color:#d9f6ef;text-shadow:0 0 14px rgba(208,173,93,.75)}
+html[data-game="hisui"] .nav button.active svg{filter:drop-shadow(0 0 8px rgba(208,173,93,.8))}
+html[data-game="hisui"] .nav button.active::before{content:'';position:absolute;top:0;left:50%;
+  transform:translateX(-50%);width:30px;height:2px;border-radius:0 0 4px 4px;
+  background:linear-gradient(90deg,rgba(208,173,93,0),#e5d1a4 50%,rgba(208,173,93,0));
+  box-shadow:0 0 14px rgba(208,173,93,.9)}
+html[data-game="hisui"] .now-card{
+  background:linear-gradient(160deg,rgba(17,38,33,.62),rgba(9,19,16,.72));
+  border:1px solid rgba(217,189,123,.24);border-radius:18px;
+  box-shadow:0 20px 46px rgba(0,0,0,.5),inset 0 1px 0 rgba(229,209,164,.12);
+  -webkit-backdrop-filter:blur(16px);backdrop-filter:blur(16px)}
+html[data-game="hisui"] .now-label{color:#6e968c}
+html[data-game="hisui"] .now-name{color:#d9f6ef;font-family:var(--gserif);font-weight:600;letter-spacing:.04em}
+html[data-game="hisui"] .now-time{font-family:var(--gnum);font-weight:600;color:#dcf8f1;letter-spacing:.04em;
+  text-shadow:0 0 24px rgba(208,173,93,.5)}
+html[data-game="hisui"] .now-sub{color:#9cc8bd}
+html[data-game="hisui"] .stat{
+  background:linear-gradient(180deg,rgba(16,34,30,.56),rgba(9,19,16,.66));
+  border:1px solid rgba(217,189,123,.20);border-radius:16px;
+  box-shadow:0 10px 26px rgba(0,0,0,.42),inset 0 1px 0 rgba(229,209,164,.09);
+  -webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px)}
+html[data-game="hisui"] .stat .label{color:#6e968c}
+html[data-game="hisui"] .stat .value{color:#d6f4ec;font-family:var(--gnum);letter-spacing:.03em}
+html[data-game="hisui"] .stat .sub{color:#9cc8bd}
+html[data-game="hisui"] .pill{border-color:rgba(217,189,123,.22);background:rgba(255,255,255,.05)}
+html[data-game="hisui"] .hint{color:#6e968c}
+html[data-game="hisui"] .sync-badge{color:#9cc8bd}
+html[data-game="hisui"] .flip{background:linear-gradient(180deg,rgba(16,34,30,.62),rgba(9,19,16,.72));border-color:rgba(217,189,123,.24)}
+html[data-game="hisui"] .hist{border-bottom-color:rgba(217,189,123,.16)}
+html[data-game="hisui"] .act-btn{background:rgba(13,28,24,.58);border-color:rgba(217,189,123,.20);
+  -webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px)}
+html[data-game="hisui"] .act-btn.current{border-color:var(--lamp);background:rgba(208,173,93,.15);
+  box-shadow:0 0 20px rgba(208,173,93,.24)}
+html[data-game="hisui"] input,html[data-game="hisui"] select,html[data-game="hisui"] textarea{
+  background:rgba(9,19,16,.74);border:1px solid rgba(217,189,123,.24);border-radius:12px;color:var(--text)}
+html[data-game="hisui"] .dcard{background:rgba(11,24,21,.72);border-color:rgba(217,189,123,.22)}
+
+/* ―― 夜灯・昼（わざ寅色の和紙） ―― */
+html[data-game="hisui"][data-theme="light"]{
+  --bg:#dff2ed;--bg-elev:rgba(244,255,252,.90);--bg-elev-2:rgba(228,248,243,.94);
+  --line:rgba(68,126,112,.30);--line-strong:rgba(68,126,112,.52);
+  --text:#132420;--text-dim:#3f5751;--text-mute:#63857d;
+  --accent:#98782c;--accent-2:#4f7a6f;--on-accent:#f1fffc;
+  --ok:#2f7d6a;--warn:#a48130;--bad:#bc9436;
+  --nav-bg:rgba(233,250,246,.86);--accent-soft:rgba(152,120,44,.10);
+  --advice-bg:linear-gradient(135deg,rgba(152,120,44,.12),rgba(244,255,252,.80));
+  --advice-line:rgba(68,126,112,.30);--danger-line:#e1cb99;
+  --shadow:0 12px 30px rgba(44,96,83,.14);--overlay:rgba(24,43,38,.42);
+  --unrec:#c4e6de;--status-bg:#132420;color-scheme:light;
+}
+html[data-game="hisui"][data-theme="light"] body{background:#dff2ed}
+html[data-game="hisui"][data-theme="light"] .bgfx{
+  display:block;position:fixed;inset:0;z-index:0;pointer-events:none;background-color:#dff2ed;
+  background-image:
+    radial-gradient(90% 46% at 50% -6%, rgba(214,255,245,.85) 0%, rgba(200,250,238,.35) 40%, rgba(223,242,237,0) 74%),
+    radial-gradient(140% 90% at 50% 110%, rgba(184,157,96,.16) 0%, rgba(223,242,237,0) 60%);
+}
+html[data-game="hisui"][data-theme="light"] .header{border-bottom:1px solid rgba(68,126,112,.24);background:linear-gradient(180deg,rgba(233,250,246,.9),rgba(233,250,246,.4) 64%,rgba(233,250,246,0))}
+html[data-game="hisui"][data-theme="light"] .header h1{color:#142a25;text-shadow:none}
+html[data-game="hisui"][data-theme="light"] .header .sub{color:#63857d}
+html[data-game="hisui"][data-theme="light"] .card{background:rgba(244,255,252,.86);border:1px solid rgba(68,126,112,.26);box-shadow:0 10px 26px rgba(44,96,83,.10)}
+html[data-game="hisui"][data-theme="light"] .card h2{color:#1a332d}
+html[data-game="hisui"][data-theme="light"] .btn{background:linear-gradient(180deg,#eafbf7,#d0f0e8);border:1px solid rgba(68,126,112,.34);color:#203a34}
+html[data-game="hisui"][data-theme="light"] .btn.primary{background:linear-gradient(180deg,#c79f40,#98782c);border-color:rgba(152,120,44,.6);color:#f1fffc}
+html[data-game="hisui"][data-theme="light"] .btn.ghost{background:transparent}
+html[data-game="hisui"][data-theme="light"] .seg{background:rgba(224,244,239,.8);border:1px solid rgba(68,126,112,.26)}
+html[data-game="hisui"][data-theme="light"] .seg button{color:#63857d}
+html[data-game="hisui"][data-theme="light"] .seg button.on{background:linear-gradient(180deg,#c79f40,#98782c);color:#f1fffc;outline:1px solid rgba(152,120,44,.5)}
+html[data-game="hisui"][data-theme="light"] .nav{background:linear-gradient(180deg,rgba(233,250,246,.92),rgba(212,240,233,.96));border-top:1px solid rgba(68,126,112,.34)}
+html[data-game="hisui"][data-theme="light"] .nav button{color:#63857d}
+html[data-game="hisui"][data-theme="light"] .nav button.active{color:#142a25;text-shadow:none}
+html[data-game="hisui"][data-theme="light"] .nav button.active::before{background:linear-gradient(90deg,rgba(152,120,44,0),#98782c 50%,rgba(152,120,44,0))}
+html[data-game="hisui"][data-theme="light"] .now-time{color:#142a25;text-shadow:none}
+html[data-game="hisui"][data-theme="light"] .stat .value{color:#142a25}
+html[data-game="hisui"][data-theme="light"] input,html[data-game="hisui"][data-theme="light"] select,html[data-game="hisui"][data-theme="light"] textarea{background:rgba(244,255,252,.9);border:1px solid rgba(68,126,112,.32);color:var(--text)}
+/* ===== hisui（翡翠） ===== */
+html[data-game="hisui"]{--gserif:"Sawarabi Mincho","Yu Mincho","YuMincho","Hiragino Mincho ProN","Noto Serif JP",serif;--glat:"Forum","Times New Roman",Georgia,serif;--gnum:"Forum","Times New Roman",Georgia,serif;--accent:#cfc08e;--accent-soft:rgba(207,192,142,.12)}
+html[data-game="hisui"] .dcard.on{border-color:#cfc08e;box-shadow:0 0 0 1px #cfc08e}</style><style id="gm-theme-haku">/* StudyTime テーマ: 白亜 - 象牙の白と青銅（ライト） */
+/* ==================================================================
+   夜灯（やあかり）― 墨と灯りの勉強机テーマ（ダーク既定・ライト別版）
+   ================================================================== */
+@import url("https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&family=Marcellus&family=Shippori+Mincho:wght@400;500;600;700&display=swap");
+html[data-game="haku"]{
+  --gserif:"Shippori Mincho","Yu Mincho","YuMincho","Hiragino Mincho ProN","Noto Serif JP",serif;
+  --glat:"Marcellus","Cinzel",Georgia,serif;
+  --gnum:"Cinzel",ui-monospace,Menlo,monospace;
+  --bg:#15120b;--bg-elev:rgba(28,24,14,.80);--bg-elev-2:rgba(38,33,19,.86);
+  --line:rgba(217,189,123,.22);--line-strong:rgba(224,202,150,.46);
+  --text:#f1ebd8;--text-dim:#c8bd9c;--text-mute:#968c6e;
+  --accent:#d0ad5d;--accent-2:#a39a7f;--on-accent:#1d1809;
+  --ok:#c5a969;--warn:#d3b368;--bad:#d8bb77;
+  --nav-bg:rgba(20,17,9,.84);--accent-soft:rgba(208,173,93,.13);
+  --advice-bg:linear-gradient(135deg,rgba(208,173,93,.14),rgba(20,17,9,.76));
+  --advice-line:rgba(217,189,123,.26);--danger-line:rgba(216,187,119,.42);
+  --shadow:0 16px 38px rgba(0,0,0,.55);--overlay:rgba(12,10,5,.76);
+  --unrec:#2a2515;--status-bg:#0e0c07;--radius:16px;color-scheme:dark;
+  --lamp:#d0ad5d;--lamp-hi:#e5d1a4;--washi:#efe8d2;
+}
+html[data-game="haku"] body{background:#15120b}
+html[data-game="haku"] .bgfx{
+  display:block;position:fixed;inset:0;z-index:0;pointer-events:none;background-color:#15120b;
+  background-image:
+    radial-gradient(90% 46% at 50% -6%, rgba(229,209,164,.20) 0%, rgba(229,209,164,.07) 38%, rgba(21,18,11,0) 72%),
+    radial-gradient(140% 90% at 50% 108%, rgba(10,8,4,.85) 0%, rgba(21,18,11,0) 60%);
+  box-shadow:inset 0 0 120px rgba(0,0,0,.45);
+}
+html[data-game="haku"] .header{
+  border-bottom:1px solid rgba(217,189,123,.20);
+  background:linear-gradient(180deg,rgba(20,17,9,.72),rgba(20,17,9,.28) 64%,rgba(20,17,9,0));
+  -webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px)}
+html[data-game="haku"] .header h1{color:#f6efd9;text-shadow:0 0 20px rgba(208,173,93,.45),0 1px 0 rgba(0,0,0,.6)}
+html[data-game="haku"] .header .sub{color:#a59a7a}
+html[data-game="haku"] .card{
+  background:linear-gradient(180deg,rgba(34,30,16,.60),rgba(19,16,9,.70));
+  border:1px solid rgba(217,189,123,.20);border-radius:16px;
+  box-shadow:0 18px 40px rgba(0,0,0,.5),inset 0 1px 0 rgba(229,209,164,.10);
+  -webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px)}
+html[data-game="haku"] .card h2{color:#efe6cc;padding-left:12px;position:relative}
+html[data-game="haku"] .card h2::before{content:'';position:absolute;left:0;top:.16em;bottom:.16em;width:2px;border-radius:2px;
+  background:linear-gradient(180deg,var(--lamp-hi),var(--lamp) 55%,var(--accent-2));
+  box-shadow:0 0 10px rgba(208,173,93,.55)}
+html[data-game="haku"] .btn{
+  background:linear-gradient(180deg,rgba(56,48,26,.78),rgba(28,24,13,.82));
+  border:1px solid rgba(217,189,123,.24);color:#ece3c6;border-radius:13px;
+  box-shadow:0 5px 16px rgba(0,0,0,.4),inset 0 1px 0 rgba(229,209,164,.10)}
+html[data-game="haku"] .btn.primary{
+  background:linear-gradient(180deg,#e5d1a4,#cba54c 62%,#ac8732);
+  border:1px solid rgba(229,209,164,.55);color:#1d1809;font-weight:700;
+  box-shadow:0 10px 26px rgba(186,146,54,.38),inset 0 1px 0 rgba(255,255,255,.5)}
+html[data-game="haku"] .btn.danger{color:#e5d1a4;border-color:var(--danger-line);background:linear-gradient(180deg,rgba(66,54,26,.72),rgba(30,25,12,.78))}
+html[data-game="haku"] .btn.ghost{background:transparent;border-color:rgba(217,189,123,.26)}
+html[data-game="haku"] .chip{background:rgba(255,255,255,.05);border-color:var(--line);color:#c8bd9c}
+html[data-game="haku"] .seg{background:rgba(18,16,8,.64);border:1px solid rgba(217,189,123,.22);border-radius:13px;
+  -webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px)}
+html[data-game="haku"] .seg button{color:#968c6e;border-radius:10px;font-family:var(--gserif);letter-spacing:.05em}
+html[data-game="haku"] .seg button.on{background:linear-gradient(180deg,rgba(164,129,48,.66),rgba(96,79,28,.66));
+  color:#f6efd9;outline:1px solid rgba(224,202,150,.45);box-shadow:0 0 18px rgba(208,173,93,.25)}
+html[data-game="haku"] .group-tab{background:rgba(24,21,11,.68);border:1px solid rgba(217,189,123,.22);
+  color:#c0b38c;font-family:var(--gserif);letter-spacing:.04em;
+  -webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px)}
+html[data-game="haku"] .group-tab.active{background:linear-gradient(180deg,#e5d1a4,#cba54c);color:#1d1809;border-color:rgba(229,209,164,.6)}
+html[data-game="haku"] .nav{
+  background:linear-gradient(180deg,rgba(22,19,10,.62),rgba(10,8,4,.94));
+  border-top:1px solid rgba(224,202,150,.34);
+  box-shadow:0 -16px 38px rgba(0,0,0,.62),inset 0 1px 0 rgba(229,209,164,.10);
+  -webkit-backdrop-filter:blur(20px) saturate(1.1);backdrop-filter:blur(20px) saturate(1.1)}
+html[data-game="haku"] .nav button{color:#968c6e;position:relative;font-family:var(--gserif);letter-spacing:.09em}
+html[data-game="haku"] .nav button.active{color:#f6efd9;text-shadow:0 0 14px rgba(208,173,93,.75)}
+html[data-game="haku"] .nav button.active svg{filter:drop-shadow(0 0 8px rgba(208,173,93,.8))}
+html[data-game="haku"] .nav button.active::before{content:'';position:absolute;top:0;left:50%;
+  transform:translateX(-50%);width:30px;height:2px;border-radius:0 0 4px 4px;
+  background:linear-gradient(90deg,rgba(208,173,93,0),#e5d1a4 50%,rgba(208,173,93,0));
+  box-shadow:0 0 14px rgba(208,173,93,.9)}
+html[data-game="haku"] .now-card{
+  background:linear-gradient(160deg,rgba(38,33,17,.62),rgba(19,16,9,.72));
+  border:1px solid rgba(217,189,123,.24);border-radius:18px;
+  box-shadow:0 20px 46px rgba(0,0,0,.5),inset 0 1px 0 rgba(229,209,164,.12);
+  -webkit-backdrop-filter:blur(16px);backdrop-filter:blur(16px)}
+html[data-game="haku"] .now-label{color:#968c6e}
+html[data-game="haku"] .now-name{color:#f6efd9;font-family:var(--gserif);font-weight:600;letter-spacing:.04em}
+html[data-game="haku"] .now-time{font-family:var(--gnum);font-weight:600;color:#f8f1dc;letter-spacing:.04em;
+  text-shadow:0 0 24px rgba(208,173,93,.5)}
+html[data-game="haku"] .now-sub{color:#c8bd9c}
+html[data-game="haku"] .stat{
+  background:linear-gradient(180deg,rgba(34,30,16,.56),rgba(19,16,9,.66));
+  border:1px solid rgba(217,189,123,.20);border-radius:16px;
+  box-shadow:0 10px 26px rgba(0,0,0,.42),inset 0 1px 0 rgba(229,209,164,.09);
+  -webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px)}
+html[data-game="haku"] .stat .label{color:#968c6e}
+html[data-game="haku"] .stat .value{color:#f4ecd6;font-family:var(--gnum);letter-spacing:.03em}
+html[data-game="haku"] .stat .sub{color:#c8bd9c}
+html[data-game="haku"] .pill{border-color:rgba(217,189,123,.22);background:rgba(255,255,255,.05)}
+html[data-game="haku"] .hint{color:#968c6e}
+html[data-game="haku"] .sync-badge{color:#c8bd9c}
+html[data-game="haku"] .flip{background:linear-gradient(180deg,rgba(34,30,16,.62),rgba(19,16,9,.72));border-color:rgba(217,189,123,.24)}
+html[data-game="haku"] .hist{border-bottom-color:rgba(217,189,123,.16)}
+html[data-game="haku"] .act-btn{background:rgba(28,24,13,.58);border-color:rgba(217,189,123,.20);
+  -webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px)}
+html[data-game="haku"] .act-btn.current{border-color:var(--lamp);background:rgba(208,173,93,.15);
+  box-shadow:0 0 20px rgba(208,173,93,.24)}
+html[data-game="haku"] input,html[data-game="haku"] select,html[data-game="haku"] textarea{
+  background:rgba(19,16,9,.74);border:1px solid rgba(217,189,123,.24);border-radius:12px;color:var(--text)}
+html[data-game="haku"] .dcard{background:rgba(24,21,11,.72);border-color:rgba(217,189,123,.22)}
+
+/* ―― 夜灯・昼（わざ寅色の和紙） ―― */
+html[data-game="haku"][data-theme="light"]{
+  --bg:#f2eddf;--bg-elev:rgba(255,252,244,.90);--bg-elev-2:rgba(248,243,228,.94);
+  --line:rgba(126,112,68,.30);--line-strong:rgba(126,112,68,.52);
+  --text:#242013;--text-dim:#57513f;--text-mute:#857d63;
+  --accent:#98782c;--accent-2:#7a6f4f;--on-accent:#fffcf1;
+  --ok:#7d6a2f;--warn:#a48130;--bad:#bc9436;
+  --nav-bg:rgba(250,246,233,.86);--accent-soft:rgba(152,120,44,.10);
+  --advice-bg:linear-gradient(135deg,rgba(152,120,44,.12),rgba(255,252,244,.80));
+  --advice-line:rgba(126,112,68,.30);--danger-line:#e1cb99;
+  --shadow:0 12px 30px rgba(96,83,44,.14);--overlay:rgba(43,38,24,.42);
+  --unrec:#e6dec4;--status-bg:#242013;color-scheme:light;
+}
+html[data-game="haku"][data-theme="light"] body{background:#f2eddf}
+html[data-game="haku"][data-theme="light"] .bgfx{
+  display:block;position:fixed;inset:0;z-index:0;pointer-events:none;background-color:#f2eddf;
+  background-image:
+    radial-gradient(90% 46% at 50% -6%, rgba(255,245,214,.85) 0%, rgba(250,238,200,.35) 40%, rgba(242,237,223,0) 74%),
+    radial-gradient(140% 90% at 50% 110%, rgba(184,157,96,.16) 0%, rgba(242,237,223,0) 60%);
+}
+html[data-game="haku"][data-theme="light"] .header{border-bottom:1px solid rgba(126,112,68,.24);background:linear-gradient(180deg,rgba(250,246,233,.9),rgba(250,246,233,.4) 64%,rgba(250,246,233,0))}
+html[data-game="haku"][data-theme="light"] .header h1{color:#2a2514;text-shadow:none}
+html[data-game="haku"][data-theme="light"] .header .sub{color:#857d63}
+html[data-game="haku"][data-theme="light"] .card{background:rgba(255,252,244,.86);border:1px solid rgba(126,112,68,.26);box-shadow:0 10px 26px rgba(96,83,44,.10)}
+html[data-game="haku"][data-theme="light"] .card h2{color:#332d1a}
+html[data-game="haku"][data-theme="light"] .btn{background:linear-gradient(180deg,#fbf7ea,#f0e8d0);border:1px solid rgba(126,112,68,.34);color:#3a3420}
+html[data-game="haku"][data-theme="light"] .btn.primary{background:linear-gradient(180deg,#c79f40,#98782c);border-color:rgba(152,120,44,.6);color:#fffcf1}
+html[data-game="haku"][data-theme="light"] .btn.ghost{background:transparent}
+html[data-game="haku"][data-theme="light"] .seg{background:rgba(244,239,224,.8);border:1px solid rgba(126,112,68,.26)}
+html[data-game="haku"][data-theme="light"] .seg button{color:#857d63}
+html[data-game="haku"][data-theme="light"] .seg button.on{background:linear-gradient(180deg,#c79f40,#98782c);color:#fffcf1;outline:1px solid rgba(152,120,44,.5)}
+html[data-game="haku"][data-theme="light"] .nav{background:linear-gradient(180deg,rgba(250,246,233,.92),rgba(240,233,212,.96));border-top:1px solid rgba(126,112,68,.34)}
+html[data-game="haku"][data-theme="light"] .nav button{color:#857d63}
+html[data-game="haku"][data-theme="light"] .nav button.active{color:#2a2514;text-shadow:none}
+html[data-game="haku"][data-theme="light"] .nav button.active::before{background:linear-gradient(90deg,rgba(152,120,44,0),#98782c 50%,rgba(152,120,44,0))}
+html[data-game="haku"][data-theme="light"] .now-time{color:#2a2514;text-shadow:none}
+html[data-game="haku"][data-theme="light"] .stat .value{color:#2a2514}
+html[data-game="haku"][data-theme="light"] input,html[data-game="haku"][data-theme="light"] select,html[data-game="haku"][data-theme="light"] textarea{background:rgba(255,252,244,.9);border:1px solid rgba(126,112,68,.32);color:var(--text)}
+/* ===== haku（白亜） ===== */
+html[data-game="haku"]{--gserif:"Zen Old Mincho","Yu Mincho","YuMincho","Hiragino Mincho ProN","Noto Serif JP",serif;--glat:"Prata","Times New Roman",Georgia,serif;--gnum:"Prata","Times New Roman",Georgia,serif;--accent:#8a6a2f;--accent-soft:rgba(138,106,47,.12)}
+html[data-game="haku"] .dcard.on{border-color:#8a6a2f;box-shadow:0 0 0 1px #8a6a2f}</style><style id="gm-fonts">@import url("https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=EB+Garamond:wght@400;500;600&family=Forum&family=Noto+Serif+JP:wght@400;500;600;700&family=Playfair+Display:wght@400;500;600;700&family=Prata&family=Sawarabi+Mincho&family=Shippori+Mincho+B1:wght@400;500;600;700&family=Zen+Old+Mincho:wght@400;500;600;700&display=swap");</style>
 
 <style id="yakari-note"></style><style id="chem-enc-style">
 .chem-subtabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px}
@@ -5206,6 +5650,42 @@ html[data-game="shiden"][data-theme="light"] input,html[data-game="shiden"][data
 .chem-enc-props th{width:34%;color:var(--text-dim,#9aa3b2);font-weight:600;background:var(--accent-soft)}
 .chem-enc-tests td:first-child{width:46%;color:var(--text-dim,#9aa3b2)}
 .chem-enc-refs{display:flex;flex-direction:column;gap:6px}
+/* 資料室v2: 元素カード・化合物・フロー・総括表・周期表独立画面 */
+.chem-el-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(96px,1fr));gap:8px}
+.chem-el-card{display:flex;flex-direction:column;align-items:center;gap:2px;padding:10px 6px;border:1px solid var(--line);border-radius:12px;background:var(--bg-elev);cursor:pointer;color:var(--text)}
+.chem-el-card:active{border-color:var(--accent)}
+.chem-el-sym{font-size:19px;font-family:var(--glat,var(--gserif));letter-spacing:.02em;color:var(--accent)}
+.chem-el-name{font-size:11px;color:var(--text-dim);text-align:center}
+.chem-in-tabs{flex-wrap:wrap}
+.chem-table-scroll{overflow-x:auto}
+.chem-gas-table{width:100%;border-collapse:collapse;font-size:12px;min-width:640px}
+.chem-gas-table th,.chem-gas-table td{border:1px solid var(--line);padding:7px 9px;text-align:left;vertical-align:top}
+.chem-gas-table thead th{background:var(--bg-elev-2)}
+.chem-gas-table tbody th{white-space:nowrap;font-family:var(--glat,var(--gserif))}
+.chem-note{font-size:11.5px;color:var(--text-mute);line-height:1.7;margin:8px 0 0}
+.chem-ind{border:1px solid var(--line);border-radius:14px;background:var(--bg-elev);padding:14px 16px;margin:12px 0}
+.chem-ind h4{margin:0 0 10px}
+.chem-flow{display:flex;align-items:center;flex-wrap:wrap;gap:6px;margin:10px 0}
+.chem-flow-node{border:1px solid var(--line-strong);border-radius:9px;padding:5px 10px;background:var(--bg-elev-2);font-family:var(--glat,var(--gserif));font-size:13px;white-space:nowrap}
+.chem-flow-arr{font-size:11px;color:var(--text-mute);display:flex;flex-direction:column;align-items:center;line-height:1.2}
+.chem-flow-arr i{font-style:normal;font-size:14px;color:var(--accent);line-height:1}
+.chem-ind-eqs{display:grid;gap:5px;margin:8px 0}
+.chem-ind-eq{display:flex;gap:8px;align-items:baseline}
+.chem-ind-eqno{flex:0 0 auto;width:18px;height:18px;border-radius:50%;border:1px solid var(--accent);color:var(--accent);font-size:11px;display:flex;align-items:center;justify-content:center}
+.chem-ind .chem-equation{margin:0}
+.chem-compounds{display:grid;gap:10px}
+.chem-compound{border:1px solid var(--line);border-radius:12px;background:var(--bg-elev);padding:10px 12px}
+.chem-compound-head{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:6px}
+.chem-compound-f{font-family:var(--glat,var(--gserif));font-size:15px;color:var(--accent);background:var(--accent-soft,var(--chem-soft));border:1px solid var(--accent);border-radius:8px;padding:2px 9px}
+.chem-compound-n{font-size:12.5px;color:var(--text)}
+.chem-compound ol{margin:0;padding-left:20px;font-size:12.5px;line-height:1.8}
+.chem-compound li{margin:2px 0}
+.chem-enc-backs{display:flex;gap:8px;margin:0 0 10px}
+.chem-flame-chip{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--line-strong);border-radius:999px;padding:4px 12px;font-size:12px;margin:4px 0 8px}
+.chem-flame-dot{width:10px;height:10px;border-radius:50%;background:radial-gradient(circle,#ffd27a,#e2582b)}
+.chem-pt-full{flex:1;min-height:0;display:flex}
+.chem-pt-full .chem-pt-wrap{flex:1;min-height:0;display:flex;flex-direction:column;width:100%;border:0;background:none;padding:0}
+.chem-pt-full .chem-pt-scroll{flex:1;min-height:0;overflow:auto}
 .chem-enc-ref{font-size:12.5px;color:var(--accent);text-decoration:underline;word-break:break-all}
 .chem-pt-wrap{display:block;padding-bottom:0;margin:6px 0 12px;padding:12px;border:1px solid var(--line);border-radius:16px;background:var(--bg-elev)}
 .chem-pt-head{display:flex;align-items:center;gap:10px;flex-wrap:wrap;justify-content:space-between}
@@ -5227,252 +5707,373 @@ html[data-game="shiden"][data-theme="light"] input,html[data-game="shiden"][data
 .pt-cell.amphot{border-left:3px solid #d6a3c9}.pt-cell.met{border-left:3px solid #9aa3b2}.pt-cell.lan{border-left:3px solid #b0a1e8}.pt-cell.act{border-left:3px solid #e8a0a0}
 @media (max-width:900px),(orientation:portrait){.chem-pt-btn{display:none}}
 </style><script>
-/* StudyTime 無機資料室（2026-11-15 追加）。受験頻出の元素・化合物をまとめた閲覧用データ。
-   数値・製法・色は出典ページで確認。出典は refs に実在URLのみ。 */
-const CHEM_INORG_REFS={
- hb:['ハーバー・ボッシュ法（Wikipedia）','https://ja.wikipedia.org/wiki/%E3%83%8F%E3%83%BC%E3%83%90%E3%83%BC%E3%83%BB%E3%83%9C%E3%83%83%E3%82%B7%E3%83%A5%E6%B3%95'],
- ks:['接触法（Wikipedia）','https://ja.wikipedia.org/wiki/%E6%8E%A5%E8%A7%A6%E6%B3%95'],
- sv:['ソルベイ法（Wikipedia）','https://ja.wikipedia.org/wiki/%E3%82%BD%E3%83%AB%E3%83%99%E3%82%A4%E6%B3%95'],
- cr:['クロール法（Wikipedia）','https://ja.wikipedia.org/wiki/%E3%82%AF%E3%83%AD%E3%83%BC%E3%83%AB%E6%B3%95'],
- im:['イオン交換膜法（Wikipedia）','https://ja.wikipedia.org/wiki/%E3%82%A4%E3%82%AA%E3%83%B3%E4%BA%A4%E6%8F%9B%E8%86%9C%E6%B3%95'],
- h17:['第17族元素（Wikipedia）','https://ja.wikipedia.org/wiki/%E7%AC%AC17%E6%97%8F%E5%85%83%E7%B4%A0'],
- khaber:['ハーバー法の原理・反応式（kimika）','https://kimika.net/m2haber.html'],
- ksess:['接触法の仕組み（kimika）','https://kimika.net/m2sessyoku.html'],
- ksoda:['アンモニアソーダ法（kimika）','https://kimika.net/m2anmoniasoda.html'],
- kost:['オストワルト法（kimika）','https://kimika.net/m2osutowaruto.html'],
- ksaku:['錯イオン総まとめ（kimika）','https://kimika.net/m1sakuion.html'],
- khalo:['ハロゲン単体の性質・製法（kimika）','https://kimika.net/m2harogen.html'],
- rost:['オストワルト法と触媒（理科ラボ）','https://rikeilabo.com/ostwald-method'],
- rhb:['ハーバーボッシュ法とは（理科ラボ）','https://rikeilabo.com/harbor-bosch-method'],
- rsoda:['アンモニアソーダ法（理科ラボ）','https://rikeilabo.com/ammonia-soda-method'],
- np2:['無機物質の工業的製法Part2（化学動夫）','https://note.com/kagakudojin_edit/n/nd6d5204ad130'],
- np1:['無機物質の工業的製法Part1（化学動夫）','https://note.com/kagakudojin_edit/n/ndbf2e42e6de2'],
- np4:['無機物質の工業的製法Part4（化学動夫）','https://note.com/kagakudojin_edit/n/n822eecc495de'],
- np7:['無機物質の工業的製法Part7（化学動夫）','https://note.com/kagakudojin_edit/n/nabea6167ae4c'],
- jog:['湿式製錬技術開発（JOGMEC）','https://www.jogmec.go.jp/activities/metal/technology-development/recycling-technologies/hydrometallurgical-technology.html'],
- jcu:['テトラアンミン銅(II)の配位数（J-STAGE）','https://www.jstage.jst.go.jp/article/jssej/46/4/46_483/_pdf'],
- agc:['食塩電解（イオン交換膜法・AGC系資料）','https://www.jase-w.eccj.or.jp/technologies-j/pdf/factory/F-74.pdf'],
- titech:['アンモニア合成を支えた研究者たち（東京工大）','https://www.titech.ac.jp/public-relations/about/stories/ammonia-synthesis'],
- env:['硝酸製造の手法（環境省）','https://www.env.go.jp/earth/ondanka/ghg-mrv/methodology/methodology_2B2_2019.pdf'],
- apec:['ルシャトリエの原理の確認実験（愛知県立高校）','https://apec.aichi-c.ed.jp/kyouka/rika/kagaku/2018/riron/kagakuheikou/kagakuheikou.htm'],
- zig:['NO2とN2O4の平衡（ジグザグ科学）','https://zigzagsci.com/no2_and_n2o4/'],
- zigcu:['テトラアンミン銅(II)イオン（ジグザグ科学）','https://zigzagsci.com/tetraammine_cu/'],
- agus:['貴ガスの性質と用途','https://agus.co.jp/?p=7473'],
- hama1:['イオン交換膜法（浜島書店化学用語）','https://www.hamajima.co.jp/rika/chemterm/52133101.html'],
- hama2:['接触法（浜島書店化学用語）','https://www.hamajima.co.jp/rika/chemterm/53112411.html'],
- kj:['硫酸工業の現状（J-STAGE）','https://www.jstage.jst.go.jp/article/kakyoshi/66/11/66_520/_pdf']
-};
-const CHEM_INORG_CATS=[
- {id:'h',name:'水素',sym:'H',z:1,g:1,p:1},
- {id:'rg',name:'貴ガス',sym:'He',z:2,g:18,p:1},
- {id:'hl',name:'ハロゲン',sym:'F',z:9,g:17,p:2},
- {id:'os',name:'酸素と硫黄',sym:'O',z:8,g:16,p:2},
- {id:'np',name:'窒素とリン',sym:'N',z:7,g:15,p:2},
- {id:'cs',name:'炭素とケイ素',sym:'C',z:6,g:14,p:2},
- {id:'am',name:'アルカリ金属',sym:'Na',z:11,g:1,p:3},
- {id:'ae',name:'アルカリ土類金属',sym:'Ca',z:20,g:2,p:4},
- {id:'amphot',name:'両性典型元素',sym:'Al',z:13,g:13,p:3},
- {id:'tm',name:'遷移元素',sym:'Fe',z:26,g:8,p:4},
- {id:'gas',name:'気体の性質（総括）',sym:'⌬'},
- {id:'ind',name:'工業的製法（総括）',sym:'⚙'},
- {id:'cx',name:'錯イオン（総括）',sym:'⟐'}
-];
+/* StudyTime 無機資料室 v2（2026-11-15 改訂）。元素別のまとめ＋総括タブ。
+   炎色反応は flame に、相互関係は flow に [節,矢印,節,…] で記録。 */
 const CHEM_INORG=[
-{id:'in-h',el:'H',name:'水素',cat:'h',grade:'頻出',z:1,g:1,p:1,
- summary:'原子番号1・最軽量の元素。単体 H₂ は無色無臭の気体で、還元剤として働き、燃焼で水を生じる。化合物中ではほぼ ＋1 だが、金属水素化物（NaH など）では −1 になる点が受験の狙い。',
- props:[['族・周期','1族・周期1'],['常温常圧','無色無臭の気体（H₂）'],['原子量','1.008'],['代表酸化数','＋1、金属水素化物中で −1']],
+{id:'el-h',el:'H',name:'水素',z:1,grade:'頻出',flame:'―',
+ summary:'原子番号1・最軽量の元素。単体 H₂ は無色無臭の気体で還元剤として働き、燃焼すると水になる。金属水素化物中では −1 になる点が要点。',
+ props:[['常温常圧','無色無臭の気体（H₂・無極性分子）'],['水への溶解','ほとんど溶けない'],['原子量','1.008'],['酸化数','＋1、金属水素化物中 −1']],
  sections:[
-  {h:'性質',body:'水素分子 H₂ は共有結合で結んだ無極性分子で、水にほとんど溶けない。最も軽い気体で、熱伝導率が高い。引火性が強く、酸素と混合して点火すると爆発的に燃える（2H₂＋O₂→2H₂O）。還元性があり、加熱した酸化銅(II)を銅に還元する。'},
-  {h:'同位体',body:'¹H（プロチウム：普通の水素）、²H（デューテリウム：重水素、重水 D₂O の成分）、³H（トリチウム：放射性）の3種。同位体の説明にほぼ毎年出る。'},
-  {h:'実験室的生成',body:'① 亜鉛・鉄などイオン化傾向が水素より大きい金属に希硫酸や塩酸を作用させる（Zn＋H₂SO₄→ZnSO₄＋H₂）。② 金属水素化物 NaH や CaH₂ に水を加える。③ マグネシウムに熱水を注ぐなど。硝酸や濃硫酸のような酸化性の酸では水素を発生しない点に注意。'},
-  {h:'工業的生成',body:'メタンやナフサの水蒸気改質、石炭ガス化、水の電気分解など。アンモニア合成（ハーバー・ボッシュ法）の原料として、窒素とともに大量に使われる。'}
+  {h:'単体の性質',body:'最も軽い気体で拡散が速い。可燃性で酸素と混合して点火すると爆発的に燃える（2H₂＋O₂→2H₂O）。加熱した酸化銅(II) CuO を銅に還元する還元剤の代表。'},
+  {h:'同位体',body:'¹H（プロチウム）・²H（デューテリウム：重水 D₂O の成分）・³H（トリチウム：放射性）。'},
+  {h:'生成法',body:'実験室：イオン化傾向が H より大きい金属（Zn・Fe など）に希硫酸や塩酸を作用（Zn＋H₂SO₄→ZnSO₄＋H₂）。金属水素化物 NaH・CaH₂ に水を加えても発生。硝酸や濃硫酸のような酸化性の酸では H₂ を発生しない。工業：炭化水素の水蒸気改質・水の電気分解。'}
  ],
- tests:[['燃いているマッチ（パチン）','純粋ならパチンという音を立てて燃える']],
- refs:[['hb','ksoda']]},
-{id:'in-rg',el:'He',name:'貴ガス',cat:'rg',grade:'頻出',z:2,g:18,p:1,
- summary:'18族のヘリウム・ネオン・アルゴン・クリプトン・キセノン・ラドンの6元素。最外殻電子が満たされた安定な単原子分子で、反応性が極めて低い。',
- props:[['分類','18族（貴ガス）'],['分子','単原子分子'],['常温常圧','無色無臭の気体'],['原子量(He)','4.003']],
- sections:[
-  {h:'性質',body:'最外殻電子配置が閉殻（He は 1s²、他は ns²np⁶）で化学的に安定。かつて「不活性ガス」と呼ばれたが、キセノンはフッ素などと化合物（XeF₂ など）を作るため「貴ガス」に改称された。単原子分子で分子間力が小さいため沸点・融点が非常に低く、原子量が大きいほど分子間力が増して沸点は高くなる（He 約 −269℃、Rn 約 −62℃）。'},
-  {h:'各元素の特徴',body:'He：沸点が最も低く、気球・MR1用冷却に使われる。Ne：ネオンサイン（赤橙に発光）。Ar：空気中に最も多く（約0.9%）、不活性雰囲気として溶接などに利用。Kr・Xe：照明・レーザー。Rn：放射性の天然ガス。'},
-  {h:'出題ポイント',body:'「単原子分子である」「分子量が大きいほど沸点が高い」「Xe でも化合物が作れる（フッ素との化合物）」「空気液化の分留で得る」が定番。'}
+ compounds:[
+  {f:'H₂O',n:'水',pts:['沸点100℃・融点0℃。水素結合で同族元素の水素化合物より異常に高い','イオン生成反応や加水分解の溶媒']},
+  {f:'H₂O₂',n:'過酸化水素',pts:['無色の液体。水溶液（オキシドール）は酸化剤でも還元剤でもある','酸化剤として：2KI＋H₂O₂→2KOH＋I₂（ヨウ素カリウムの酸化）','還元剤として：MnO₂＋H₂O₂＋H₂SO₄→MnSO₄＋2H₂O＋O₂','MnO₂ などを触媒に分解して O₂ を発生：2H₂O₂→2H₂O＋O₂']}
  ],
- tests:[],refs:[['agus']]},
-{id:'in-f',el:'F',name:'フッ素',cat:'hl',grade:'頻出',z:9,g:17,p:2,
- summary:'最も反応性の高いハロゲン。単体 F₂ は淡黄色の気体で、暗所でも激しく反応する最強の酸化剤。水と反応して酸素を発生する特異性が狙われる。',
- props:[['常温常圧','淡黄色の気体'],['酸化力','ハロゲン中で最も強い'],['炭素との化合物','フッ化炭素（テフロン等）']],
+ tests:[['燃えているマッチを近づける','純粋ならパチンという音を立てて燃える']]},
+{id:'el-he',el:'He',name:'ヘリウム',z:2,grade:'頻出',flame:'―',
+ summary:'18族の貴ガス。閉殻の単原子分子で反応性はほとんどない。沸点が全物質中で最も低い。',
+ props:[['常温常圧','無色無臭の気体（単原子分子）'],['沸点','約 −269℃（最低）'],['最外殻電子','1s²（閉殻）']],
+ sections:[{h:'性質・用途',body:'分子間力が極めて小さいため沸点・融点が最低。気球・飛行船への充填、MRI（MR画像診断）の超伝導磁石の冷却に使う。空気の液化分留で得る。'}],
+ compounds:[],tests:[]},
+{id:'el-ne',el:'Ne',name:'ネオン',z:10,grade:'頻出',flame:'―',
+ summary:'貴ガス。放電すると赤橙色に強く光る（ネオンサイン）。',
+ props:[['常温常圧','無色無臭の気体（単原子分子）'],['放電発光','赤橙色'],['最外殻電子','ns²np⁶（閉殻）']],
+ sections:[{h:'性質・用途',body:'化学的に不活性。放電管で赤橙色に発光するので広告灯（ネオンサイン）に使う。'}],
+ compounds:[],tests:[]},
+{id:'el-ar',el:'Ar',name:'アルゴン',z:18,grade:'頻出',flame:'―',
+ summary:'空気中に約0.9%含まれる最も多い貴ガス。不活性雰囲気を作る。',
+ props:[['常温常圧','無色無臭の気体（単原子分子）'],['空気中の含有率','約0.9%（体積）'],['最外殻電子','ns²np⁶（閉殻）']],
+ sections:[{h:'性質・用途',body:'反応性が全くないため、溶接や高温実験で金属が空気（酸素・窒素）と反応するのを防ぐ不活性ガスに使う。空気液化分留で得る。'}],
+ compounds:[],tests:[]},
+{id:'el-na',el:'Na',name:'ナトリウム',z:11,grade:'最重要',flame:'黄色',
+ summary:'1族（アルカリ金属）の銀白色の軟らかい金属。水と激しく反応して強塩基の NaOH を生じ、炎色反応は黄色。',
+ props:[['単体の色・状態','銀白色の柔らかい金属（ナイフで切れる）'],['密度','0.97 g/cm³（水より軽い）'],['常温の水との反応','激しく反応し H₂ を発生：2Na＋2H₂O→2NaOH＋H₂'],['炎色反応','黄色']],
  sections:[
-  {h:'性質',body:'電気陰性度が全元素中で最大（4.0）。単体 F₂ は暗所でも H₂ と爆発的に反応し、金属も一気に酸化する。水に溶かすと 2F₂＋2H₂O→4HF＋O₂ で酸素を発生する（塩素とは異なる点）。'},
-  {h:'フッ化水素 HF',body:'腐食性の強い無色の気体で、水溶液はフッ化水素酸（弱酸）。ガラスの主成分 SiO₂ と反応して四フッ化ケイ素 SiF₄ を生じるため、ガラスを腐食できる（フッ酸の刻印）。塩酸を酢酸瓶に入れるのに対し、HF はポリエチレン瓶に入れる、という対比が定番。'}
- ],tests:[],refs:[['h17','khalo']]},
-{id:'in-cl',el:'Cl',name:'塩素',cat:'hl',grade:'最重要',z:17,g:17,p:3,
- summary:'黄緑色・刺激臭の気体 Cl₂。強い酸化剤で漂白・殺菌に使われ、水酸化ナトリウム水溶液との反応（イオン交換膜法の陽極生成物）は必出。',
- props:[['常温常圧','黄緑色の気体（刺激臭）'],['水溶液','塩素水（黄緑色）'],['検出','湿ったヨウ化カリウムデンプン紙を青変']],
+  {h:'単体の性質',body:'価電子を1個もち、1価の陽イオン Na⁺ になりやすい。酸化されやすく、空気中では直ちに酸化されるので灯油中に保存する。水酸化カリウム K より反応は穏やかで、融点・沸点はアルカリ金属の中で中程度。'},
+  {h:'性質の通則（1族）',body:'Li→Na→K の順にイオン化傾向が大きく、水との反応は激しくなる。塩はほとんど水に可溶で無色（イオンが無色）。'}
+ ],
+ compounds:[
+  {f:'NaOH',n:'水酸化ナトリウム（苛性ソーダ）',pts:['白色固体で水に易溶。溶解時発熱','潮解性があり強く吸湿。水溶液は強塩基性','空気中の CO₂ を吸収して炭酸塩になる：2NaOH＋CO₂→Na₂CO₃＋H₂O','ソーダ石灰＝NaOH と CaO の混合物（塩基性乾燥剤・CO₂ 吸収剤）']},
+  {f:'NaCl',n:'塩化ナトリウム（食塩）',pts:['無色立方晶。水に易溶（溶解度は温度依存が小さい）','精製した飽和食塩水はイオン交換膜法の原料','冷剤（食塩＋氷で約 −21℃）']},
+  {f:'Na₂CO₃',n:'炭酸ナトリウム（ソーダ灰）',pts:['白色粉末。水に易溶で水溶液は加水分解により塩基性','酸を加えると CO₂ を発生：Na₂CO₃＋2HCl→2NaCl＋H₂O＋CO₂','ソルベー法で製造']},
+  {f:'NaHCO₃',n:'炭酸水素ナトリウム（重曹）',pts:['白色粉末。水にやや溶ける（水溶液は弱塩基性）','加熱で分解：2NaHCO₃→Na₂CO₃＋H₂O＋CO₂','パン・菓子の膨張剤、制酸剤']},
+  {f:'Na₂S₂O₃',n:'チオ硫酸ナトリウム（ハイポ）',pts:['無色結晶。水に易溶','還元剤でハロゲンを脱色：Cl₂＋2Na₂S₂O₃→2NaCl＋Na₂S₄O₆','ヨウ素滴定の標準液、写真の定着液']}
+ ],
+ tests:[['炎色反応','黄色']]},
+{id:'el-k',el:'K',name:'カリウム',z:19,grade:'頻出',flame:'淡紫色',
+ summary:'1族の金属。Na より水との反応が激しく、炎色反応は淡紫色（Na の黄色を隠すためコバルトガラス越しに観察）。',
+ props:[['単体の色・状態','銀白色の柔らかい金属'],['常温の水との反応','Na より激しく、発生した H₂ が自然に燃える：2K＋2H₂O→2KOH＋H₂'],['炎色反応','淡紫色']],
+ sections:[{h:'単体の性質',body:'イオン化傾向は Na より大きい。屋外実験では K の切れ端を水に入れると直ちに H₂ が燃える。'}],
+ compounds:[
+  {f:'KOH',n:'水酸化カリウム',pts:['白色固体。水に易溶で強塩基性（NaOH と同様の性質）','潮解性が強い']},
+  {f:'KClO₃',n:'塩素酸カリウム',pts:['白色結晶。強熱すると O₂ を発生：2KClO₃→2KCl＋3O₂','MnO₂ を触媒にして分解を速める（実験室の酸素発生）','酸化剤で、硫黄・リンなどと混ぜると爆発しやすい（花火・マッチ）']}
+ ],
+ tests:[['炎色反応','淡紫色（コバルトガラス越し）']]},
+{id:'el-mg',el:'Mg',name:'マグネシウム',z:12,grade:'頻出',flame:'示さない',
+ summary:'2族の銀白色の金属。Be・Mg は常温の水と反応せず（Mg は熱水と反応）、炎色反応を示さない。',
+ props:[['単体の色・状態','銀白色の軽い金属（密度1.74 g/cm³）'],['常温の水との反応','しない（熱水と反応して H₂ を発生）'],['炎色反応','示さない']],
  sections:[
-  {h:'性質',body:'強い酸化剤で、水と反応すると HCl と次亜塩素酸 HClO になる（Cl₂＋H₂O⇌HCl＋HClO）。HClO が漂白・殺菌の主役で、乾燥した塩素は漂白しない。水素と混合して光を当てると爆発的に化合し HCl を生じる。'},
-  {h:'製法',body:'実験室では濃塩酸に二酸化マンガン MnO₂ を加えて加熱（MnO₂＋4HCl→MnCl₂＋Cl₂＋2H₂O）。工業では食塩水の電気分解（イオン交換膜法）で陽極から塩素を得る。日本では水銀法・隔膜法が廃止され、すべてイオン交換膜法になった。'},
-  {h:'塩化水素 HCl',body:'無色・刺激臭の気体で、水に非常に溶けやすく（塩酸になる）、湿った空気中で白煙を生じる。実験室では食塩に濃硫酸を加えて加熱して作る。'},
-  {h:'検出',body:'塩素イオン Cl⁻ は硝酸酸性で硝酸銀 AgNO₃ を加えると白色沈殿 AgCl。塩素単体はヨウ化カリウム KI を酸化してヨウ素 I₂ を遊離する（Cl₂＋2KI→2KCl＋I₂）。'}
- ],tests:[['湿ったヨウ化カリウムデンプン紙','青変'],['硝酸銀（Cl⁻、硝酸酸性）','白色沈殿 AgCl']],refs:[['h17','im','np4','khalo']]},
-{id:'in-br',el:'Br',name:'臭素',cat:'hl',grade:'頻出',z:35,g:17,p:4,
- summary:'常温常圧で唯一液体のハロゲン単体。赤褐色・刺激臭の液体 Br₂ で、不飽和結合の検出に使う。',
- props:[['常温常圧','赤褐色の液体（揮発性）'],['水溶液','臭素水（橙黄色）'],['検出','不飽和結合の付加で脱色']],
+  {h:'単体の性質',body:'酸素中で点火すると激しく燃えて白色の MgO を生じ、強い光を放つ（マグネシウム光・写真用フラッシュ・花火）。2Mg＋O₂→2MgO。CO₂ 中でも燃え続ける：2Mg＋CO₂→2MgO＋C。'},
+  {h:'イオン',body:'Mg²⁺ は無色。水酸化物 Mg(OH)₂ は白色沈殿（海水中の Mg から水酸化マグネシウムを得る）。'}
+ ],
+ compounds:[
+  {f:'MgO',n:'酸化マグネシウム',pts:['白色の粉末。融点が約2800℃と高く耐火レンガ・るつぼに使う','塩基性酸化物。水とゆっくり反応：MgO＋H₂O→Mg(OH)₂']},
+  {f:'MgCl₂',n:'塩化マグネシウム',pts:['海水の苦汁に含まれる。潮解性が強い','電解して Mg を製造（融解塩電解）']}
+ ],
+ tests:[['炎色反応','示さない']]},
+{id:'el-ca',el:'Ca',name:'カルシウム',z:20,grade:'最重要',flame:'橙赤色',
+ summary:'2族の代表元素。単体は常温の水と反応し、CaO→Ca(OH)₂→CaCO₃ の相互関係、セッコウの可逆変化が最重要。',
+ props:[['単体の色・状態','銀白色の金属'],['常温の水との反応','反応して H₂ を発生：Ca＋2H₂O→Ca(OH)₂＋H₂'],['炎色反応','橙赤色']],
  sections:[
-  {h:'性質',body:'酸化力はフッ素・塩素より弱くヨウ素より強い。臭素水に不飽和結合（C=C）を含む化合物を加えると付加反応で赤褐色が消える（エチレンなどアルケンの検出）。'},
-  {h:'臭化物の沈殿',body:'Br⁻ に硝酸酸性で AgNO₃ を加えると淡黄色沈殿 AgBr。感光材料（写真フィルム）の主成分で、光を当てると分解する。AgCl（白）→AgBr（淡黄）→AgI（黄）の順に色が濃くなる。'}
- ],tests:[['硝酸銀（Br⁻、硝酸酸性）','淡黄色沈殿 AgBr']],refs:[['h17','khalo']]},
-{id:'in-i',el:'I',name:'ヨウ素',cat:'hl',grade:'頻出',z:53,g:17,p:5,
- summary:'紫黒色・金属光沢の固体 I₂。デンプンと青紫色を示す検出反応と、昇華する性質が狙われる。',
- props:[['常温常圧','紫黒色の固体（金属光沢）'],['水溶液','ヨウ素水（黄褐色）'],['ヨウ化カリウム水溶液','ヨウ素ヨウ化カリウム水溶液（赤褐色）']],
+  {h:'単体の性質',body:'価電子2個のもつ2価の陽イオンになりやすい。Be・Mg と違い常温の水と反応して水素を発生する。'},
+  {h:'炭酸塩・硫酸塩',body:'炭酸塩（MgCO₃・CaCO₃・BaCO₃）は白色で水に難溶（塩酸には可溶）。硫酸塩は Ca・Sr・Ba が白色で水に難溶（CaSO₄・BaSO₄）、Be・Mg は可溶（MgSO₄）。この溶解度の差が沈殿分離の狙い。'}
+ ],
+ compounds:[
+  {f:'CaO',n:'酸化カルシウム（生石灰）',pts:['白色固体。塩基性酸化物：CaO＋2HCl→CaCl₂＋H₂O','水と反応して発熱：CaO＋H₂O→Ca(OH)₂','乾燥剤として使う']},
+  {f:'Ca(OH)₂',n:'水酸化カルシウム（消石灰）',pts:['白色粉末。水にやや溶け、飽和水溶液は石灰水（強塩基性）','石灰水に CO₂ を通じると白濁（CO₂ の検出）：Ca(OH)₂＋CO₂→CaCO₃＋H₂O']},
+  {f:'CaCO₃',n:'炭酸カルシウム',pts:['石灰石・大理石・サンゴの主成分。白色で水に難溶','強熱すると分解：CaCO₃→CaO＋CO₂','塩酸に溶けて CO₂ を発生：CaCO₃＋2HCl→CaCl₂＋H₂O＋CO₂','CO₂ を含む水に溶ける（鍾乳石・石筍の原因）：CaCO₃＋CO₂＋H₂O⇌Ca(HCO₃)₂']},
+  {f:'CaSO₄',n:'硫酸カルシウム（セッコウ）',pts:['天然に CaSO₄·2H₂O（ gypsum）として産出。白色','約140℃で焼くと焼きセッコウ：CaSO₄·2H₂O⇌CaSO₄·½H₂O＋3/2H₂O（加熱方向／水を加えると逆に固まる）']},
+  {f:'CaCl₂',n:'塩化カルシウム',pts:['水への溶解度が大きく吸湿性が強い。中性の乾燥剤','融雪剤・凍結防止剤','NH₃ とは反応するのでアンモニアの乾燥には使えない']},
+  {f:'CaC₂',n:'炭化カルシウム（カーバイド）',pts:['灰色の固体。水と激しく反応してアセチレンを発生：CaC₂＋2H₂O→C₂H₂＋Ca(OH)₂']}
+ ],
+ tests:[['炎色反応','橙赤色']],
+ flow:['CaCO₃','強熱','CaO','＋H₂O','Ca(OH)₂','＋CO₂','CaCO₃']},
+{id:'el-ba',el:'Ba',name:'バリウム',z:56,grade:'頻出',flame:'黄緑色',
+ summary:'2族。硫酸塩 BaSO₄ が水にも塩酸にも不溶な点（造影剤）と、SO₄²⁻ の検出に使う点が要点。',
+ props:[['単体の色・状態','銀白色の金属（常温の水と反応）'],['炎色反応','黄緑色'],['硫酸塩','BaSO₄：白色で水・塩酸に不溶']],
+ sections:[{h:'性質',body:'イオン化傾向が大きく、水と反応して H₂ を発生。BaSO₄ は胃の造影剤として飲んでも消化管から吸収されない（酸にも不溶なため）。'}],
+ compounds:[
+  {f:'BaSO₄',n:'硫酸バリウム',pts:['白色沈殿。水にも塩酸にも溶けない','胃腸の X 線造影剤']},
+  {f:'BaCl₂',n:'塩化バリウム',pts:['無色結晶。水に易溶','SO₄²⁻ の検出：BaCl₂ 水溶液を加えると白色沈殿 BaSO₄（塩酸に不溶）']}
+ ],
+ tests:[['SO₄²⁻ への反応','BaCl₂＋SO₄²⁻→BaSO₄（白色沈殿・塩酸に不溶）'],['炎色反応','黄緑色']]},
+{id:'el-al',el:'Al',name:'アルミニウム',z:13,grade:'最重要',flame:'示さない',
+ summary:'両性典型元素の代表。酸にも塩基にも溶け、表面の酸化皮膜で耐食性をもつ。ホール・エルー法で製造。',
+ props:[['単体の色・状態','銀白色の軽い金属（密度2.7 g/cm³）'],['両性','酸にも塩基にも溶ける'],['表面','酸化皮膜 Al₂O₃ で保護される（イオン化傾向は大きいのに耐食）'],['炎色反応','示さない']],
  sections:[
-  {h:'性質',body:'ハロゲン中で最も酸化力が弱く、I₂＋2NaOH→NaI＋NaIO＋H₂O のように穏やかに反応する。固体から直接紫色の蒸気になる昇華性がある。水には溶けにくいが、ヨウ化カリウム KI の水溶液には I₃⁻（三ヨウ化イオン）としてよく溶ける。'},
-  {h:'検出',body:'デンプン水溶液に I₂ を加えると青紫色（デンプン・ヨウ素反応）を示す。加熱すると色が消え、冷却で再び現れる可逆性まで問われる。'}
- ],tests:[['デンプン水溶液','青紫色'],['硝酸銀（I⁻、硝酸酸性）','黄色沈殿 AgI']],refs:[['h17','khalo']]},
-{id:'in-o',el:'O',name:'酸素',cat:'os',grade:'最重要',z:8,g:16,p:2,
- summary:'地殻で最も多く、単体 O₂ は無色無臭の気体。燃焼を支える酸化剤で、オゾン O₃ は同素体。',
- props:[['常温常圧','無色無臭の気体'],['地殻中の存在','最も多い元素'],['同素体','O₂ と O₃（オゾン）']],
+  {h:'単体の性質',body:'イオン化傾向は大きいが、表面に薄い酸化皮膜を生じるため内部が保護される（不動態化）。粉末を酸化剤（Fe₂O₃ など）と混ぜて点火するテルミット法の還元剤にもなる：2Al＋Fe₂O₃→Al₂O₃＋2Fe。'},
+  {h:'両性の反応',body:'塩酸に：2Al＋6HCl→2AlCl₃＋3H₂。水酸化ナトリウム水溶液に：2Al＋2NaOH＋2H₂O→2NaAlO₂＋3H₂（水素を発生して溶ける）。'}
+ ],
+ compounds:[
+  {f:'Al₂O₃',n:'酸化アルミニウム（アルミナ）',pts:['白色の固体。両性酸化物：酸に Al³⁺、塩基に AlO₂⁻ として溶ける','天然の結晶がコランダム（ルビー・サファイアの主成分）','バイヤー法でボーキサイトから精製する']},
+  {f:'Al(OH)₃',n:'水酸化アルミニウム',pts:['白色の両性水酸化物：塩酸に溶けて AlCl₃、NaOH に溶けて NaAlO₂','白色の無機顔料・制酸剤']},
+  {f:'NaAlO₂',n:'アルミン酸ナトリウム',pts:['水に可溶。CO₂ を通じると Al(OH)₃ が沈殿：NaAlO₂＋CO₂＋2H₂O→Al(OH)₃＋NaHCO₃']},
+  {f:'KAl(SO₄)₂·12H₂O',n:'ミョウバン（カリミョウバン）',pts:['無色の八面体結晶。水に易溶','加水分解で弱酸性。水の浄化（凝集剤）・染めの媒染剤','焼きミョウバン（脱水）は食品添加物・消臭剤']}
+ ],
+ tests:[['Al³⁺ への反応','少量の NH₃ 水・NaOH で白色沈殿 Al(OH)₃、過剰の NaOH に溶ける']]},
+{id:'el-c',el:'C',name:'炭素',z:6,grade:'頻出',flame:'―',
+ summary:'同素体（ダイヤモンド・黒鉛）と、CO・CO₂ の性質の対比が中心。',
+ props:[['同素体','ダイヤモンド（正八面体・最硬）／黒鉛（黒色・電気伝導性・へき開）'],['常温常圧','固体'],['酸化数','＋2（CO）・＋4（CO₂）']],
+ sections:[{h:'同素体',body:'ダイヤモンドは各 C が共有結合で4個と結んだ原子価結晶（最硬・電気絶縁体）。黒鉛は六角形網面が重なった層状構造で面間が弱い（柔らかい・黒鉛筆・電極・減摩剤）。'}],
+ compounds:[
+  {f:'CO',n:'一酸化炭素',pts:['無色無臭の気体で劇毒（ヘモグロビンと結合）','還元剤：Fe₂O₃＋3CO→2Fe＋3CO₂（溶鉱炉内）','不完全燃焼で発生。2C＋O₂→2CO']},
+  {f:'CO₂',n:'二酸化炭素',pts:['無色無臭の気体。水にやや溶け（炭酸 H₂CO₃）、空気より重い','石灰水を白濁させる（CO₂ の検出）：Ca(OH)₂＋CO₂→CaCO₃＋H₂O','さらに通じると透明に戻る：CaCO₃＋CO₂＋H₂O→Ca(HCO₃)₂','固形物がドライアイス（昇華）']}
+ ],
+ tests:[['石灰水','白濁（CO₂ の検出）']]},
+{id:'el-si',el:'Si',name:'ケイ素',z:14,grade:'頻出',flame:'―',
+ summary:'14族の半導体・ガラスの主役。SiO₂ が石英・ガラスの成分で、水ガラス→ケイ酸→シリカゲルの関係が要点。',
+ props:[['常温常圧','黒灰色の固体（半導体）'],['酸化物','SiO₂：無色の硬い固体（石英・水晶・砂の主成分）'],['酸','ケイ酸 H₂SiO₃（弱酸）']],
+ sections:[{h:'性質',body:'SiO₂ は塩酸とは反応せず、フッ化水素酸とだけ反応：SiO₂＋4HF→SiF₄＋2H₂O。強塩基と反応：SiO₂＋2NaOH→Na₂SiO₃＋H₂O。'}],
+ compounds:[
+  {f:'SiO₂',n:'二酸化ケイ素（シリカ）',pts:['石英・水晶・砂・ガラスの主成分。塩酸に不溶','HF に溶けて SiF₄ を生じる（フッ酸でのガラス加工）']},
+  {f:'Na₂SiO₃',n:'メタケイ酸ナトリウム（水ガラス）',pts:['水溶液（水ガラス）は粘りのある塩基性液','接着剤・防火塗料・卵の保存に使う']},
+  {f:'H₂SiO₃',n:'ケイ酸',pts:['水ガラスに塩酸を加えると白色沈殿：Na₂SiO₃＋2HCl→H₂SiO₃＋2NaCl','加熱して乾燥するとシリカゲル（乾燥剤・吸着剤）']}
+ ],
+ tests:[]},
+{id:'el-pb',el:'Pb',name:'鉛',z:82,grade:'頻出',flame:'―',
+ summary:'鉛電池（Pb 陰極・PbO₂ 陽極・硫酸電解液）の材料として最重要。',
+ props:[['常温常圧','青白色の柔らかい金属（重い）'],['イオンの色','Pb²⁺ 無色'],['酸化物','PbO（黄）・PbO₂（黒褐色）']],
+ sections:[{h:'性質',body:'空気中で表面が酸化される。有毒重金属（鉛中毒）。水酸化物 Pb(OH)₂ は両性。'}],
+ compounds:[
+  {f:'PbO₂',n:'二酸化鉛',pts:['黒褐色の固体。強い酸化剤','鉛電池の陽極（＋極）の物質']},
+  {f:'PbSO₄',n:'硫酸鉛',pts:['白色沈殿。水に難溶','鉛電池の放電で両極に生成：Pb＋PbO₂＋2H₂SO₄→2PbSO₄＋2H₂O']}
+ ],
+ tests:[['鉛電池の放電','両極が PbSO₄ になり電解液の濃度が下がる']]},
+{id:'el-n',el:'N',name:'窒素',z:7,grade:'最重要',flame:'―',
+ summary:'N₂（不活性）から NH₃・硝酸への変化が核。NO・NO₂ の色と平衡、硝酸の酸化作用が最重要。',
+ props:[['常温常圧','無色無臭の気体（N₂・三重結合）'],['水への溶解','ほとんど溶けない'],['イオンの色','NH₄⁺・NO₃⁻ とも無色']],
  sections:[
-  {h:'性質',body:'酸化剤として燃焼を助ける。無極性分子だが水にわずかに溶け（魚が呼吸できる理由）、温度が低いほどよく溶ける。液体酸素は淡青色で磁石に引かれる（常磁性）。'},
-  {h:'生成と検出',body:'実験室では過酸化水素水に二酸化マンガン MnO₂ を触媒として加えて発生させる（2H₂O₂→2H₂O＋O₂）。燃えているマッチを入れると激しく燃えて復火する。'},
-  {h:'オゾン O₃',body:'酸素の同素体で、特有の臭いがある薄青色の気体。強い酸化力・殺菌力を持ち、成層圏で紫外線を吸収するオゾン層を作る。O₂ と O₃ のように同じ元素からなる異なる単体を「同素体」と呼ぶ（ダイヤモンドと黒鉛、黄リンと赤リンも同素体）。'}
- ],tests:[['燃えるマッチ','激しく燃えて復火']],refs:[['ksess','hama2']]},
-{id:'in-s',el:'S',name:'硫黄',cat:'os',grade:'最重要',z:16,g:16,p:3,
- summary:'黄色固体。同素体（斜方硫黄・単斜硫黄・ゴム状硫黄）と、硫酸の工業的製法（接触法）の中核になる元素。',
- props:[['常温常圧','黄色の固体（斜方硫黄）'],['同素体','斜方硫黄 S₈・単斜硫黄・ゴム状硫黄'],['燃焼','青色の炎で SO₂ を発生']],
+  {h:'単体の性質',body:'N≡N の三重結合が強く、常温では反応性が乏しい（保護ガス・不活性雰囲気）。高温高圧の触媒下で水素と化合（ハーバー・ボッシュ法）。'},
+  {h:'酸化物と硝酸',body:'NO（無色・空気中で酸化されて赤褐色 NO₂ に）→NO₂（赤褐色・刺激臭）→硝酸。硝酸は強酸で酸化剤：Cu と反応して NO（希硝酸）や NO₂（濃硝酸）を発生。'}
+ ],
+ compounds:[
+  {f:'NH₃',n:'アンモニア',pts:['無色・刺激臭。極めて水に溶けやすく、水溶液は弱塩基性','湿った赤色リトマス紙を青変（唯一の塩基性気体）','濃塩酸と白煙：NH₃＋HCl→NH₄Cl','ハーバー・ボッシュ法で合成：N₂＋3H₂⇌2NH₃','触媒存在で酸化されて NO になる（オストワルト法）']},
+  {f:'NO',n:'一酸化窒素',pts:['無色無臭の気体。水に難溶','空気中ですぐ酸化されて赤褐色の NO₂ になる：2NO＋O₂→2NO₂']},
+  {f:'NO₂',n:'二酸化窒素',pts:['赤褐色・刺激臭。強い酸化剤','2NO₂⇌N₂O₄（無色）の平衡（低温で N₂O₄ 側・高温で NO₂ 側）','水と反応して硝酸：3NO₂＋H₂O→2HNO₃＋NO']},
+  {f:'HNO₃',n:'硝酸',pts:['無色の液体（発煙硝酸）。強酸で強い酸化剤','Cu と：Cu＋4HNO₃（濃）→Cu(NO₃)₂＋2NO₂＋2H₂O','3Cu＋8HNO₃（希）→3Cu(NO₃)₂＋2NO＋4H₂O','金・白金には侵されない（王水には溶ける）']}
+ ],
+ tests:[['NH₃ の検出','湿った赤色リトマス紙を青変／濃塩酸のガラス棒で白煙'],['NO₃⁻ の検出','銅と濃硫酸を加えると赤褐色の NO₂（共存的に確認）']]},
+{id:'el-p',el:'P',name:'リン',z:15,grade:'頻出',flame:'―',
+ summary:'同素体（黄リン・赤リン）の対比と、P₄O₁₀・リン酸の性質が中心。',
+ props:[['同素体','黄リン（白色蝋様・毒性・二硫化炭素に溶ける）／赤リン（暗赤色粉末・無毒・不溶）'],['酸化物','P₄O₁₀：白色粉末（強力な脱水・乾燥剤）'],['酸','リン酸 H₃PO₄（三塩基酸・無色結晶）']],
  sections:[
-  {h:'性質と同素体',body:'空気中で青色の炎を上げて燃え、刺激臭の二酸化硫黄 SO₂ を生じる（S＋O₂→SO₂）。斜方硫黄は二硫化炭素 CS₂ に溶けるが、ゴム状硫黄は溶けない。加熱した硫黄を水の中に注ぐと急冷されてゴム状硫黄になる。'},
-  {h:'硫化水素 H₂S',body:'腐卵臭の有毒気体。水溶液（硫化水素水）は弱い二塩基酸で、金属イオンの沈殿分離（第4族〜第5族）に使う。PbS（黒色）、CuS（黑色）、ZnS（白色）、MnS（淡桃色）の色を覚える。空気中で酸化されて硫黄を析出する。'},
-  {h:'二酸化硫黄 SO₂',body:'刺激臭の無色気体で、漂白作用（酸化力というより還元作用による）と殺菌力がある。亜硫酸は空中の酸素でゆっくり硫酸に変わる。'}
- ],tests:[['硫化水素水（各金属イオン）','PbS 黒・CuS 黒・ZnS 白・MnS 淡桃色']],refs:[['ksess','ks','kj']]}
+  {h:'同素体',body:'黄リンは空気中で自然発火するので水中に保存（白リン病）。赤リンは自然発火せず安全マッチの側面に使用。燃やすとどちらも P₄O₁₀。'},
+  {h:'リン酸塩',body:'過リン酸石灰 Ca(H₂PO₄)₂＋CaSO₄·½H₂O：リン鉱石を硫酸で処理した肥料。'}
+ ],
+ compounds:[
+  {f:'P₄O₁₀',n:'五酸化二リン',pts:['白色粉末。水と激しく反応してリン酸：P₄O₁₀＋6H₂O→4H₃PO₄','気体の乾燥剤のうち最強の脱水剤（酸性乾燥剤）']},
+  {f:'H₃PO₄',n:'リン酸',pts:['無色の結晶（吸湿性）。三塩基酸で水溶液は弱酸性','H₂PO₄⁻・HPO₄²⁻・PO₄³⁻ の3段階の電離']}
+ ],
+ tests:[]},
+{id:'el-o',el:'O',name:'酸素',z:8,grade:'最重要',flame:'―',
+ summary:'助燃性の無色の気体。オゾン O₃ は同素体。酸化物・オキソ酸の母体。',
+ props:[['常温常圧','無色無臭の気体（O₂）'],['水への溶解','ほとんど溶けない（微量溶けて水生生物を支える）'],['同素体','O₃（オゾン：特異臭・強い酸化力）']],
+ sections:[
+  {h:'単体の性質',body:'助燃性。酸化剤として金属・非金属と化合する。復火した木片が再び燃えることで検出。実験室では 2H₂O₂→2H₂O＋O₂（MnO₂ 触媒）や 2KClO₃→2KCl＋3O₂（MnO₂ 触媒）で発生。'},
+  {h:'オゾン',body:'O₃ は O₂ より強い酸化剤で、漂白・殺菌・大気上層の紫外線吸収層に重要。'}
+ ],
+ compounds:[],tests:[['復火','再び燃える（O₂ の検出）']]},
+{id:'el-s',el:'S',name:'硫黄',z:16,grade:'最重要',flame:'―',
+ summary:'同素体と H₂S・SO₂・硫酸の性質が中心。特に硫酸の3性質（強酸・脱水・酸化）が最重要。',
+ props:[['同素体','斜方硫黄（黄色菱形）・単斜硫黄・ゴム状硫黄'],['常温常圧','黄色の脆い固体'],['酸化数','−2（H₂S）・＋4（SO₂）・＋6（H₂SO₄）']],
+ sections:[
+  {h:'単体・硫化物',body:'H₂S は腐卵臭の有毒気体で還元剤。湿った酢酸鉛紙を黒変させる（検出）。空気中で燃えると SO₂（青い炎）。'},
+  {h:'硫酸の3性質',body:'① 強酸（2段階の電離のうち第1段階は完全）。② 脱水剤（ショ糖や紙から H₂O を奪って炭化）。③ 熱した濃硫酸は強い酸化剤（Cu＋2H₂SO₄（濃）→CuSO₄＋SO₂＋2H₂O）。'}
+ ],
+ compounds:[
+  {f:'H₂S',n:'硫化水素',pts:['無色・腐卵臭の有毒気体。水にやや溶け弱酸性','還元剤：2H₂S＋O₂→2S＋2H₂O','金属イオンとの沈殿反応で陽イオン分離に使用']},
+  {f:'SO₂',n:'二酸化硫黄',pts:['無色・刺激臭の気体。水に易溶で亜硫酸（弱酸）','酸性気体で漂白・殺菌に使用（自身は還元剤）','触媒存在で酸化されて SO₃（接触法）']},
+  {f:'H₂SO₄',n:'硫酸',pts:['無色の粘り強い液体。水と混じると激しく発熱（希釈は酸を水に）','強酸・脱水剤・（熱濃硫酸は）酸化剤','接触法で製造：2SO₂＋O₂→2SO₃、SO₃＋H₂O→H₂SO₄']}
+ ],
+ tests:[['H₂S の検出','湿った酢酸鉛紙を黒変（PbS）'],['SO₂ の検出','過マンガン酸カリウムの紫色を脱色'],['SO₄²⁻ の検出','BaCl₂ で白色沈殿 BaSO₄（塩酸に不溶）']]},
+{id:'el-f',el:'F',name:'フッ素',z:9,grade:'頻出',flame:'―',
+ summary:'最も反応性の高い元素。単体 F₂ は淡黄色の気体で、水と反応して O₂ を発生する特異性と、HF のガラス腐食が要点。',
+ props:[['常温常圧','淡黄色の気体（F₂）'],['酸化力','ハロゲン中で最も強い（電気陰性度4.0・最大）'],['水との反応','2F₂＋2H₂O→4HF＋O₂（塩素と異なり O₂ を発生）']],
+ sections:[{h:'単体の性質',body:'暗所でも H₂ と爆発的に反応：H₂＋F₂→2HF。ほとんどの金属を常温で酸化する。'}],
+ compounds:[
+  {f:'HF',n:'フッ化水素',pts:['無色の刺激臭の気体。水溶液はフッ化水素酸（弱酸）','ガラス（SiO₂）を腐食：SiO₂＋4HF→SiF₄＋2H₂O','ポリエチレン瓶に保存（ガラス瓶不可）・ガラスの刻印']}
+ ],tests:[]},
+{id:'el-cl',el:'Cl',name:'塩素',z:17,grade:'最重要',flame:'―',
+ summary:'黄緑色・刺激臭の Cl₂。強い酸化剤で漂白・殺菌に使い、水との平衡（塩素水）と製法が最重要。',
+ props:[['常温常圧','黄緑色・刺激臭の気体（Cl₂）'],['水への溶解','やや溶ける（塩素水：Cl₂＋H₂O⇌HCl＋HClO）'],['酸化力','強い（I⁻・Br⁻ を酸化して単体に）']],
+ sections:[
+  {h:'単体の性質',body:'強い酸化剤で漂白・殺菌作用。塩素水は Cl₂＋H₂O⇌HCl＋HClO の平衡で酸性を示し、次亜塩素酸 HClO が漂白の本体。日光で HClO は分解：2HClO→2HCl＋O₂。'},
+  {h:'製法',body:'実験室：MnO₂ に濃塩酸を加えて加熱（MnO₂＋4HCl→MnCl₂＋Cl₂＋2H₂O）。工業：食塩水の電解（イオン交換膜法）の陽極から Cl₂。'}
+ ],
+ compounds:[
+  {f:'HCl',n:'塩化水素',pts:['無色・刺激臭。極めて水に溶けやすく塩酸（強酸）','湿った青色リトマス紙を赤変。アンモニアと白煙','乾燥剤は濃硫酸（酸性気体）']},
+  {f:'NaClO',n:'次亜塩素酸ナトリウム',pts:['水溶液は漂白剤（キッチン漂白剤）の主成分','塩基性で安定。酸性にすると Cl₂ を発生するので混ぜるな危険']},
+  {f:'CaCl(ClO)·H₂O',n:'さらし粉',pts:['消石灰に塩素を吸収させて製造：Ca(OH)₂＋Cl₂→Ca(ClO)₂·2H₂O（高度さらし粉）。消石灰に塩素を吸収させて製造','塩酸を加えると Cl₂ を発生：Ca(ClO)₂·2H₂O＋4HCl→CaCl₂＋4H₂O＋2Cl₂']}
+ ],
+ tests:[['湿ったヨウ化カリウムデンプン紙','青変（酸化力の確認）']]},
+{id:'el-br',el:'Br',name:'臭素',z:35,grade:'頻出',flame:'―',
+ summary:'常温で唯一の液体のハロゲン単体。赤褐色・揮発性で刺激臭。',
+ props:[['常温常圧','赤褐色の液体（Br₂・揮発性）'],['におい','刺激臭（臭素の語源）'],['水への溶解','やや溶ける（臭素水・赤褐色）']],
+ sections:[{h:'性質',body:'酸化力は Cl₂ より弱く I⁻ は酸化する：Br₂＋2KI→2KBr＋I₂。気体は Br₂（赤褐色）で、水溶液の臭素水も赤褐色。'}],
+ compounds:[
+  {f:'HBr',n:'臭化水素',pts:['無色・刺激臭の気体。水溶液は強酸','還元性があり濃硫酸では乾燥できない（P₄O₁₀ で乾燥）']},
+  {f:'AgBr',n:'臭化銀',pts:['淡黄色の沈殿。感光材（写真フィルム）：2AgBr→2Ag＋Br₂（光で分解）']}
+ ],tests:[['Br⁻ の検出','AgNO₃ で淡黄色沈殿 AgBr']]},
+{id:'el-i',el:'I',name:'ヨウ素',z:53,grade:'頻出',flame:'―',
+ summary:'紫黑色の固体で昇華し、デンプンを青変させる（デンプンの検出にも使う）。',
+ props:[['常温常圧','紫黒色の固体（I₂・金属光沢）'],['昇華','加熱で紫色の蒸気に（昇華）'],['水への溶解','ほとんど溶けない（KI 水溶液には溶ける：I₂＋I⁻→I₃⁻）']],
+ sections:[{h:'性質',body:'ハロゲンの中で最も酸化力が弱い。デンプンと青紫色の分子化合物を作る（デンプンの検出・ヨウ素デンプン反応）。チオ硫酸ナトリウムで脱色：I₂＋2Na₂S₂O₃→2NaI＋Na₂S₄O₆（ヨウ素滴定）。'}],
+ compounds:[
+  {f:'KI',n:'ヨウ化カリウム',pts:['無色結晶。水に易溶','I₂ の溶媒（ヨウ素カリウム水溶液）','I⁻ は Cl₂・Br₂ で酸化されて I₂ に：Cl₂＋2KI→2KCl＋I₂']},
+  {f:'AgI',n:'ヨウ化銀',pts:['黄色の沈殿。光で分解（感光材）']}
+ ],tests:[['デンプン','青紫色に変化'],['I⁻ の検出','AgNO₃ で黄色沈殿 AgI']]},
+{id:'el-zn',el:'Zn',name:'亜鉛',z:30,grade:'頻出',flame:'―',
+ summary:'両性金属。希酸との H₂ 発生・ダニエル電池の負極・ZnO の色変化が要点。',
+ props:[['常温常圧','青白色の金属'],['両性','塩酸にも NaOH 水溶液にも溶ける'],['イオンの色','Zn²⁺ 無色']],
+ sections:[
+  {h:'単体の性質',body:'イオン化傾向は H より大きい。希硫酸・塩酸に溶けて H₂ を発生：Zn＋H₂SO₄→ZnSO₄＋H₂（実験室の水素発生）。水酸化ナトリウム水溶液にも溶ける：Zn＋2NaOH＋2H₂O→Na₂[Zn(OH)₄]＋H₂。'}
+ ],
+ compounds:[
+  {f:'ZnO',n:'酸化亜鉛',pts:['白色粉末（亜鉛華）。両性酸化物','加熱すると黄色、冷却すると白色に戻る（温度による色変化）','白黒顔料（亜鉛白）・皮膚薬']},
+  {f:'Zn(OH)₂',n:'水酸化亜鉛',pts:['白色の両性水酸化物','塩酸に溶けて ZnCl₂、NaOH に溶けて Na₂[Zn(OH)₄]（亜鉛酸ナトリウム）','過剰のアンモニア水に溶けて無色の [Zn(NH₃)₄]²⁺（テトラアンミン亜鉛）']}
+ ],
+ tests:[['ダニエル電池','負極：Zn→Zn²⁺＋2e⁻（亜鉛の溶解）']]},
+{id:'el-fe',el:'Fe',name:'鉄',z:26,grade:'最重要',flame:'―',
+ summary:'Fe²⁺（淡緑）と Fe³⁺（黄褐色）の酸化還元・沈殿の色変化、製鉄（溶鉱炉）が最重要。',
+ props:[['常温常圧','銀白色の金属（灰白色）'],['イオンの色','Fe²⁺ 淡水色（水溶液は淡緑）・Fe³⁺ 黄褐色'],['酸化物','FeO（黒）・Fe₂O₃（赤褐色）・Fe₃O₄（黒）']],
+ sections:[
+  {h:'Fe²⁺ と Fe³⁺ の相互変化',body:'酸化：Fe²⁺ は空気中で徐々に Fe³⁺ へ（酸性下で H₂O₂・硝酸などで速やかに）。還元：Fe³⁺ は Fe・KI・H₂S などで Fe²⁺ に。Fe³⁺ は KSCN で血赤色、K₃[Fe(CN)₆]（赤血塩）で濃青色（ターンブル青）、K₄[Fe(CN)₆]（黄血塩）で暗青緑色? の沈殿。'},
+  {h:'製鉄と腐食',body:'溶鉱炉：Fe₂O₃＋3CO→2Fe＋3CO₂（CO による還元）。転炉で C を除き鋼に。腐食は Fe→Fe²⁺ が O₂・H₂O で進行し、Fe(OH)₂→Fe(OH)₃（赤褐色）へ。'}
+ ],
+ compounds:[
+  {f:'Fe₂O₃',n:'酸化鉄(III)（ヘマタイト）',pts:['赤褐色の固体。鉄鉱石の主成分','溶鉱炉で CO により還元されて鉄になる','ベンガラ（顔料・触媒）']},
+  {f:'Fe₃O₄',n:'四酸化三鉄',pts:['黑色の固体。マグネタイト（磁鉄鉱）','FeO と Fe₂O₃ の混合酸化物とみなせる']},
+  {f:'FeSO₄·7H₂O',n:'硫酸鉄(II)（緑礬）',pts:['淡緑色の結晶。水に易溶','Fe²⁺ の供給源・還元剤']}
+ ],
+ tests:[['Fe²⁺','K₃[Fe(CN)₆]（赤血塩）で濃青色沈殿'],['Fe³⁺','KSCN で血赤色・K₄[Fe(CN)₆]（黄血塩）で青緑色沈殿']],
+ flow:['Fe₂O₃','＋CO（溶鉱炉）','Fe','＋O₂（転炉）','鋼']},
+{id:'el-cu',el:'Cu',name:'銅',z:29,grade:'最重要',flame:'―',
+ summary:'Cu²⁺（青色）の色と沈殿、テトラアンミン銅(II)錯イオンの深青色、電解精製が最重要。',
+ props:[['常温常圧','赤褐色の金属（イオン化傾向は H より小さい）'],['イオンの色','Cu²⁺ 青色（水溶液）'],['酸化物','CuO（黑色）・Cu₂O（赤色）']],
+ sections:[
+  {h:'単体の性質',body:'希酸には溶けない（イオン化傾向が H 未満）。硝酸・熱濃硫酸には酸化されて溶ける。湿った空気中で緑青（塩基性炭酸銅）を生じる。'},
+  {h:'錯イオン',body:'Cu²⁺ に少量のアンモニア水→青白色沈殿 Cu(OH)₂、過剰→深青色 [Cu(NH₃)₄]²⁺（テトラアンミン銅(II)）。'}
+ ],
+ compounds:[
+  {f:'CuO',n:'酸化銅(II)',pts:['黑色の固体。塩基性酸化物：CuO＋2HCl→CuCl₂＋H₂O','アルコールの酸化の触媒（CuO を赤熱→Cu に還元→再酸化で触媒）']},
+  {f:'Cu₂O',n:'酸化銅(I)',pts:['赤色の固体。フェーリング反応の赤色沈殿（Cu₂O）']},
+  {f:'CuSO₄·5H₂O',n:'硫酸銅(II)五水和物（胆礬）',pts:['青色の結晶。水に易溶（水溶液は青色）','加熱すると無水 CuSO₄（白色）→ 水を加えると青変（水の検出にも使う）']}
+ ],
+ tests:[['Cu²⁺ の検出','少量の NH₃ 水で青白色沈殿 Cu(OH)₂、過剰で深青色 [Cu(NH₃)₄]²⁺']]},
+{id:'el-ag',el:'Ag',name:'銀',z:47,grade:'頻出',flame:'―',
+ summary:'イオン化傾向が最小級の金属。ハロゲン化銀の色・感光性、アンミン錯イオン、銀鏡反応が要点。',
+ props:[['常温常圧','銀白色の金属（電気伝導率最大）'],['イオンの色','Ag⁺ 無色'],['ハロゲン化物','AgCl 白・AgBr 淡黄・AgI 黄（光で分解）']],
+ sections:[{h:'性質',body:'希酸にも溶けない。硝酸には溶ける（AgNO₃）。アンモニア性硝酸銀溶液はアルデヒドで還元されて銀鏡を生じる。'}],
+ compounds:[
+  {f:'AgNO₃',n:'硝酸銀',pts:['無色結晶。水に易溶','ハロゲン化物イオンの検出試薬（AgCl・AgBr・AgI の色で判別）','塩酸には白色沈殿 AgCl（アンモニア水に溶ける）']},
+  {f:'AgBr',n:'臭化銀',pts:['淡黄色の沈殿。光で分解して黒色の銀：2AgBr→2Ag＋Br₂（写真の感光）']}
+ ],
+ tests:[['Cl⁻・Br⁻・I⁻ の判別','AgNO₃ で白・淡黄・黄の沈殿（色で判別）']]},
+{id:'el-cr',el:'Cr',name:'クロム',z:24,grade:'頻出',flame:'―',
+ summary:'Cr³⁺（緑）・Cr₂O₇²⁻（橙）・CrO₄²⁻（黄）の色と平衡（クロム酸−重クロム酸）が中心。',
+ props:[['常温常圧','銀白色の硬い金属'],['イオンの色','Cr³⁺ 緑色・Cr₂O₇²⁻ 橙色・CrO₄²⁻ 黄色'],['酸化数','＋3・＋6']],
+ sections:[
+  {h:'色と平衡',body:'酸性で：2CrO₄²⁻（黄）＋2H⁺⇌Cr₂O₇²⁻（橙）＋H₂O。塩基性では CrO₄²⁻ 側、酸性では Cr₂O₇²⁻ 側に移動（色で酸塩基性を判別できる）。重クロム酸カリウム K₂Cr₂O₇ は橙色の酸化剤（酸性で Cr³⁺ 緑へ還元）。'}
+ ],
+ compounds:[
+  {f:'K₂Cr₂O₇',n:'重クロム酸カリウム',pts:['橙色の結晶。酸性で強い酸化剤（Cr₂O₇²⁻＋14H⁺＋6e⁻→2Cr³⁺＋7H₂O）','アルコール検知の酸化剤'],
+  },
+  {f:'Cr₂(SO₄)₃',n:'硫酸クロム(III)',pts:['Cr³⁺（緑色）の溶液。酸化すると CrO₄²⁻（黄色）に']}
+ ],tests:[]},
+{id:'el-mn',el:'Mn',name:'マンガン',z:25,grade:'頻出',flame:'―',
+ summary:'KMnO₄（紫色）の酸化力と MnO₂ の触媒作用が中心。酸性・塩基性・中性での還元生成物の違いが重要。',
+ props:[['常温常圧','灰白色の硬い金属'],['イオンの色','Mn²⁺ 無色（淡桃）・MnO₄⁻ 紫色・MnO₄²⁻ 緑色'],['酸化数','＋2・＋4・＋7']],
+ sections:[
+  {h:'過マンガン酸カリウム',body:'MnO₄⁻ は紫色の強い酸化剤。酸性で Mn²⁺（無色）、中性で MnO₂（黑色沈殿）、塩基性で MnO₄²⁻（緑色）に還元される。酸性での定量分析（過マンガン酸滴定）に使用。'},
+  {h:'二酸化マンガン',body:'黑色固体。過酸化水素の分解・塩素酸カリウムの熱分解の触媒、塩素の実験室製法の酸化剤。'}
+ ],
+ compounds:[
+  {f:'KMnO₄',n:'過マンガン酸カリウム',pts:['紫色の結晶。強い酸化剤（酸性・塩基性で還元生成物が異なる）','SO₂・H₂S・シュウ酸などの定量に使う']},
+  {f:'MnO₂',n:'二酸化マンガン',pts:['黑色の粉末。触媒（H₂O₂・KClO₃ の分解）・塩素製造の酸化剤','乾電池の消極剤']}
+ ],tests:[['過酸化水素水','MnO₂ が触媒で O₂ 発生'],['KMnO₄（酸性）＋H₂O₂','紫色が消える']]}
 ];
-CHEM_INORG.push(
-{id:'in-n',el:'N',name:'窒素',cat:'np',grade:'最重要',z:7,g:15,p:2,
- summary:'単体 N₂ は三重結合の強い無色無臭の気体で、空気の約78%を占める。アンモニア→硝酸の工業連鎖（ハーバー・ボッシュ法→オストワルド法）が最大の出題ポイント。',
- props:[['常温常圧','無色無臭の気体（三重結合）'],['空気中の割合','約78体積%'],['分子量','28']],
- sections:[
-  {h:'性質',body:'N₂ は N≡N の三重結合が非常に強く、常温ではほとんど反応しない（不活性）。このため食材の包装ガスや保護ガスに使う。酸素と電気放電でわずかに NO を生じる。'},
-  {h:'アンモニア NH₃',body:'無色・刺激臭の気体で、水に非常によく溶け（アルカリ性）、液化しやすい。ハーバー・ボッシュ法（N₂＋3H₂⇌2NH₃、四三酸化鉄 Fe₃O₄ 系の触媒・約500℃・高圧）で工業製造され、ハーバーは1918年、ボッシュは高圧プロセスの開発で1931年にノーベル化学賞を受賞した。化成肥料（硫安・尿素）の出発物質。'},
-  {h:'硝酸 HNO₃',body:'オストワルド法で製造する：① アンモニアを白金 Pt 触媒で酸化して NO（4NH₃＋5O₂→4NO＋6H₂O）、② NO を酸素で NO₂ に、③ NO₂ を水に溶かして HNO₃（4NO₂＋O₂＋2H₂O→4HNO₃）。濃硝酸は黄色になる（自己酸化で NO₂ を溶かし込むため）。酸化剤として銅と激しく反応する。'},
-  {h:'NO と NO₂・平衡',body:'NO は無色、NO₂ は赤褐色の気体で、2NO₂⇌N₂O₄（四酸化二窒素・無色）の平衡を形成する。加圧すると N₂O₄ 側へ（色が淡く）、加熱すると NO₂ 側へ（色が濃く）移動する。正反応が発熱で分子数が減る平衡として、ルシャトリエの原理の代表例。'}
- ],tests:[['マグネシウム中で燃やす','窒化マグネシウム Mg₃N₂']],refs:[['hb','khaber','rhb','titech','kost','rost','env','zig','apec','np1','np2']]},
-{id:'in-p',el:'P',name:'リン',cat:'np',grade:'頻出',z:15,g:15,p:3,
- summary:'黄リンと赤リンの同素体が有名。空気中で自然発火する黄リンに対し、赤リンは安全マッチに使われる。肥料（過リン酸石灰）も出題される。',
- props:[['常温常圧','黄リン：淡黄色の蠟様固体／赤リン：暗赤色の粉末'],['同素体','黄リン（P₄）と赤リン'],['燃焼','五酸化二リン P₄O₁₀（白煙）']],
- sections:[
-  {h:'同素体の対比',body:'黄リンは二硫化炭素に溶け、空気中で自然発火する（水中に貯蔵）。毒性强。赤リンは二硫化炭素に溶けず、自然発火しない（安全マッチの側面）。加熱すると黄リン→赤リン、気化して冷やすと逆に黄リンへ戻る。'},
-  {h:'リン酸',body:'五酸化二リン P₄O₁₀ は水と反応して正リン酸 H₃PO₄ になる。リン酸は三塩基酸で、肥料（過リン酸石灰）や歯科材料（リン酸セメント）に使う。'}
- ],tests:[],refs:[['np2']]},
-{id:'in-c',el:'C',name:'炭素',cat:'cs',grade:'頻出',z:6,g:14,p:2,
- summary:'同素体（ダイヤモンド・黒鉛・C₆₀）の対比と、一酸化炭素・二酸化炭素の性質・検出が狙われる。',
- props:[['常温常圧','固体（黒鉛・ダイヤモンド）'],['同素体','ダイヤモンド・黒鉛・C₆₀（フラーレン）'],['燃焼','O₂ 中で CO₂（十分量）／CO（不十分）']],
- sections:[
-  {h:'同素体',body:'ダイヤモンドは共有結合の立方晶格子で最硬・電気不導体。黒鉛は六角形の層構造で、層間がはがれやすく電気をよく導く（電極・鉛筆）。C₆₀ はサッカーボール状の分子（フラーレン）。黒鉛は触媒や電極、ダイヤモンドは切断工具など工業用途の対比も定番。'},
-  {h:'一酸化炭素 CO',body:'無色・無臭の有毒気体（ヘモグロビンと結合）。還元剤として働き、金属製錬（酸化鉄を還元）に使う。二酸化炭素を赤熱炭素と反応させると CO になる（CO₂＋C→2CO）。'},
-  {h:'二酸化炭素 CO₂',body:'無色無臭の気体で、石灰水を白濁させる（Ca(OH)₂＋CO₂→CaCO₃）。ドライアイス（固体 CO₂）は昇華する。水溶液は弱酸性の炭酸で、塩基性の炭酸塩（Na₂CO₃／NaHCO₃）の対比が頻出。'}
- ],tests:[['石灰水','白濁（CaCO₃）']],refs:[['ksess']]},
-{id:'in-si',el:'Si',name:'ケイ素',cat:'cs',grade:'頻出',z:14,g:14,p:3,
- summary:'地殻で酸素に次いで多く、二酸化ケイ素 SiO₂（石英・ガラスの主成分）とけい酸塩鉱物、半導体材料としての純ケイ素がポイント。',
- props:[['常温常圧','固体（灰色・金属光沢）'],['地殻中の存在','酸素に次ぐ'],['主な化合物','SiO₂（石英・砂）']],
- sections:[
-  {h:'性質',body:'炭素と同じ14族だが、ケイ素は金属的に振る舞う半導体。純度99.9999999%の高純度ケイ素をウエハーに切り、不純物を添加して半導体素子にする。'},
-  {h:'二酸化ケイ素 SiO₂',body:'石英・水晶・砂の主成分。極めて硬く、酸に侵されないがフッ化水素酸 HF とは反応する（SiO₂＋4HF→SiF₄＋2H₂O）。水ガラス（けい酸ナトリウム）からけい酸ゲル（乾燥剤）を作る話も出題される。'}
- ],tests:[],refs:[['ksess']]},
-{id:'in-na',el:'Na',name:'ナトリウム（アルカリ金属）',cat:'am',grade:'最重要',z:11,g:1,p:3,
- summary:'1族の軟らかい軽金属。水と激しく反応して水素と NaOH を生じ、炎色反応は黄色。化合物（NaOH・Na₂CO₃・NaHCO₃）の工業製法が最大の狙い。',
- props:[['常温常圧','銀白色の軟らかい金属（ナイフで切れる）'],['密度','水より軽い'],['炎色反応','黄色'],['水との反応','2Na＋2H₂O→2NaOH＋H₂（激しく）']],
- sections:[
-  {h:'アルカリ金属の共通性',body:'Li・Na・K・Rb・Cs は最外殻電子が1個で、イオン化傾向がきわめて大きい。軟らかく融点が低く、水と激しく反応して強塩基の水溶液と水素を生じる。Li→Cs の順に反応性が増す。炎色反応は Li 深紅・Na 黄・K 紫（コバルトガラスで透過）・Rb 深赤・Cs 青緑。'},
-  {h:'水酸化ナトリウム NaOH（苛性ソーダ）',body:'工業では食塩水の電気分解で製造する。日本ではすべてイオン交換膜法になった：陽極室で塩素 Cl₂、陰極室で水素 H₂ と NaOH を生じ、陽イオン交換膜が Na⁺ だけを陰極側へ通す。水銀法・隔膜法との対比が頻出。'},
-  {h:'炭酸ナトリウム Na₂CO₃（ソルベー法）',body:'食塩と石灰石を原料にアンモニアを循環させて製造する。① NH₃＋CO₂＋H₂O＋NaCl→NaHCO₃（炭酸水素ナトリウムの沈殿）＋NH₄Cl、② 2NaHCO₃→Na₂CO₃＋H₂O＋CO₂（加熱分解）。アンモニアを繰り返し使う「アンモニア循環」が狙い。'},
-  {h:'炭酸水素ナトリウム NaHCO₃',body:'重曹。加熱すると分解して CO₂ を発生し、水溶液は弱塩基性。Na₂CO₃ と NaHCO₃ の加熱分解・水溶液の pH の違いが定番の設問。'}
- ],tests:[['炎色反応','黄色'],['フェノールフタレイン（NaOH水溶液）','紅色']],refs:[['im','agc','hama1','np4','sv','ksoda','rsoda','np1']]},
-{id:'in-ca',el:'Ca',name:'カルシウム（アルカリ土類金属）',cat:'ae',grade:'最重要',z:20,g:2,p:4,
- summary:'2族（アルカリ土類金属）の代表。CaCO₃⇌CaO⇌Ca(OH)₂ の一連の変化（石灰サイクル）と、硬水・軟水の対比が必出。',
- props:[['常温常圧','銀白色の金属（空気中で酸化被膜）'],['炎色反応','朱橙色'],['水との反応','Ca＋2H₂O→Ca(OH)₂＋H₂（常温で反応）']],
- sections:[
-  {h:'アルカリ土類金属の共通性',body:'Be・Mg・Ca・Sr・Ba は最外殻電子が2個。アルカリ金属より反応は穏やかだが、水と反応して水素と強塩基を生じる。炎色反応は Ca 朱橙・Sr 深紅・Ba 黄緑。硫酸塩は BaSO₄ が最も溶けにくい（硫酸の検出に使う）。'},
-  {h:'石灰サイクル',body:'石灰石 CaCO₃ を強熱すると二酸化炭素を放って生石灰 CaO に（CaCO₃→CaO＋CO₂）。CaO に水を加えると発熱して消石灰 Ca(OH)₂（CaO＋H₂O→Ca(OH)₂）。消石灰に CO₂ を通すと再び CaCO₃ が白濁する。すべて発熱／吸熱の向きも問われる。'},
-  {h:'硬水と軟水',body:'Ca²⁺・Mg²⁺ を多く含む水を硬水、少ない水を軟水という。石鹸の泡立ちが悪く、湯垢（スケール）がつく。CaO や Na₂CO₃ を加えて軟水化する。'},
-  {h:'石膏とマグネシウム',body:'セッコウ CaSO₄·2H₂O は焼き石膏（CaSO₄·1/2H₂O）にして型取りに使う。Mg は軽量合金（マグネシウム合金）やマグネシウム燃烧で MgO（白い固体）を作る。'}
- ],tests:[['炎色反応','朱橙色'],['硝酸銀（SO₄²⁻）','白色沈殿 BaSO₄']],refs:[['ksess','np1']]},
-{id:'in-al',el:'Al',name:'アルミニウム（両性典型元素）',cat:'amphot',grade:'最重要',z:13,g:13,p:3,
- summary:'両性元素（酸にも塩基にも溶ける）の代表。酸化被膜による耐食性と、ホール・エルー法による酸化アルミニウムの熔融塩電解が最大の狙い。',
- props:[['常温常圧','銀白色の軽金属'],['表面','緻密な酸化アルミニウムの被膜（耐食性）'],['両性','酸にも塩基にも溶ける']],
- sections:[
-  {h:'両性の代表',body:'塩酸には Al＋6HCl→2AlCl₃＋3H₂、水酸化ナトリウム水溶液には 2Al＋2NaOH＋2H₂O→2NaAlO₂（アルミン酸ナトリウム）＋3H₂ で溶ける。酸化アルミニウム Al₂O₃ も酸にも塩基にも溶ける。Al(OH)₃ の白色沈殿が過剰の塩基に溶ける点も定番。'},
-  {h:'ホール・エルー法',body:'氷晶石 Na₃AlF₆ を加えて Al₂O₃ の融点を下げて熔融塩電解する。陽極は炭素（酸素と反応して消耗する）。軽くて電気をよく導くため、送電線・航空機・缶に使う。'},
-  {h:'錫と鉛',body:'Sn・Pb も両性（酸にも塩基にも溶ける）。はんだ（Sn-Pb 合金）の融点が低い理由（合金の融点は純金属より低い）も出題される。'}
- ],tests:[['塩酸','水素発生'],['NaOH 水溶液','アルミン酸塩（水素発生）']],refs:[['np7','jog']]},
-{id:'in-fe',el:'Fe',name:'鉄',cat:'tm',grade:'最重要',z:26,g:8,p:4,
- summary:'Fe²⁺（淡水色）と Fe³⁺（黄褐色）の色と反応、還元剤としての製錬（一酸化炭素による還元）が最大の狙い。',
- props:[['常温常圧','銀白色の金属（湿った空気で赤錆）'],['イオンの色','Fe²⁺ 淡水色、Fe³⁺ 黄褐色'],['磁石','常温の固体は磁性がある']],
- sections:[
-  {h:'Fe²⁺ と Fe³⁺ の変化',body:'Fe²⁺ 水溶液は空気中で酸化されて Fe³⁺ へ（淡水色→黄褐色）。Fe³⁺ に鉄を加えると Fe²⁺ へ還元（2Fe³⁺＋Fe→3Fe²⁺）。水酸化物の沈殿は Fe(OH)₂（白色→緑色→空気中で赤褐色に変化）と Fe(OH)₃（赤褐色）。'},
-  {h:'検出反応',body:'Fe³⁺ にチオシアン酸カリウム KSCN を加えると血赤色（[Fe(SCN)]²⁺）。Fe²⁺・Fe³⁺ にフェリシアン化カリウム K₃[Fe(CN)₆] を加えると紺青の沈殿。Fe³⁺ にフェロシアン化カリウム K₄[Fe(CN)₆] を加えると青色沈殿（ベルリン青）。'},
-  {h:'製錬',body:'高炉で酸化鉄 Fe₂O₃ をコークスからできる CO で還元して粗鉄を得る（Fe₂O₃＋3CO→2Fe＋3CO₂）。不純物を除くため転炉で酸素を吹き込む。さびの主成分は Fe₂O₃·nH₂O。'}
- ],tests:[['KSCN（Fe³⁺）','血赤色'],['K₃[Fe(CN)₆]（Fe²⁺）','紺青沈殿']],refs:[['np7','jog']]},
-{id:'in-cu',el:'Cu',name:'銅',cat:'tm',grade:'最重要',z:29,g:11,p:4,
- summary:'Cu²⁺（青色）と CuO・Cu₂O の色、硝酸・硫酸への溶解、アンモニアによるテトラアンミン錯イオン形成が必出。',
- props:[['常温常圧','赤褐色の金属'],['イオンの色','Cu²⁺ 水色（青色）'],['表面','湿った空気で緑青（塩基性炭酸銅）']],
- sections:[
-  {h:'性質と色',body:'CuO（黒色）は H₂ や CO で還元されて赤色の Cu₂O／Cu になる。CuSO₄·5H₂O（青色結晶）は加熱すると白色の無水硫酸銅 CuSO₄ になる（水の検出）。'},
-  {h:'酸への溶解',body:'銅は希硫酸・希塩酸には溶けない（イオン化傾向が水素より小さい）が、酸化性の酸には溶ける：Cu＋4HNO₃(濃)→Cu(NO₃)₂＋2NO₂＋2H₂O、3Cu＋8HNO₃(希)→3Cu(NO₃)₂＋2NO＋4H₂O、温濃硫酸にも溶ける。'},
-  {h:'アンモニア錯体',body:'硫酸銅水溶液に少量のアンモニア水で青色沈殿 Cu(OH)₂、過剰のアンモニア水で深青色のテトラアンミン銅(II)イオン [Cu(NH₃)₄]²⁺ になる（配位結合）。塩酸を加えると CuCl₄²⁻ の黄色溶液へ変わる話も。'},
-  {h:'検出',body:'フェロシアン化カリウム K₄[Fe(CN)₆] で赤褐色の Cu₂[Fe(CN)₆] の沈殿。炎色反応は緑色。'}
- ],tests:[['K₄[Fe(CN)₆]','赤褐色沈殿'],['過剰アンモニア水','深青色溶液']],refs:[['jcu','zigcu','ksaku','np7']]},
-{id:'in-ag',el:'Ag',name:'銀',cat:'tm',grade:'頻出',z:47,g:11,p:5,
- summary:'イオン化傾向が最も小さい（Au の次）金属。ハロゲン化銀の色と感光性、アンモニア錯イオン（銀鏡反応）が狙われる。',
- props:[['常温常圧','銀白色の金属'],['ハロゲン化物','AgCl 白（光で黒変）・AgBr 淡黄・AgI 黄'],['イオンの色','Ag⁺ 無色']],
- sections:[
-  {h:'性質',body:'イオン化傾向が水素より小さく、塩酸や希硫酸には溶けないが、酸化性の酸（硝酸）には溶ける。塩化銀 AgCl は光を当てると分解して黒変する（写真フィルムの原理）。'},
-  {h:'アンモニア錯体',body:'AgCl にアンモニア水を加えるとジアンミン銀(I)イオン [Ag(NH₃)₂]⁺ として溶ける（AgCl＋2NH₃→[Ag(NH₃)₂]⁺＋Cl⁻）。この溶液に還元性の糖（ブドウ糖など）を加えて加熱すると銀鏡反応が起きる。'}
- ],tests:[['硝酸銀（Cl⁻・Br⁻・I⁻）','AgCl 白／AgBr 淡黄／AgI 黄']],refs:[['ksaku','ksess']]},
-{id:'in-zn',el:'Zn',name:'亜鉛',cat:'tm',grade:'頻出',z:30,g:12,p:4,
- summary:'両性元素で、イオン化傾向が水素より大きい代表的な還元剤（水素の発生、脱酸剤）。空気中で亜鉛華 ZnO の被膜を作る。',
- props:[['常温常圧','青白色の金属'],['イオンの色','Zn²⁺ 無色'],['両性','酸にも塩基にも溶ける']],
- sections:[
-  {h:'性質',body:'希硫酸・塩酸で水素を発生（Zn＋2HCl→ZnCl₂＋H₂）。NaOH 水溶液では亜鉛酸塩 ZnO₂²⁻ として溶ける。酸化亜鉛 ZnO（白色）は黄色に発色し冷却で白色へ戻る（熱色変化）。硫化亜鉛 ZnS は白色沈殿。'},
-  {h:'防錆',body:'鉄の表面に亜鉛をめっきすると、キズから先に亜鉛が溶けて鉄を守る（犠牲防蝕）。亜鉛めっき鉄板（トタン板）の語も出題される。'}
- ],tests:[['NaOH 水溶液','水素発生（両性）']],refs:[['np7','ksess']]},
-{id:'in-cr',el:'Cr',name:'クロム',cat:'tm',grade:'頻出',z:24,g:6,p:4,
- summary:'Cr³⁺（緑色）と Cr₂O₇²⁻（橙色）／CrO₄²⁻（黄色）の平衡が最大の狙い。強い還元性の酸性溶液として二クロ酸塩を使う。',
- props:[['常温常圧','銀白色の硬い金属'],['イオンの色','Cr³⁺ 緑色・Cr₂O₇²⁻ 橙色・CrO₄²⁻ 黄色'],['酸化数','＋2・＋3・＋6']],
- sections:[
-  {h:'性質と色',body:'常温では酸・アルカリに侵されにくい（不動態化）。水溶液中の色：Cr³⁺ 緑色、Cr₂O₇²⁻（二クロ酸イオン）橙色、CrO₄²⁻（クロム酸イオン）黄色。'},
-  {h:'二クロ酸イオンの平衡',body:'Cr₂O₇²⁻＋H₂O⇌2CrO₄²⁻＋2H⁺ で、酸性では橙色の Cr₂O₇²⁻、塩基性では黄色の CrO₄²⁻ が優勢。酸性の二クロ酸カリウム K₂Cr₂O₇ は強い酸化剤（二酸化硫黄やアルコールを酸化）。'}
- ],tests:[['SO₂ 通気（K₂Cr₂O₇ 酸性）','橙色→緑色（Cr³⁺）']],refs:[['ksaku','ksess']]},
-{id:'in-mn',el:'Mn',name:'マンガン',cat:'tm',grade:'頻出',z:25,g:7,p:4,
- summary:'過マンガン酸カリウム KMnO₄（紫色）の強い酸化力と、二酸化マンガン MnO₂ の触媒作用（過酸化水素の分解）が最大の狙い。',
- props:[['常温常圧','灰白色の硬い金属'],['イオンの色','Mn²⁺ 無色（淡桃色）・MnO₄⁻ 紫色'],['酸化数','＋2・＋4・＋7']],
- sections:[
-  {h:'過マンガン酸カリウム',body:'MnO₄⁻ は紫色の強い酸化剤。酸性・塩基性・中性で還元後の生成物が違う：酸性では Mn²⁺（無色）、塩基性では MnO₄²⁻（緑色）、中性では MnO₂（黑色沈殿）。還元の化学量論（酸性で5e⁻ 受ける）が頻出計算。'},
-  {h:'二酸化マンガン',body:'黑色固体。過酸化水素水の分解や塩素酸カリウムの熱分解の触媒、塩素の実験室製法の酸化剤として使う。'}
- ],tests:[['過酸化水素水','MnO₂ が触媒で O₂ 発生'],['KMnO₄ 溶液（酸性）','還元で紫色が消える']],refs:[['ksaku','ksess']]},
-{id:'in-gas',el:'',name:'気体の性質（総括）',cat:'gas',grade:'最重要',z:0,g:0,p:0,
- summary:'入試で出る気体の色・臭い・水への溶解度・検出法の一覧。共通テストでは「この気体はどれか」の判別に直結する。',
- props:[],sections:[
-  {h:'色と臭い',body:'無色：H₂・O₂・N₂・CO₂・CO・NH₃・HCl・SO₂・NO。有色：Cl₂ 黄緑、NO₂ 赤褐、Br₂ 赤褐（液体）、I₂ 紫黒（固体・紫蒸気）。臭い：NH₃（アンモニア臭）、HCl（刺激臭）、SO₂（刺激臭）、H₂S（腐卵臭）。'},
-  {h:'水への溶けやすさ',body:'よく溶ける：NH₃（アルカリ性）、HCl（酸性）。やや溶ける：SO₂、Cl₂、CO₂（酸性）。ほとんど溶けない：H₂・O₂・N₂・CO。また空気より重いのは CO₂・SO₂・Cl₂、軽いのは H₂・NH₃・N₂・CO。'},
-  {h:'検出法まとめ',body:'O₂：復火。H₂：パチンという音。CO₂：石灰水白濁。NH₃：濃塩酸の白煙／湿った赤色リトマス紙を青変。HCl：湿った青色リトマス紙を赤変・アンモニアの白煙。SO₂：脱色（酸化力あり）。NO：空気中で NO₂（赤褐色）へ変わる。Cl₂：湿ったヨウ化カリウムデンプン紙青変。'}
- ],tests:[],refs:[['apec','zig','hama2']]},
-{id:'in-ind',el:'',name:'工業的製法（総括）',cat:'ind',grade:'最重要',z:0,g:0,p:0,
- summary:'ハーバー・ボッシュ法、オストワルド法、接触法、ソルベー法、金属の製錬など、入試で出る工業的製法を一括整理。',
- props:[],sections:[
-  {h:'窒素・アンモニア系',body:'ハーバー・ボッシュ法：N₂＋3H₂⇌2NH₃、Fe₃O₄ 系の触媒・中程度の温度（約500℃）・高圧。オストワルド法：アンモニアを Pt 触媒で酸化して NO → NO₂ → 硝酸。'},
-  {h:'硫酸・塩素系',body:'接触法：S→SO₂、SO₂ を V₂O₅（五酸化バナジウム）触媒・450℃付近で酸化して SO₃、濃硫酸に吸収させて発煙硫酸→希釈して硫酸。塩素：食塩水の電気分解（イオン交換膜法）で陽極から。苛性ソーダも同時に得る。'},
-  {h:'ソーダ系',body:'ソルベー法（アンモニアソーダ法）：食塩と石灰石を原料に、アンモニアを循環させて NaHCO₃ を析出させ、加熱分解して Na₂CO₃。'},
-  {h:'金属の製錬',body:'銅：硫化鉱を焙焼→乾式製錬で粗銅→電解精製（電気銅）。湿式製錬は酸化銅鉱を希硫酸で溶かす方法。アルミニウム：ホール・エルー法（氷晶石で Al₂O₃ の融点を下げる熔融塩電解）。チタン：クロール法（TiO₂ を塩素化して TiCl₄ にしてから Mg 還元、スポンジチタン）。鉄：高炉で CO 還元→転炉で精錬。'}
- ],tests:[],refs:[['hb','ks','sv','cr','im','np1','np2','np4','np7','jog','kj','hama2','agc']]},
-{id:'in-cx',el:'',name:'錯イオン（総括）',cat:'cx',grade:'最重要',z:0,g:0,p:0,
- summary:'金属イオンに配位子（NH₃・CN⁻・SCN⁻・H₂O など）が結びついた錯イオンの色・配位数・名称。共通テストの色判別問題で最頻出。',
- props:[],sections:[
-  {h:'主な錯イオンの色',body:'[Cu(NH₃)₄]²⁺ テトラアンミン銅(II)：深青色。[Fe(SCN)]²⁺（チオシアン酸鉄）：血赤色。[Fe(CN)₆]⁴⁻ フェロシアン化物：黄色。K₄[Fe(CN)₆]（黄血塩）と K₃[Fe(CN)₆]（赤血塩）の対比。[Ag(NH₃)₂]⁺ ジアンミン銀(I)：無色。[Zn(NH₃)₄]²⁺ テトラアンミン亜鉛(II)：無色。'},
-  {h:'配位数と構造',body:'[Cu(NH₃)₄]²⁺ は高校では平面四配位で扱う（実際は水2分子を軸方向に含む六配位）。[Ag(NH₃)₂]⁺ は直線二配位。配位結合は中心金属が電子対を受け取る共有結合。'},
-  {h:'アンモニア錯体の見分け方',body:'Cu²⁺・Ag⁺・Zn²⁺ は少量のアンモニア水で水酸化物の沈殿、過剰のアンモニア水で錯イオンとして溶ける。Fe³⁺ は沈殿したまま（赤褐色）で錯イオンを作らない点が狙い。'}
- ],tests:[],refs:[['ksaku','jcu','zigcu']]}
-);
-/* 検証用エクスポート（index.html統合時は使用しない） */
-if(typeof module!=='undefined'&&module.exports){module.exports={CHEM_INORG_REFS,CHEM_INORG_CATS,CHEM_INORG};}
+
+/* 気体の性質の総括（表） */
+const CHEM_GASES=[
+ ['H₂','無色','無臭','難溶','可燃・還元性','濃硫酸','水上'],
+ ['O₂','無色','無臭','難溶','助燃・復火','濃硫酸','水上'],
+ ['N₂','無色','無臭','難溶','不活性（N₂）','濃硫酸','水上'],
+ ['Cl₂','黄緑色','刺激臭','やや溶','漂白・殺菌','濃硫酸','上方'],
+ ['HCl','無色','刺激臭','易溶','酸性（塩酸）','濃硫酸','上方'],
+ ['H₂S','無色','腐卵臭','やや溶','還元性・有毒','CaCl₂（濃硫酸は不可）','水上'],
+ ['SO₂','無色','刺激臭','易溶','漂白・還元性','濃硫酸','下方'],
+ ['NH₃','無色','刺激臭','極めて易溶','塩基性','ソーダ石灰（CaO）','下方'],
+ ['NO','無色','無臭','難溶','空気中で NO₂ に変化','―','水上'],
+ ['NO₂','赤褐色','刺激臭','溶ける','強酸化性','濃硫酸','上方'],
+ ['CO','無色','無臭','難溶','毒性・還元性','濃硫酸','水上'],
+ ['CO₂','無色','無臭','やや溶','石灰水を白濁','濃硫酸','上方']
+];
+const CHEM_GAS_NOTES=[
+ '捕集法：水上置換＝水に溶けにくい気体（H₂・O₂・N₂・NO・CO・H₂S）。下方置換＝空気より軽く水に溶ける気体（NH₃）。上方置換＝空気より重く水に溶ける気体（Cl₂・HCl・SO₂・CO₂・NO₂）。',
+ '乾燥剤の選択：酸性乾燥剤（濃硫酸・P₄O₁₀）は酸性・中性の気体に。塩基性乾燥剤（CaO・ソーダ石灰）は塩基性・中性の気体に。中性乾燥剤（CaCl₂・シリカゲル）はすべての気体に使えるが、NH₃ は CaCl₂ と反応するため不可。',
+ 'H₂S は還元性のため濃硫酸（酸化剤）では乾燥できない。NO は乾燥剤の選択が難しく、水上置換が基本。'
+];
+
+/* 工業的製法の総括（フロー図） */
+const CHEM_IND=[
+ {name:'硫酸の製法（接触法）',flow:['SO₂','O₂・V₂O₅','SO₃','H₂O','H₂SO₄'],
+  eqs:['2SO₂＋O₂⇌2SO₃（触媒 V₂O₅・約450℃・発熱）','SO₃＋H₂O→H₂SO₄'],
+  notes:['実際には SO₃ を濃硫酸に吸収させて発煙硫酸にし、水で希釈して硫酸にする（SO₃ は直接水に入れるとミストになる）','圧力は常圧（高圧にしても平衡移動の利益が小さい）']},
+ {name:'アンモニアの製法（ハーバー・ボッシュ法）',flow:['N₂＋3H₂','Fe 触媒','2NH₃'],
+  eqs:['N₂＋3H₂⇌2NH₃（触媒：酸化鉄 Fe₃O₄ 系・約400～500℃・数百気圧）'],
+  notes:['発熱反応なので低温が平衡には有利、反応速度には高温が有利→中程度の温度・高圧が採用される','未反応の N₂・H₂ は循環して再利用']},
+ {name:'硝酸の製法（オストワルト法）',flow:['NH₃','O₂・Pt','NO','O₂','NO₂','H₂O','HNO₃'],
+  eqs:['4NH₃＋5O₂→4NO＋6H₂O（触媒 Pt）','2NO＋O₂→2NO₂','3NO₂＋H₂O→2HNO₃＋NO'],
+  notes:['全体では NH₃＋2O₂→HNO₃＋H₂O に相当','NO を回収して再循環させる']},
+ {name:'水酸化ナトリウムと塩素（イオン交換膜法）',flow:['精製食塩水','電解','Cl₂（陽極）＋H₂（陰極）＋NaOH（陰極室）'],
+  eqs:['陽極：2Cl⁻→Cl₂＋2e⁻','陰極：2H₂O＋2e⁻→H₂＋2OH⁻（Na⁺ と合わせて NaOH）'],
+  notes:['隔膜にイオン交換膜を使い、Na⁺ だけが陰極室へ移動','素焼きの隔膜を使う旧式の隔膜法（素焼きの隔膜）では NaOH に NaCl が混ざる']},
+ {name:'炭酸ナトリウムの製法（ソルベー法・アンモニアソーダ法）',flow:['NaCl＋NH₃＋CO₂＋H₂O','析出','NaHCO₃','加熱','Na₂CO₃'],
+  eqs:['NH₃＋CO₂＋H₂O＋NaCl→NaHCO₃＋NH₄Cl（NaHCO₃ の溶解度が小さく析出）','2NaHCO₃→Na₂CO₃＋H₂O＋CO₂（約150℃）'],
+  notes:['原料は食塩と石灰石（CaCO₃→CaO＋CO₂）。CaO は NH₄Cl から NH₃ を回収：2NH₄Cl＋CaO→2NH₃＋CaCl₂＋H₂O','アンモニアは循環して再利用']},
+ {name:'鉄の製錬（溶鉱炉→転炉）',flow:['鉄鉱石＋コークス','溶鉱炉','銑鉄','転炉（O₂）','鋼'],
+  eqs:['C＋O₂→CO₂','CO₂＋C→2CO','Fe₂O₃＋3CO→2Fe＋3CO₂'],
+  notes:['石灰石は不純物（ケイ酸塩）とスラグを作るために加える','転炉で酸素を吹き込んで C を除き、鋼とする']},
+ {name:'アルミニウムの製法（ホール・エルー法）',flow:['ボーキサイト','バイヤー法精製','Al₂O₃','氷晶石と溶融電解','Al'],
+  eqs:['2Al₂O₃→4Al（陰極）＋3O₂（陽極）'],
+  notes:['氷晶石 Na₃AlF₆ を加えて融点（約2050℃→約1000℃）を下げて溶融塩電解','ボーキサイト（Al₂O₃·nH₂O）を NaOH で処理して精製するのがバイヤー法']},
+ {name:'石灰の製法（石灰石の熱分解）',flow:['CaCO₃','強熱','CaO','＋H₂O','Ca(OH)₂'],
+  eqs:['CaCO₃→CaO＋CO₂（約900℃）','CaO＋H₂O→Ca(OH)₂（発熱）'],
+  notes:['CaO（生石灰）は乾燥剤・セメント原料。Ca(OH)₂（消石灰）はマセメント? 壁・消毒剤']}
+];
+
+/* 炎色反応の総括（表） */
+const CHEM_FLAME=[
+ ['Li（リチウム）','緋色（深紅）'],['Na（ナトリウム）','黄色'],['K（カリウム）','淡紫色（コバルトガラス越しに観察）'],['Rb（ルビジウム）','濃赤紫（紫色）'],['Cs（セシウム）','青紫色'],
+ ['Ca（カルシウム）','橙赤色'],['Sr（ストロンチウム）','紅色（深紅）'],['Ba（バリウム）','黄緑色'],['Cu（銅）','青緑色'],['Zn（亜鉛）','示さない（白色に近い）'],['Be・Mg・Al・Fe など','炎色反応を示さない']
+];
+const CHEM_FLAME_NOTES=[
+ '観察方法：白金線（またはマイナスイオンの影響を除くため塩酸で湿らせた白金線）に試料を付け、酸化炎（無色の炎）に入れる。',
+ 'K の淡紫色は Na の黄色に隠れるので、コバルトガラス越しに観察して黄色を吸収させる。',
+ '花火の色：Li・Sr の赤、Na の黄、Ba の黄緑、Cu の青緑は炎色反応の応用。'
+];
+
+/* 錯イオンの総括（表） */
+const CHEM_CX=[
+ ['[Cu(NH₃)₄]²⁺','テトラアンミン銅(II)','深青色'],
+ ['[Ag(NH₃)₂]⁺','ジアンミン銀(I)','無色'],
+ ['[Zn(NH₃)₄]²⁺','テトラアンミン亜鉛(II)','無色'],
+ ['[Fe(SCN)]²⁺','チオシアン酸鉄(III)','血赤色'],
+ ['[Fe(CN)₆]⁴⁻','ヘキサシアノ鉄(II)（フェロシアン化物イオン）','黄色'],
+ ['[Fe(CN)₆]³⁻','ヘキサシアノ鉄(III)（フェリシアン化物イオン）','赤褐色'],
+ ['[CuCl₄]²⁻','テトラクロロ銅(II)','黄褐色'],
+ ['K₄[Fe(CN)₆]','黄血塩（フェロシアン化カリウム）','黄色結晶'],
+ ['K₃[Fe(CN)₆]','赤血塩（フェリシアン化カリウム）','赤褐色結晶']
+];
+const CHEM_CX_NOTES=[
+ 'Cu²⁺・Ag⁺・Zn²⁺ は少量のアンモニア水で水酸化物の沈殿、過剰で錯イオンとして溶ける。Fe³⁺ は沈殿したまま（赤褐色）で錯イオンを作らない。',
+ '配位数：[Cu(NH₃)₄]²⁺ は4（高校では平面四配位）、[Ag(NH₃)₂]⁺ は2（直線）、[Fe(CN)₆]⁴⁻ は6（八面体）。'
+];
+
+if(typeof module!=='undefined'&&module.exports){module.exports={CHEM_INORG,CHEM_GASES,CHEM_GAS_NOTES,CHEM_IND,CHEM_FLAME,CHEM_FLAME_NOTES,CHEM_CX,CHEM_CX_NOTES};}
 
 /* StudyTime 有機資料室（2026-11-15 追加）。脂肪族炭化水素・酸素を含む脂肪族化合物・芳香族化合物・高分子化合物。 */
 const CHEM_ORG_REFS={
@@ -5619,68 +6220,110 @@ const PT_ELEM=[
 ];
 
 /* StudyTime 資料室 UI（無機・有機の閲覧機能＋周期表） */
-var chemMixMode='lab',chemEncKind='in',chemEncSel='',chemEncQ='',chemEncPT=false,chemEncCat='';
+/* StudyTime 資料室 UI v2（元素別無機＋有機＋周期表独立画面） */
+var chemMixMode='lab',chemEncKind='in',chemEncSel='',chemEncQ='',chemEncPT=false,chemEncCat='',chemInTab='el';
 function chemEncEsc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
-function chemEncData(k){return k==='org'?{refs:CHEM_ORG_REFS,cats:CHEM_ORG_CATS,data:CHEM_ORG}:{refs:CHEM_INORG_REFS,cats:CHEM_INORG_CATS,data:CHEM_INORG}}
+function chemEncData(k){return k==='org'?{cats:CHEM_ORG_CATS,data:CHEM_ORG}:{data:CHEM_INORG}}
 function chemMixModeSet(m){chemMixMode=m;renderDeck()}
 function chemEncModeSet(m){chemRouteMode=m;renderDeck()}
 function chemEncCatSet(c){chemEncCat=c;renderDeck()}
+function chemInTabSet(t){chemInTab=t;renderDeck()}
 function chemEncQSet(v){chemEncQ=v;var box=document.getElementById('chem-enc-results');if(box)box.innerHTML=chemEncCardsHTML(chemEncKind)}
 function chemEncOpen(kind,id){chemEncKind=kind;chemEncSel=id;renderDeck()}
 function chemEncBack(){chemEncSel='';renderDeck()}
 function chemPTToggle(v){chemEncPT=v;renderDeck()}
-function chemPTPick(z){let e=CHEM_INORG.find(x=>x.z===z);if(e){chemEncKind='in'}else{e=CHEM_ORG.find(x=>x.z===z);if(e)chemEncKind='org'}if(e){chemEncSel=e.id;chemEncPT=false}renderDeck()}
+function chemPTPick(z){const e=CHEM_INORG.find(x=>x.z===z);if(e){chemEncKind='in';chemEncSel=e.id;renderDeck()}}
 function chemSubTabsHTML(kind){
   const b=(mode,label,on,fn)=>`<button class="btn sm ${on?'':'ghost'}" aria-pressed="${on?'true':'false'}" onclick="${fn}">${label}</button>`;
   if(kind==='in')return `<div class="chem-subtabs">${b('lab','実験',chemMixMode!=='ref',"chemMixModeSet('lab')")}${b('ref','無機資料室',chemMixMode==='ref',"chemMixModeSet('ref')")}</div>`;
   return `<div class="chem-subtabs">${b('list','経路一覧',chemRouteMode!=='lookup'&&chemRouteMode!=='ref',"chemRouteModeSet('list')")}${b('lookup','物質から調べる',chemRouteMode==='lookup',"chemRouteModeSet('lookup')")}${b('ref','有機資料室',chemRouteMode==='ref',"chemEncModeSet('ref')")}</div>`;
 }
 function chemEncGradeChip(g){const cls=g==='最重要'?'hi':(g==='頻出'?'mid':'low');return `<span class="chem-enc-grade ${cls}">${g}</span>`}
+function chemFlowHTML(f){return f.map((n,i)=>i%2?`<span class="chem-flow-arr">${chemEncEsc(n)}<i>→</i></span>`:`<span class="chem-flow-node">${chemEncEsc(n)}</span>`).join('')}
 function chemEncCardsHTML(kind){
   const d=chemEncData(kind),q=(chemEncQ||'').trim(),cat=chemEncCat||'';
   let list=d.data.filter(e=>(!cat||e.cat===cat));
-  if(q){const n=q.toLowerCase();list=list.filter(e=>(e.name+' '+e.summary+' '+e.sections.map(s=>s.h+' '+s.body).join(' ')).toLowerCase().includes(n));}
+  if(q){const n=q.toLowerCase();list=list.filter(e=>(e.name+' '+e.summary+' '+e.sections.map(s=>s.h+' '+s.body).join(' ')+(e.compounds||[]).map(c=>c.f+' '+c.n+' '+c.pts.join(' ')).join(' ')).toLowerCase().includes(n));}
   if(!list.length)return `<div class="chem-enc-empty">該当する項目がありません。別の語で検索してください。</div>`;
   return list.map(e=>`<button class="chem-enc-card" onclick="chemEncOpen('${kind}','${e.id}')"><span class="chem-enc-card-head"><b>${chemEncEsc(e.name)}</b>${e.grade?chemEncGradeChip(e.grade):''}</span><span class="chem-enc-card-sum">${chemEncEsc(e.summary.slice(0,80))}…</span></button>`).join('');
+}
+function chemInListHTML(){
+  const q=(chemEncQ||'').trim();
+  let list=CHEM_INORG.slice().sort((a,b)=>(a.z||999)-(b.z||999));
+  if(q){const n=q.toLowerCase();list=list.filter(e=>(e.name+' '+e.summary+' '+e.sections.map(s=>s.h+' '+s.body).join(' ')+(e.compounds||[]).map(c=>c.f+' '+c.n+' '+c.pts.join(' ')).join(' ')).toLowerCase().includes(n));}
+  if(!list.length)return `<div class="chem-enc-empty">該当する元素がありません。別の語で検索してください。</div>`;
+  return `<div class="chem-el-grid" id="chem-enc-results">${list.map(e=>`<button class="chem-el-card" onclick="chemEncOpen('in','${e.id}')"><span class="chem-el-sym">${chemEncEsc(e.el)}</span><span class="chem-el-name">${chemEncEsc(e.name)}</span>${e.grade?chemEncGradeChip(e.grade):''}</button>`).join('')}</div>`;
+}
+function chemGasHTML(){
+  return `<div class="chem-enc"><h4>気体の性質の一覧</h4><div class="chem-table-scroll"><table class="chem-gas-table"><thead><tr><th>気体</th><th>色</th><th>におい</th><th>水への溶解</th><th>その他の性質</th><th>乾燥剤</th><th>捕集法</th></tr></thead><tbody>${CHEM_GASES.map(r=>`<tr>${r.map((c,i)=>i===0?`<th>${chemEncEsc(c)}</th>`:`<td>${chemEncEsc(c)}</td>`).join('')}</tr>`).join('')}</tbody></table></div>${CHEM_GAS_NOTES.map(n=>`<p class="chem-note">${chemEncEsc(n)}</p>`).join('')}</div>`;
+}
+function chemIndHTML(){
+  return `<div class="chem-enc">${CHEM_IND.map(p=>`<div class="chem-ind"><h4>${chemEncEsc(p.name)}</h4><div class="chem-flow">${chemFlowHTML(p.flow)}</div><div class="chem-ind-eqs">${p.eqs.map((q,i)=>`<div class="chem-ind-eq"><span class="chem-ind-eqno">${i+1}</span><span class="chem-equation">${chemEncEsc(q)}</span></div>`).join('')}</div>${p.notes.map(n=>`<p class="chem-note">${chemEncEsc(n)}</p>`).join('')}</div>`).join('')}</div>`;
+}
+function chemFlameHTML(){
+  return `<div class="chem-enc"><h4>炎色反応の一覧</h4><div class="chem-table-scroll"><table class="chem-gas-table chem-flame-table"><thead><tr><th>元素</th><th>炎の色</th></tr></thead><tbody>${CHEM_FLAME.map(r=>`<tr><th>${chemEncEsc(r[0])}</th><td>${chemEncEsc(r[1])}</td></tr>`).join('')}</tbody></table></div>${CHEM_FLAME_NOTES.map(n=>`<p class="chem-note">${chemEncEsc(n)}</p>`).join('')}</div>`;
+}
+function chemCxHTML(){
+  return `<div class="chem-enc"><h4>主な錯イオンの色</h4><div class="chem-table-scroll"><table class="chem-gas-table"><thead><tr><th>錯イオン</th><th>名称</th><th>色</th></tr></thead><tbody>${CHEM_CX.map(r=>`<tr><th>${chemEncEsc(r[0])}</th><td>${chemEncEsc(r[1])}</td><td>${chemEncEsc(r[2])}</td></tr>`).join('')}</tbody></table></div>${CHEM_CX_NOTES.map(n=>`<p class="chem-note">${chemEncEsc(n)}</p>`).join('')}</div>`;
+}
+function chemInTabsHTML(){
+  const t=(id,l)=>`<button class="btn sm ${chemInTab===id?'':'ghost'}" aria-pressed="${chemInTab===id?'true':'false'}" onclick="chemInTabSet('${id}')">${l}</button>`;
+  return `<div class="chem-subtabs chem-in-tabs">${t('el','元素')}${t('gas','気体の性質')}${t('ind','工業的製法')}${t('flame','炎色反応')}${t('cx','錯イオン')}</div>`;
 }
 function chemEncEntryHTML(kind,id){
   const d=chemEncData(kind),e=d.data.find(x=>x.id===id);
   if(!e)return `<div class="chem-enc-empty">項目が見つかりません。</div>`;
-  const refs=(e.refs||[]).flat().map(id=>{const ref=d.refs[id];return ref?`<a class="chem-enc-ref" href="${ref[1]}" target="_blank" rel="noopener">${chemEncEsc(ref[0])}</a>`:''}).join('');
+  const back=chemEncPT
+    ?`<div class="chem-enc-backs"><button class="btn sm" onclick="chemEncBack()">← 周期表へ戻る</button><button class="btn sm ghost" onclick="chemPTToggle(false)">一覧へ戻る</button></div>`
+    :`<div class="chem-enc-backs"><button class="btn sm ghost" onclick="chemEncBack()">← 一覧へ戻る</button></div>`;
+  const secs=(e.sections||[]).filter(s=>s.h!=='出題ポイント');
+  const comps=(e.compounds||[]).length?`<h4>化合物のまとめ</h4><div class="chem-compounds">${e.compounds.map(c=>`<div class="chem-compound"><span class="chem-compound-head"><b class="chem-compound-f">${chemEncEsc(c.f)}</b><span class="chem-compound-n">${chemEncEsc(c.n)}</span></span><ol>${c.pts.map(p=>`<li>${chemEncEsc(p)}</li>`).join('')}</ol></div>`).join('')}</div>`:'';
+  const flow=e.flow&&e.flow.length?`<h4>相互関係</h4><div class="chem-flow">${chemFlowHTML(e.flow)}</div>`:'';
   const tests=(e.tests||[]).length?`<h4>検出反応</h4><table class="chem-enc-tests">${e.tests.map(t=>`<tr><td>${chemEncEsc(t[0])}</td><td>${chemEncEsc(t[1])}</td></tr>`).join('')}</table>`:'';
-  return `<div class="chem-enc-detail"><button class="btn sm ghost" onclick="chemEncBack()">← 一覧へ戻る</button>
-  <h3 class="chem-enc-title">${chemEncEsc(e.name)}${e.grade?chemEncGradeChip(e.grade):''}</h3>
+  const flame=e.flame&&e.flame!=='―'?`<div class="chem-flame-chip"><span class="chem-flame-dot"></span>炎色反応：${chemEncEsc(e.flame)}</div>`:'';
+  return `<div class="chem-enc-detail">${back}
+  <h3 class="chem-enc-title">${e.el?`<span class="chem-el-sym">${chemEncEsc(e.el)}</span> `:''}${chemEncEsc(e.name)}${e.grade?chemEncGradeChip(e.grade):''}</h3>
   <p class="chem-enc-summary">${chemEncEsc(e.summary)}</p>
+  ${flame}
   ${e.props&&e.props.length?`<table class="chem-enc-props">${e.props.map(p=>`<tr><th>${chemEncEsc(p[0])}</th><td>${chemEncEsc(p[1])}</td></tr>`).join('')}</table>`:''}
-  ${e.sections.map(s=>`<h4>${chemEncEsc(s.h)}</h4><p>${chemEncEsc(s.body)}</p>`).join('')}
+  ${comps}
+  ${secs.map(s=>`<h4>${chemEncEsc(s.h)}</h4><p>${chemEncEsc(s.body)}</p>`).join('')}
+  ${flow}
   ${tests}
-  ${refs?`<h4>出典</h4><div class="chem-enc-refs">${refs}</div>`:''}
-  </div>`;
-}
-function chemEncHTML(kind){
-  const d=chemEncData(kind);
-  if(chemEncSel&&d.data.some(x=>x.id===chemEncSel))return chemSubTabsHTML(kind)+chemEncEntryHTML(kind,chemEncSel);
-  const ptBtn=kind==='in'?`<button class="btn sm chem-pt-btn" onclick="chemPTToggle(true)">周期表で調べる</button>`:'';
-  const cats=`<div class="chem-enc-cats"><button class="btn sm ${chemEncCat?'ghost':''}" onclick="chemEncCatSet('')">すべて</button>`+d.cats.map(c=>`<button class="btn sm ${chemEncCat===c.id?'':'ghost'}" onclick="chemEncCatSet('${c.id}')">${chemEncEsc(c.name)}</button>`).join('')+`</div>`;
-  return chemSubTabsHTML(kind)+chemPTHTML()+`
-  <div class="chem-enc">
-    <div class="chem-enc-head"><h3>${kind==='in'?'無機資料室':'有機資料室'}</h3>${ptBtn}</div>
-    <p class="hint">${kind==='in'?'受験頻出の元素・化合物の性質・生成法・検出反応をまとめました。':'脂肪族・酸素を含む化合物・芳香族・高分子の要点をまとめました。'}</p>
-    <input class="chem-enc-search" type="search" placeholder="項目を検索（例：アンモニア・エステル）" value="${chemEncEsc(chemEncQ)}" oninput="chemEncQSet(this.value)">
-    ${cats}
-    <div class="chem-enc-grid" id="chem-enc-results">${chemEncCardsHTML(kind)}</div>
   </div>`;
 }
 function chemPTHTML(){
-  if(!chemEncPT)return '';
   const exam=new Set(CHEM_INORG.filter(e=>e.z).map(e=>e.z));
   const cell=r=>{const examEl=exam.has(r[0]);const noname=r[0]>=104?' no-name':'';return `<button class="pt-cell ${r[5]}${noname}${examEl?' exam':''}" style="grid-column:${r[3]||''};grid-row:${r[3]&&r[4]?r[4]:''}" ${r[3]&&r[4]?`data-g="${r[3]}" data-p="${r[4]}"`:''} onclick="chemPTPick(${r[0]})" title="${r[2]}"><span class="pt-z">${r[0]}</span><span class="pt-sym">${r[1]}</span><span class="pt-name">${r[2]}</span></button>`};
   let cells=PT_ELEM.filter(r=>r[3]>0).map(cell).join('');
   cells+=`<button class="pt-cell lan-mark" style="grid-column:3;grid-row:6" title="ランタノイド">57-71</button><button class="pt-cell act-mark" style="grid-column:3;grid-row:7" title="アクチノイド">89-103</button>`;
   cells+=PT_ELEM.filter(r=>r[5]==='lan').map((r,i)=>`<button class="pt-cell lan${exam.has(r[0])?' exam':''}" style="grid-column:${3+i};grid-row:9" onclick="chemPTPick(${r[0]})" title="${r[2]}"><span class="pt-z">${r[0]}</span><span class="pt-sym">${r[1]}</span></button>`).join('');
   cells+=PT_ELEM.filter(r=>r[5]==='act').map((r,i)=>`<button class="pt-cell act${exam.has(r[0])?' exam':''}" style="grid-column:${3+i};grid-row:10" onclick="chemPTPick(${r[0]})" title="${r[2]}"><span class="pt-z">${r[0]}</span><span class="pt-sym">${r[1]}</span></button>`).join('');
-  return `<div class="chem-pt-wrap"><div class="chem-pt-head"><h3>周期表</h3><p class="hint">色のついた元素は収録あり。タップすると資料室の項目が開きます（横画面向け）。</p><button class="btn sm ghost" onclick="chemPTToggle(false)">閉じる</button></div><div class="chem-pt-scroll"><div class="chem-pt">${cells}</div></div></div>`;
+  return `<div class="chem-pt-full"><div class="chem-pt-wrap"><div class="chem-pt-head"><h3>周期表</h3><p class="hint">色のついた元素は収録あり。タップするとその元素のページが開きます（横画面向け）。</p><button class="btn sm ghost" onclick="chemPTToggle(false)">← 資料室へ戻る</button></div><div class="chem-pt-scroll"><div class="chem-pt">${cells}</div></div></div></div>`;
 }
-
+function chemEncHTML(kind){
+  const d=chemEncData(kind);
+  if(chemEncSel&&d.data.some(x=>x.id===chemEncSel))return chemSubTabsHTML(kind)+chemEncEntryHTML(kind,chemEncSel);
+  if(kind==='in'&&chemEncPT)return chemPTHTML();
+  const ptBtn=kind==='in'?`<button class="btn sm chem-pt-btn" onclick="chemPTToggle(true)">周期表</button>`:'';
+  const cats=kind==='org'?`<div class="chem-enc-cats"><button class="btn sm ${chemEncCat?'ghost':''}" onclick="chemEncCatSet('')">すべて</button>`+d.cats.map(c=>`<button class="btn sm ${chemEncCat===c.id?'':'ghost'}" onclick="chemEncCatSet('${c.id}')">${chemEncEsc(c.name)}</button>`).join('')+`</div>`:'';
+  const head=kind==='in'?'無機資料室':'有機資料室';
+  const hint=kind==='in'?'元素ごとに、単体・化合物・検出反応をまとめました。':'脂肪族・酸素を含む化合物・芳香族・高分子の要点をまとめました。';
+  let body;
+  if(kind==='in'){
+    body=chemInTabsHTML()+(chemInTab==='el'?chemInListHTML():chemInTab==='gas'?chemGasHTML():chemInTab==='ind'?chemIndHTML():chemInTab==='flame'?chemFlameHTML():chemCxHTML());
+  }else{
+    body=`<div class="chem-enc-grid" id="chem-enc-results">${chemEncCardsHTML('org')}</div>`;
+  }
+  const search=(kind==='org'||chemInTab==='el')?`<input class="chem-enc-search" type="search" placeholder="項目を検索（例：アンモニア・エステル）" value="${chemEncEsc(chemEncQ)}" oninput="chemEncQSet(this.value)">`:'';
+  return chemSubTabsHTML(kind)+`
+  <div class="chem-enc">
+    <div class="chem-enc-head"><h3>${head}</h3>${ptBtn}</div>
+    <p class="hint">${hint}</p>
+    ${search}
+    ${cats}
+    ${body}
+  </div>`;
+}
 </script></body>
 </html>
