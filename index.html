@@ -977,8 +977,6 @@ function loadGameFont(){}
 </style>
 <button class="btn" style="position:relative;width:100%;margin-top:20px;padding:18px 0 16px;border-radius:13px;border:1px solid #ff2f6b;background:radial-gradient(130% 180% at 50% 0%,#2a0713 0%,#12030a 58%,#080104 100%);color:#ffdbe4;font-size:15px;letter-spacing:.24em;font-weight:700;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;cursor:pointer;overflow:hidden;text-shadow:0 0 10px rgba(255,47,107,.85);box-shadow:0 0 0 1px rgba(255,47,107,.25);animation:neonPulse 2.4s ease-in-out infinite" onclick="location.href='over.html'"><span style="position:absolute;left:0;right:0;top:0;height:26%;pointer-events:none;background:repeating-linear-gradient(112deg,rgba(255,47,107,.10) 0 9px,transparent 9px 18px);animation:neonScan 3.6s linear infinite"></span><span style="display:block;font-size:9.5px;letter-spacing:.34em;color:#ff5c86;margin-bottom:6px;text-shadow:0 0 12px rgba(255,47,107,.9)">RESTRICTED MODE</span>STUDY OVER</button>
 
-    <button class="btn" style="position:relative;width:100%;margin-top:12px;padding:16px 0 14px;border-radius:13px;border:1px solid #c9a24a;background:radial-gradient(130% 180% at 50% 0%,#2a2213 0%,#14100a 58%,#0a0806 100%);color:#f3e3bd;font-size:15px;letter-spacing:.24em;font-weight:700;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;cursor:pointer;box-shadow:0 0 0 1px rgba(201,162,74,.25),inset 0 0 18px rgba(201,162,74,.07)" onclick="location.href='cards.html'"><span style="display:block;font-size:9.5px;letter-spacing:.34em;color:#c9a24a;margin-bottom:6px">CARD BATTLE</span>学府の絵札</button>
-
     <div class="hint" style="text-align:center;margin-top:16px">StudyTime v3.32 · ローカル保存＋GitHub自動バックアップ</div>
   </div>
 
@@ -5666,13 +5664,14 @@ html[data-game="haku"] .dcard.on{border-color:#8a6a2f;box-shadow:0 0 0 1px #8a6a
 .chem-ind{border:1px solid var(--line);border-radius:14px;background:var(--bg-elev);padding:14px 16px;margin:12px 0}
 .chem-ind h4{margin:0 0 10px}
 .chem-flow{display:flex;align-items:center;flex-wrap:wrap;gap:6px;margin:10px 0}
-.chem-flow-node{border:1px solid var(--line-strong);border-radius:9px;padding:5px 10px;background:var(--bg-elev-2);font-family:var(--glat,var(--gserif));font-size:13px;white-space:nowrap}
-.chem-flow-arr{font-size:11px;color:var(--text-mute);display:flex;flex-direction:column;align-items:center;line-height:1.2}
+.chem-flow-node{border:1px solid var(--line-strong);border-radius:9px;padding:5px 10px;background:var(--bg-elev-2);font-family:var(--glat,var(--gserif));font-size:13px;white-space:normal;overflow-wrap:anywhere;text-align:center;min-width:0;max-width:100%}
+.chem-flow-arr{font-size:11px;color:var(--text-mute);display:flex;flex-direction:column;align-items:center;line-height:1.2;overflow-wrap:anywhere;max-width:110px}
 .chem-flow-arr i{font-style:normal;font-size:14px;color:var(--accent);line-height:1}
 .chem-ind-eqs{display:grid;gap:5px;margin:8px 0}
 .chem-ind-eq{display:flex;gap:8px;align-items:baseline}
 .chem-ind-eqno{flex:0 0 auto;width:18px;height:18px;border-radius:50%;border:1px solid var(--accent);color:var(--accent);font-size:11px;display:flex;align-items:center;justify-content:center}
 .chem-ind .chem-equation{margin:0}
+@media(max-width:480px){.chem-flow-node{font-size:12px;padding:4px 8px}.chem-flow{gap:5px}}
 .chem-compounds{display:grid;gap:10px}
 .chem-compound{border:1px solid var(--line);border-radius:12px;background:var(--bg-elev);padding:10px 12px}
 .chem-compound-head{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:6px}
@@ -6047,13 +6046,11 @@ const CHEM_IND=[
 
 /* 炎色反応の総括（表） */
 const CHEM_FLAME=[
- ['Li（リチウム）','緋色（深紅）'],['Na（ナトリウム）','黄色'],['K（カリウム）','淡紫色（コバルトガラス越しに観察）'],['Rb（ルビジウム）','濃赤紫（紫色）'],['Cs（セシウム）','青紫色'],
- ['Ca（カルシウム）','橙赤色'],['Sr（ストロンチウム）','紅色（深紅）'],['Ba（バリウム）','黄緑色'],['Cu（銅）','青緑色'],['Zn（亜鉛）','示さない（白色に近い）'],['Be・Mg・Al・Fe など','炎色反応を示さない']
+ ['Li','赤色'],['Na','黄色'],['K','紫色'],['Ca','橙赤色'],['Sr','緋色'],['Ba','黄緑色'],['Cu','緑色']
 ];
 const CHEM_FLAME_NOTES=[
- '観察方法：白金線（またはマイナスイオンの影響を除くため塩酸で湿らせた白金線）に試料を付け、酸化炎（無色の炎）に入れる。',
- 'K の淡紫色は Na の黄色に隠れるので、コバルトガラス越しに観察して黄色を吸収させる。',
- '花火の色：Li・Sr の赤、Na の黄、Ba の黄緑、Cu の青緑は炎色反応の応用。'
+ 'K（カリウム）はコバルトガラス越しに観察する',
+ '炎色反応を示さない主な金属：Mg・Al・Zn・Fe など'
 ];
 
 /* 錯イオンの総括（表） */
