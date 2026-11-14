@@ -1269,6 +1269,7 @@ let state = {
   cards:    [], // {id,sid,kind,f,b,x,tag,box,n,due}
   diary:    [], // {id,date,text,u}
   chemRoutes: [], // {id,sid,title,nodes,edges,u}
+  chemDailyDone: null, chemDailyLog: {}, // 化学ラボの1日1回テスト
   streak:   {}, // {sid:{n,d}}
   goals:      { daily:360, weekly:2520 },
   settings:   { theme:'dark' },
@@ -1316,6 +1317,8 @@ function normalizeState(){
   state.cards = (state.cards||[]).filter(c=>c.sid && (state.subjects||[]).some(x=>x.id===c.sid));
   state.cards = state.cards||[];
   state.chemRoutes = Array.isArray(state.chemRoutes)?state.chemRoutes:[];
+  state.chemDailyLog = (state.chemDailyLog&&typeof state.chemDailyLog==='object')?state.chemDailyLog:{};
+  if(state.chemDailyDone!==todayKey()) state.chemDailyDone=state.chemDailyDone||null;
   state.streak = state.streak||{};
   state.deleted = state.deleted||{};
   state.subjects = state.subjects||[];
@@ -2838,12 +2841,64 @@ const CHEM_REAGENTS = [
 let chemTab='mix', chemIon='cu', chemReagent='oh', chemAmount='small', chemMixed=false;
 let chemRouteId='seed-ethanol', chemEditing=null, chemPractice=null;
 let chemIonQuery='',chemReagentQuery='',chemRefQuery='',chemQuiz=null;
+let chemRouteMode='list',chemLookupSel='',chemLookupQuery='',chemDailyRun=null;
 const CHEM_ROUTE_SEEDS = [
   {id:'seed-ethanol',title:'エタノールの酸化',nodes:['エタノール','アセトアルデヒド','酢酸'],edges:[
     {name:'酸化',condition:'K₂Cr₂O₇／H₂SO₄／留出'},
     {name:'酸化',condition:'過剰 K₂Cr₂O₇／H₂SO₄／還流'}],builtin:true,source:CHEM_SOURCE.organic},
   {id:'seed-propanol',title:'第二級アルコールの酸化',nodes:['2-プロパノール','アセトン'],edges:[
     {name:'酸化',condition:'K₂Cr₂O₇／H₂SO₄／加熱'}],builtin:true,source:CHEM_SOURCE.organic}
+];
+/* 有機化学の系統図（脂肪族・芳香族）に沿った経路集 */
+const CHEM_ORGANIC_ROUTES=[
+  {id:'org-cac2',title:'炭化カルシウムから酢酸エチルまで',nodes:['炭化カルシウム','アセチレン','エチレン','エタノール','アセトアルデヒド','酢酸','酢酸エチル'],edges:[
+    {name:'加水分解',condition:'H₂O（CaC₂ ＋ 2H₂O）'},{name:'水素の付加',condition:'H₂／Ni触媒'},{name:'水の付加',condition:'H₂O／硫酸酸性'},
+    {name:'酸化',condition:'CuO／加熱'},{name:'酸化',condition:'K₂Cr₂O₇／H₂SO₄'},{name:'エステル化',condition:'エタノール ＋ 濃硫酸'}],builtin:true,source:CHEM_SOURCE.organic},
+  {id:'org-dehydrate',title:'エタノールの脱水と臭素の付加',nodes:['エタノール','エチレン','1,2-ジブロモエタン'],edges:[
+    {name:'脱水',condition:'濃硫酸／170℃'},{name:'付加',condition:'Br₂'}],builtin:true,source:CHEM_SOURCE.organic},
+  {id:'org-ether',title:'エタノールの分子間脱水',nodes:['エタノール','ジエチルエーテル'],edges:[
+    {name:'脱水',condition:'濃硫酸／140℃'}],builtin:true,source:CHEM_SOURCE.organic},
+  {id:'org-iodoform',title:'ヨードホルム反応',nodes:['エタノール','ヨードホルム'],edges:[
+    {name:'ヨードホルム反応',condition:'I₂ ＋ NaOH（アセトアルデヒドも同様）'}],builtin:true,source:CHEM_SOURCE.organic},
+  {id:'org-methanol',title:'メタノールから二酸化炭素まで',nodes:['一酸化炭素','メタノール','ホルムアルデヒド','ギ酸','二酸化炭素'],edges:[
+    {name:'還元（合成）',condition:'H₂／ZnO触媒'},{name:'酸化',condition:'CuO／加熱'},{name:'酸化',condition:'K₂Cr₂O₇／H₂SO₄'},{name:'酸化',condition:'K₂Cr₂O₇／H₂SO₄（完全酸化）'}],builtin:true,source:CHEM_SOURCE.organic},
+  {id:'org-vinyl-chloride',title:'塩化ビニル樹脂の合成',nodes:['アセチレン','塩化ビニル','ポリ塩化ビニル'],edges:[
+    {name:'付加',condition:'HCl'},{name:'付加重合',condition:'触媒・加圧'}],builtin:true,source:CHEM_SOURCE.organic},
+  {id:'org-vinyl-alcohol',title:'アセチレンの水和',nodes:['アセチレン','ビニルアルコール','アセトアルデヒド'],edges:[
+    {name:'水の付加',condition:'H₂O／Hg²⁺触媒'},{name:'異性化',condition:'不安定でアセトアルデヒドへ移動'}],builtin:true,source:CHEM_SOURCE.organic},
+  {id:'org-benzene-from-acetylene',title:'アセチレンからベンゼンへ',nodes:['アセチレン','ベンゼン'],edges:[
+    {name:'3分子重合',condition:'赤熱・触媒'}],builtin:true,source:CHEM_SOURCE.organic},
+  {id:'org-propene-acetone',title:'プロペンからアセトンへ',nodes:['プロペン','2-プロパノール','アセトン'],edges:[
+    {name:'水の付加',condition:'H₂O／硫酸酸性'},{name:'酸化',condition:'K₂Cr₂O₇／H₂SO₄'}],builtin:true,source:CHEM_SOURCE.organic},
+  {id:'org-propionic',title:'プロピオン酸の合成',nodes:['プロペン','1-プロパノール','プロピオンアルデヒド','プロピオン酸'],edges:[
+    {name:'水の付加',condition:'H₂O／硫酸酸性'},{name:'酸化',condition:'CuO／加熱'},{name:'酸化',condition:'K₂Cr₂O₇／H₂SO₄'}],builtin:true,source:CHEM_SOURCE.organic},
+  {id:'org-polypropylene',title:'ポリプロピレンの合成',nodes:['プロペン','ポリプロピレン'],edges:[
+    {name:'付加重合',condition:'触媒'}],builtin:true,source:CHEM_SOURCE.organic},
+  {id:'org-fatty',title:'高級脂肪酸とセッケン',nodes:['油脂','高級脂肪酸','セッケン'],edges:[
+    {name:'加水分解',condition:'水／触媒（グリセリンも生成）'},{name:'中和',condition:'NaOH'}],builtin:true,source:CHEM_SOURCE.organic},
+  {id:'org-soap',title:'油脂のけん化',nodes:['油脂','セッケン'],edges:[
+    {name:'けん化',condition:'NaOH（グリセリンも生成）'}],builtin:true,source:CHEM_SOURCE.organic},
+  {id:'org-nitro-aniline',title:'ベンゼンからフェノール（ジアゾ法）',nodes:['ベンゼン','ニトロベンゼン','アニリン塩酸塩','アニリン','ジアゾニウム塩','フェノール','2,4,6-トリブロモフェノール'],edges:[
+    {name:'ニトロ化',condition:'濃硝酸 ＋ 濃硫酸'},{name:'還元',condition:'Sn ＋ HCl'},{name:'弱塩基の遊離',condition:'NaOH'},
+    {name:'ジアゾ化',condition:'NaNO₂ ＋ HCl／氷冷'},{name:'加水分解',condition:'温水'},{name:'ハロゲン化',condition:'臭素水'}],builtin:true,source:CHEM_SOURCE.organic},
+  {id:'org-chloro-phenol',title:'クロロベンゼンからフェノールへ',nodes:['ベンゼン','クロロベンゼン','ナトリウムフェノキシド','フェノール','ピクリン酸'],edges:[
+    {name:'塩素化',condition:'Cl₂／FeCl₃'},{name:'高温・高圧',condition:'NaOH'},{name:'弱酸の遊離',condition:'HCl'},{name:'ニトロ化',condition:'濃硝酸 ＋ 濃硫酸'}],builtin:true,source:CHEM_SOURCE.organic},
+  {id:'org-toluic',title:'トルエンから安息香酸へ',nodes:['ベンゼン','トルエン','安息香酸'],edges:[
+    {name:'アルキル化',condition:'CH₃Cl／AlCl₃'},{name:'酸化',condition:'KMnO₄'}],builtin:true,source:CHEM_SOURCE.organic},
+  {id:'org-tnt',title:'TNTの合成',nodes:['トルエン','TNT'],edges:[
+    {name:'ニトロ化',condition:'濃硝酸 ＋ 濃硫酸'}],builtin:true,source:CHEM_SOURCE.organic},
+  {id:'org-cumene',title:'クメン法（フェノールとアセトン）',nodes:['ベンゼン','クメン','クメンヒドロペルオキシド','フェノール'],edges:[
+    {name:'アルキル化',condition:'プロピレン'},{name:'酸化',condition:'O₂'},{name:'分解',condition:'H₂SO₄（アセトンも生成）'}],builtin:true,source:CHEM_SOURCE.organic},
+  {id:'org-sulfonic',title:'スルホン化とアルカリ融解',nodes:['ベンゼン','ベンゼンスルホン酸','ナトリウムフェノキシド'],edges:[
+    {name:'スルホン化',condition:'濃硫酸'},{name:'アルカリ融解',condition:'NaOH融解'}],builtin:true,source:CHEM_SOURCE.organic},
+  {id:'org-kolbe',title:'コルベ・シュミット反応',nodes:['ナトリウムフェノキシド','サリチル酸ナトリウム','サリチル酸','アセチルサリチル酸'],edges:[
+    {name:'高温・高圧',condition:'CO₂'},{name:'弱酸の遊離',condition:'HCl'},{name:'アセチル化',condition:'無水酢酸'}],builtin:true,source:CHEM_SOURCE.organic},
+  {id:'org-methyl-salicylate',title:'サリチル酸メチルの合成',nodes:['サリチル酸','サリチル酸メチル'],edges:[
+    {name:'エステル化',condition:'メタノール ＋ 濃硫酸'}],builtin:true,source:CHEM_SOURCE.organic},
+  {id:'org-cyclohexane',title:'ベンゼンの水素付加',nodes:['ベンゼン','シクロヘキサン'],edges:[
+    {name:'付加',condition:'H₂／Ni触媒'}],builtin:true,source:CHEM_SOURCE.organic},
+  {id:'org-bhc',title:'ベンゼンの塩素付加',nodes:['ベンゼン','BHC'],edges:[
+    {name:'付加',condition:'Cl₂／光（紫外線）'}],builtin:true,source:CHEM_SOURCE.organic}
 ];
 function chemResult(ion,reagent,amount){
   const extra=chemExpandedResult(ion,reagent,amount);if(extra)return extra;
@@ -2893,19 +2948,39 @@ function chemMixHTML(){
 }
 function chemRoutes(){
   const custom=(state.chemRoutes||[]).filter(x=>x.sid===deckSid);
-  return CHEM_ROUTE_SEEDS.concat(CHEM_EXTRA_ROUTES).map(x=>custom.find(c=>c.base===x.id)||{...x,sid:deckSid}).concat(custom.filter(x=>!x.base));
+  return CHEM_ROUTE_SEEDS.concat(CHEM_ORGANIC_ROUTES,CHEM_EXTRA_ROUTES).map(x=>custom.find(c=>c.base===x.id)||{...x,sid:deckSid}).concat(custom.filter(x=>!x.base));
 }
 function chemCurrentRoute(){return chemRoutes().find(x=>x.id===chemRouteId)||chemRoutes()[0]}
 function chemSelectRoute(id){chemRouteId=id;chemPractice=null;chemEditing=null;renderDeck()}
 function chemRouteDiagram(r,hidden){
   return `<div class="chem-route-scroll"><div class="chem-chain">${r.nodes.map((n,i)=>`${i?`<div class="chem-arrow"><span>${chemText(hidden?'？':r.edges[i-1]?.name||'反応名')}</span><b>⟶</b><small>${chemText(hidden?'条件は？':r.edges[i-1]?.condition||'条件未入力')}</small></div>`:''}<div class="chem-node">${chemText(n)}</div>`).join('')}</div></div>`;
 }
+function chemRouteModeSet(m){chemRouteMode=(m==='lookup')?'lookup':'list';renderDeck()}
+function chemLookupSelect(n){chemLookupSel=(chemLookupSel===n)?'':n;renderDeck()}
+function chemLookupFilter(v){chemLookupQuery=v;const k=chemSearchKey(v);document.querySelectorAll('.chem-subst-chip').forEach(el=>el.hidden=!chemSearchKey(el.dataset.s).includes(k))}
+function chemSubstanceReactions(name){
+  const out=[];
+  chemRoutes().forEach(r=>{const i=r.nodes.indexOf(name);if(i<0)return;
+    if(i>0)out.push({dir:'in',from:r.nodes[i-1],to:name,edge:r.edges[i-1],route:r});
+    if(i<r.nodes.length-1)out.push({dir:'out',from:name,to:r.nodes[i+1],edge:r.edges[i],route:r});});
+  return out;
+}
+function chemLookupHTML(){
+  const names=[...new Set(chemRoutes().flatMap(r=>r.nodes))].sort();
+  const sel=chemLookupSel&&names.includes(chemLookupSel)?chemLookupSel:'';
+  const chips=names.map(n=>`<button class="chem-card ${sel===n?'selected':''} chem-subst-chip" data-s="${escapeHtml(n)}" ${!chemSearchKey(n).includes(chemSearchKey(chemLookupQuery))?'hidden':''} onclick="chemLookupSelect(this.dataset.s)"><span>${chemText(n)}</span></button>`).join('');
+  const reactions=sel?chemSubstanceReactions(sel):[];
+  const rows=reactions.map(x=>`<details class="chem-ref-entry"><summary><span class="chem-formula">${chemText(x.from)} ⟶ ${chemText(x.to)}</span><small>${escapeHtml(x.route.title)}</small></summary><div class="chem-ref-detail"><div class="chem-equation">${chemText(x.edge.name||'反応')}</div><p>条件：${chemText(x.edge.condition||'条件未入力')}</p><button class="btn sm ghost" onclick="chemSelectRoute('${x.route.id}');chemRouteMode='list'">この経路を見る</button></div></details>`).join('');
+  return `<div class="chem-route-toolbar"><label class="chem-search">物質を検索<input type="search" value="${escapeHtml(chemLookupQuery)}" placeholder="物質名・一部一致" oninput="chemLookupFilter(this.value)"></label></div><div class="chem-cards chem-card-shelf">${chips}</div>${sel?`<h3 class="chem-route-title">${chemText(sel)} の反応経路</h3><p class="hint">${reactions.length}件の反応がつながっています。開いて条件を確認し、「この経路を見る」で系統図に移動できます。</p><div class="chem-reference">${rows||'<p class="hint">この経路集では単独の物質です。</p>'}</div>`:'<p class="hint">調べたい物質を選ぶと、前後の反応（反応名・条件）と、その反応が含まれる経路を表示します。地誌のように物質から反応を引けます。</p>'}`;
+}
 function chemRouteHTML(){
-  const routes=chemRoutes(),r=chemCurrentRoute();
   if(chemEditing)return chemEditorHTML();
-  return `<div class="chem-route-toolbar"><label>反応経路<select onchange="chemSelectRoute(this.value)">${routes.map(x=>`<option value="${escapeHtml(x.id)}" ${x.id===r.id?'selected':''}>${escapeHtml(x.title)}</option>`).join('')}</select></label><button class="btn sm ghost" onclick="chemEditRoute(true)">新しく作る</button></div><h3 class="chem-route-title">${escapeHtml(r.title)}</h3>${chemPractice?chemPracticeHTML(r):chemRouteDiagram(r,false)}
+  const r=chemCurrentRoute(),routes=chemRoutes();
+  const modebar=`<div class="chem-route-toolbar"><button class="btn sm ${chemRouteMode==='list'?'':'ghost'}" onclick="chemRouteModeSet('list')">経路一覧</button><button class="btn sm ${chemRouteMode==='lookup'?'':'ghost'}" onclick="chemRouteModeSet('lookup')">物質から調べる</button></div>`;
+  if(chemRouteMode==='lookup')return modebar+chemLookupHTML();
+  return modebar+`<div class="chem-route-toolbar"><label>反応経路<select onchange="chemSelectRoute(this.value)">${routes.map(x=>`<option value="${escapeHtml(x.id)}" ${x.id===r.id?'selected':''}>${escapeHtml(x.title)}</option>`).join('')}</select></label><button class="btn sm ghost" onclick="chemEditRoute(true)">新しく作る</button></div><h3 class="chem-route-title">${escapeHtml(r.title)}</h3>${chemPractice?chemPracticeHTML(r):chemRouteDiagram(r,false)}
   <div class="chem-actions"><button class="btn" onclick="chemStartPractice()">並べ替え練習</button><button class="btn ghost" onclick="chemEditRoute(false)">経路・矢印を編集</button></div>
-   <p class="hint">矢印の上に反応名、下に酸化剤・触媒・条件を表示します。長い経路は横にスクロールできます。</p>${r.builtin||r.base?`<p class="chem-disclaimer">酸化剤と触媒を区別し、反応条件も確認しましょう。${r.builtin?`<a href="${r.source||CHEM_SOURCE.organic}" target="_blank" rel="noopener">出典</a>`:'編集済みの経路です。変更内容の自動検証は行いません。'}</p>`:'<p class="chem-disclaimer">自作の経路です。内容の自動検証は行いません。</p>'}`;
+   <p class="hint">矢印の上に反応名、下に酸化剤・触媒・条件を表示します。長い経路は横にスクロールできます。「物質から調べる」で物質を軸に反応を引けます。</p>${r.builtin||r.base?`<p class="chem-disclaimer">酸化剤と触媒を区別し、反応条件も確認しましょう。${r.builtin?`<a href="${r.source||CHEM_SOURCE.organic}" target="_blank" rel="noopener">出典</a>`:'編集済みの経路です。変更内容の自動検証は行いません。'}</p>`:'<p class="chem-disclaimer">自作の経路です。内容の自動検証は行いません。</p>'}`;
 }
 function chemEditRoute(fresh){
   chemPractice=null;
@@ -2977,9 +3052,49 @@ function chemQuestionBank(){
 function chemStartQuiz(){const pool=chemQuestionBank();shuffle(pool);chemQuiz={questions:pool.slice(0,10),index:0,answers:[],selected:null};renderDeck()}
 function chemAnswerQuiz(index){if(!chemQuiz||chemQuiz.selected!==null)return;const q=chemQuiz.questions[chemQuiz.index];if(!q||!Number.isInteger(index)||index<0||index>=q.options.length)return;chemQuiz.selected=index;chemQuiz.answers.push({correct:q.options[index]===q.correct});renderDeck()}
 function chemNextQuiz(){if(!chemQuiz||chemQuiz.selected===null)return;chemQuiz.index++;chemQuiz.selected=null;renderDeck()}
+function chemRouteQuestionBank(){
+  const qs=[],names=[],conds=[];
+  chemRoutes().forEach(r=>{r.edges.forEach((e,i)=>{if(!e||!e.name||!e.condition||!r.nodes[i]||!r.nodes[i+1])return;
+    qs.push({routeId:r.id,from:r.nodes[i],to:r.nodes[i+1],name:e.name,cond:e.condition});
+    if(names.indexOf(e.name)<0)names.push(e.name);if(conds.indexOf(e.condition)<0)conds.push(e.condition);})});
+  const out=[];
+  qs.forEach((q,qi)=>{
+    if(names.length>=4){const others=chemShuffleSeeded(names.filter(x=>x!==q.name),chemSeedOf('n'+qi+q.from)).slice(0,3);
+      if(others.length===3)out.push({kind:'route',prompt:`${q.from} ⟶ ${q.to}`,label:'矢印の反応名は？',options:chemShuffleSeeded([q.name].concat(others),chemSeedOf('o'+qi)),correct:q.name,routeId:q.routeId})}
+    if(conds.length>=4){const others=chemShuffleSeeded(conds.filter(x=>x!==q.cond),chemSeedOf('c'+qi+q.from)).slice(0,3);
+      if(others.length===3)out.push({kind:'route',prompt:`${q.from} ⟶ ${q.to}（${q.name}）`,label:'矢印の条件は？',options:chemShuffleSeeded([q.cond].concat(others),chemSeedOf('oc'+qi)),correct:q.cond,routeId:q.routeId})}
+  });
+  return out;
+}
+function chemSeedOf(str){let s=0;for(let i=0;i<str.length;i++)s=(s*31+str.charCodeAt(i))>>>0;return s||1}
+function chemShuffleSeeded(arr,seed){const a=arr.slice();for(let i=a.length-1;i>0;i--){seed=(seed*1103515245+12345)>>>0;const j=(seed>>>8)%(i+1);const t=a[i];a[i]=a[j];a[j]=t}return a}
+function chemDailyDoneToday(){return state.chemDailyDone===todayKey()}
+function chemDailyQuestions(){return chemShuffleSeeded(chemQuestionBank().concat(chemRouteQuestionBank()),chemSeedOf('chem-daily-'+todayKey())).slice(0,5)}
+function chemStartDaily(){chemDailyRun={qs:chemDailyQuestions(),i:0,answers:[],sel:null};renderDeck()}
+function chemAnswerDaily(i){if(!chemDailyRun||chemDailyRun.sel!==null)return;const q=chemDailyRun.qs[chemDailyRun.i];if(!q||!Number.isInteger(i)||i<0||i>=q.options.length)return;chemDailyRun.sel=i;chemDailyRun.answers.push(q.options[i]===q.correct);renderDeck()}
+function chemNextDaily(){if(!chemDailyRun||chemDailyRun.sel===null)return;chemDailyRun.i++;chemDailyRun.sel=null;
+  if(chemDailyRun.i>=chemDailyRun.qs.length){const got=chemDailyRun.answers.filter(Boolean).length;
+    state.chemDailyDone=todayKey();state.chemDailyLog=state.chemDailyLog||{};state.chemDailyLog[todayKey()]={got,total:chemDailyRun.qs.length,u:Date.now()};
+    chemDailyRun=null;saveState()}
+  renderDeck()}
+function chemDailyCardHTML(){
+  if(chemDailyDoneToday()){const l=(state.chemDailyLog||{})[todayKey()];
+    return `<div class="chem-result"><h3>今日のテスト 終了</h3><p>${l?l.got+' / '+l.total+' 問正解':'記録を確認できません'}</p><p class="hint">新しいテストは明日出ます。間違えたところは下の自由練習や「物質から調べる」で復習できます。</p></div>`}
+  return `<div class="chem-result"><h3>今日のテスト（5問）</h3><p class="hint">色・沈殿と反応経路の問題から5問。単語の今日の分のように、1日1回出題します。</p><button class="btn" onclick="chemStartDaily()">はじめる</button></div>`;
+}
+function chemDailyFlowHTML(){
+  const run=chemDailyRun,q=run.qs[run.i],answered=run.sel!==null;
+  if(!q)return '';
+  let body;
+  if(q.kind==='route')body=`<h3 class="chem-route-title">${escapeHtml(q.label)}</h3><div class="chem-quiz-prompt"><b>${chemText(q.prompt)}</b></div>`;
+  else body=`<h3 class="chem-route-title">${escapeHtml(q.label)}は？</h3><div class="chem-quiz-prompt"><b>${chemText(q.ion.f)} ＋ ${chemText(q.reagent.f)}</b><p>${escapeHtml(q.ion.n)} ＋ ${escapeHtml(q.reagent.n)}</p><span>${q.amount==='excess'?'過剰':'少量'}に加える。${q.result.quizCondition?chemText(q.result.quizCondition):'試薬に明示された条件で考える。'}</span></div>`;
+  const opts=`<div class="chem-quiz-options">${q.options.map((o,i)=>`<button class="chem-answer ${answered?(o===q.correct?'correct':i===run.sel?'wrong':''):''}" ${answered?'disabled':''} onclick="chemAnswerDaily(${i})">${escapeHtml(o)}</button>`).join('')}</div>`;
+  const fb=answered?`<div class="chem-result" role="status"><h3>${run.answers[run.i]?'正解！':'正解：'+escapeHtml(q.correct)}</h3>${q.kind==='route'?'':`<div class="chem-product">${chemText(q.result.product)}</div><div class="chem-equation">${chemText(q.result.equation)}</div><p>${chemText(q.result.detail)}</p><a href="${q.result.source}" target="_blank" rel="noopener">出典</a>`}</div><button class="btn" onclick="chemNextDaily()">${run.i+1===run.qs.length?'結果を見る':'次の問題'}</button>`:'';
+  return `<p class="chem-caption">今日のテスト ${run.i+1} / ${run.qs.length} 問</p>`+body+opts+fb+`<button class="btn ghost" onclick="chemDailyRun=null;renderDeck()">やめる</button>`;
+}
 function chemQuizHTML(){
   const total=chemQuiz?0:chemQuestionBank().length;
-  if(!chemQuiz)return `<h3 class="chem-route-title">色と沈殿を確認</h3><p class="hint">収録反応から作った${total}題の候補から、10問を出題します。実際の入試過去問ではなく、このラボの確認問題です。</p><button class="btn" onclick="chemStartQuiz()">10問はじめる</button><p class="chem-disclaimer">試薬カードの液性・濃度と、解説の条件を含めた問題です。履歴はこの画面内のみで、学習時間や既存の単語テストには加算しません。</p>`;
+  if(!chemQuiz)return (chemDailyRun?chemDailyFlowHTML():chemDailyCardHTML())+`<h3 class="chem-route-title" style="margin-top:22px">自由練習 ／ 色と沈殿を確認</h3><p class="hint">収録反応から作った${total}題の候補から、10問を出題します。実際の入試過去問ではなく、このラボの確認問題です。</p><button class="btn" onclick="chemStartQuiz()">10問はじめる</button><p class="chem-disclaimer">試薬カードの液性・濃度と、解説の条件を含めた問題です。履歴はこの画面内のみで、学習時間や既存の単語テストには加算しません。</p>`;
   const quiz=chemQuiz;
   if(quiz.index>=quiz.questions.length){const score=quiz.answers.filter(x=>x.correct).length;return `<h3 class="chem-route-title">${score} / ${quiz.questions.length} 問正解</h3><p class="hint">間違えた反応は「資料」や試験管でも確かめよう。</p><div class="chem-reference">${quiz.questions.map((q,i)=>`<details class="chem-ref-entry"><summary>${quiz.answers[i]?.correct?'正解':'復習'}：${chemText(q.ion.f)} ＋ ${chemText(q.reagent.f)}<small>${q.amount==='excess'?'過剰':'少量'} ・ ${q.label}：${escapeHtml(q.correct)}</small></summary><div class="chem-ref-detail"><p>${chemText(q.result.quizCondition||'試薬に明示された条件で考える。')}</p><p>${chemText(q.result.detail)}</p><div class="chem-equation">${chemText(q.result.equation||'新しい反応式ではなく、指定条件での観察結果です。')}</div><a href="${q.result.source}" target="_blank" rel="noopener">出典</a></div></details>`).join('')}</div><button class="btn" onclick="chemStartQuiz()">もう10問</button>`}
   const q=quiz.questions[quiz.index],answered=quiz.selected!==null;
