@@ -11,7 +11,7 @@
 <link rel="manifest" href="./manifest.webmanifest" />
 <link rel="apple-touch-icon" href="./apple-touch-icon.png" />
 <link rel="icon" type="image/png" sizes="64x64" href="./favicon-64.png" />
-<script>(function(){try{var s=(JSON.parse(localStorage.getItem("studytime.v1")||"{}").settings)||{};var d=s.design||((s.game==="game")?"game":(s.game==="ice")?"yakari":(s.game==="huaxu")?"yakari-light":((s.theme==="light"||s.theme==="auto")?s.theme:"dark"));if(d==="ice")d="yakari";if(d==="huaxu")d="yakari-light";var t=(d==="game")?"dark":(d==="yakari")?"dark":(d==="yakari-light")?"light":(d==="auto")?"auto":(d==="light"?"light":"dark");var g=(d==="yakari"||d==="yakari-light")?"yakari":(d==="game")?"game":"none";if(t==="auto")t=(window.matchMedia&&matchMedia("(prefers-color-scheme: light)").matches)?"light":"dark";document.documentElement.dataset.theme=t;document.documentElement.dataset.game=g;var m=document.querySelector("meta[name=theme-color]");if(m)m.content=(g==="yakari")?((t==="light")?"#f2ecdf":"#15110b"):(g==="game")?"#0e0c12":(t==="light")?"#f4f6fb":"#0b0d12";}catch(e){}})();</script>
+<script>(function(){try{var s=(JSON.parse(localStorage.getItem("studytime.v1")||"{}").settings)||{};var d=s.design||((s.game==="game")?"game":(s.game==="ice")?"soya":(s.game==="huaxu")?"soya-light":((s.theme==="light"||s.theme==="auto")?s.theme:"dark"));if(d==="ice")d="soya";if(d==="huaxu")d="soya-light";if(d==="yakari")d="soya";if(d==="yakari-light")d="soya-light";var t=(d==="game")?"dark":(d==="soya")?"dark":(d==="soya-light")?"light":(d==="shiden")?"dark":(d==="auto")?"auto":(d==="light"?"light":"dark");var g=(d==="soya"||d==="soya-light")?"soya":(d==="shiden")?"shiden":(d==="game")?"game":"none";if(t==="auto")t=(window.matchMedia&&matchMedia("(prefers-color-scheme: light)").matches)?"light":"dark";document.documentElement.dataset.theme=t;document.documentElement.dataset.game=g;var m=document.querySelector("meta[name=theme-color]");if(m)m.content=(g==="soya")?((t==="light")?"#e9eef7":"#0a1020"):(g==="shiden")?"#120a1e":(g==="game")?"#0e0c12":(t==="light")?"#f4f6fb":"#0b0d12";}catch(e){}})();</script>
 <title>StudyTime — 24時間・勉強管理</title>
 <style>
 :root{
@@ -634,7 +634,7 @@ html[data-game="game"] .hint{color:var(--text-mute)}
 html[data-game="game"] .group-tabs button{color:var(--text-dim)}
 html[data-game="game"] .sync-badge{color:var(--text-dim)}
 
-/* ============ ゲーム配色：夜灯 ============ */
+/* ============ ゲーム配色：蒼夜・紫電 ============ */
 
 </style>
 <script id="gm-loader">
@@ -665,7 +665,7 @@ function loadGameFont(){}
 #deck-view:has(.chem-lab) #deck-head{display:none}
 #deck-view:has(.chem-compact) .deck-tabs{flex-shrink:0;margin:0 0 8px}
 #deck-view:has(.chem-compact) #deck-pane{flex:1;min-height:0;display:flex}
-.chem-lab.chem-compact{flex:1;min-height:0;padding:0;display:flex}
+.chem-mix-col{flex:1;min-height:0;display:flex;flex-direction:column;min-width:0}.chem-mix-col>.chem-subtabs{flex:0 0 auto;padding:8px 8px 0}.chem-lab.chem-compact{flex:1;min-height:0;padding:0;display:flex}
 .chem-workspace{width:100%;min-width:0;min-height:0;display:grid;grid-template-rows:minmax(120px,1fr) auto 130px;gap:8px}
 .chem-pickers{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;min-height:0}
 .chem-picker{display:flex;flex-direction:column;min-width:0;min-height:0}
@@ -2985,7 +2985,7 @@ function chemLookupHTML(){
 function chemRouteHTML(){
   if(chemEditing)return chemEditorHTML();
   const r=chemCurrentRoute(),routes=chemRoutes();
-  const modebar=`<div class="chem-route-toolbar"><button class="btn sm ${chemRouteMode==='list'?'':'ghost'}" onclick="chemRouteModeSet('list')">経路一覧</button><button class="btn sm ${chemRouteMode==='lookup'?'':'ghost'}" onclick="chemRouteModeSet('lookup')">物質から調べる</button></div>`;
+  const modebar=chemSubTabsHTML('org');
   if(chemRouteMode==='lookup')return modebar+chemLookupHTML();
   return modebar+`<div class="chem-route-toolbar"><label>反応経路<select onchange="chemSelectRoute(this.value)">${routes.map(x=>`<option value="${escapeHtml(x.id)}" ${x.id===r.id?'selected':''}>${escapeHtml(x.title)}</option>`).join('')}</select></label><button class="btn sm ghost" onclick="chemEditRoute(true)">新しく作る</button></div><h3 class="chem-route-title">${escapeHtml(r.title)}</h3>${chemPractice?chemPracticeHTML(r):chemRouteDiagram(r,false)}
   <div class="chem-actions"><button class="btn" onclick="chemStartPractice()">並べ替え練習</button><button class="btn ghost" onclick="chemEditRoute(false)">経路・矢印を編集</button></div>
@@ -3133,7 +3133,7 @@ function renderChemDeckBase(s){
   document.getElementById('deck-title').textContent=s.name+' ラボ';
   document.getElementById('deck-head').innerHTML='';
    document.getElementById('deck-tabs').innerHTML=[['mix','無機'],['route','有機'],['quiz','確認問題'],['reference','資料']].map(([id,label])=>`<button class="${chemTab===id?'on':''}" onclick="setChemTab('${id}')">${label}</button>`).join('');
-    document.getElementById('deck-pane').innerHTML=`<div class="chem-lab ${chemTab==='mix'?'chem-compact':''}">${chemTab==='mix'?chemMixHTML():chemTab==='route'?chemRouteHTML():chemTab==='quiz'?chemQuizHTML():chemReferenceHTML()}</div>`;
+    document.getElementById('deck-pane').innerHTML=`<div class="chem-mix-col">${chemTab==='mix'?chemSubTabsHTML('in')+`<div class="chem-lab chem-compact">`+chemMixHTML()+`</div>`:`<div class="chem-lab">`+(chemTab==='route'?chemRouteHTML():chemTab==='quiz'?chemQuizHTML():chemReferenceHTML())+`</div>`}</div>`;
    document.querySelectorAll('.chem-card-shelf').forEach((el,i)=>el.scrollTop=shelfPositions[i]||0);
 }
 
@@ -4471,22 +4471,26 @@ const DESIGNS=[
   {id:'dark',  name:'ダーク', pv:{bg:'linear-gradient(180deg,#161a20,#0b0d12)', panel:'#1b1f26', line:'#2c333d', acc:'#7cc4ff', txt:'#e8ecf2'}},
   {id:'auto',  name:'自動',   pv:{bg:'linear-gradient(115deg,#f6f8fc 0 50%,#0b0d12 50% 100%)', panel:'rgba(150,160,176,.6)', line:'rgba(255,255,255,.4)', acc:'#1f7ae0', txt:'#9aa3b2'}},
   {id:'game',  name:'金襴',   pv:{bg:'linear-gradient(180deg,#1d2026,#0d0e11)', panel:'#1a1d22', line:'rgba(255,255,255,.28)', acc:'#e6b450', txt:'#ffffff'}},
-  {id:'yakari', name:'夜灯（やあかり）', pv:{bg:'linear-gradient(180deg,#171208 0%,#241a0e 46%,#4a3115 78%,#120d07 100%)', panel:'rgba(30,23,14,.88)', line:'rgba(226,178,108,.44)', acc:'#e2a24b', txt:'#f1e8d8'}},
-  {id:'yakari-light', name:'夜灯・昼', pv:{bg:'linear-gradient(180deg,#f4efe3 0%,#efe6d2 44%,#e0cba4 74%,#cfd8cf 100%)', panel:'rgba(255,252,244,.92)', line:'rgba(126,104,68,.44)', acc:'#a86a1c', txt:'#241d13'}}
+  {id:'soya', name:'蒼夜（そうや）', pv:{bg:'linear-gradient(180deg,#080e17 0%,#0e1724 46%,#152b4a 78%,#070c12 100%)', panel:'rgba(14,21,30,.88)', line:'rgba(108,157,226,.44)', acc:'#4b8ae2', txt:'#d8e2f1'}},
+  {id:'soya-light', name:'蒼夜・昼', pv:{bg:'linear-gradient(180deg,#e3eaf4 0%,#d2deef 44%,#a4bde0 74%,#cfd8cf 100%)', panel:'rgba(244,249,255,.92)', line:'rgba(68,92,126,.44)', acc:'#1c56a8', txt:'#131a24'}},
+  {id:'shiden', name:'紫電（しでん）', pv:{bg:'linear-gradient(180deg,#130817 0%,#1e0e24 46%,#3d154a 78%,#0f0712 100%)', panel:'rgba(26,14,30,.88)', line:'rgba(196,108,226,.44)', acc:'#bc4be2', txt:'#ebd8f1'}},
 ];
 function designById(d){ for(var i=0;i<DESIGNS.length;i++){ if(DESIGNS[i].id===d) return DESIGNS[i] } return DESIGNS[1] }
 function currentDesign(){
   const s=state.settings||{};
   if(s.design) return s.design;
   if(s.game==='game') return 'game';
-  if(s.game==='ice') return 'yakari';
-  if(s.game==='huaxu') return 'yakari-light';
+  if(s.design==='yakari') return 'soya';
+  if(s.design==='yakari-light') return 'soya-light';
+  if(s.game==='ice') return 'soya';
+  if(s.game==='huaxu') return 'soya-light';
   return (s.theme==='light'||s.theme==='auto')?s.theme:'dark';
 }
 function designSpec(d){
   if(d==='game') return {theme:'dark', game:'game'};
-  if(d==='ice'||d==='yakari') return {theme:'dark', game:'yakari'};
-  if(d==='huaxu'||d==='yakari-light') return {theme:'light', game:'yakari'};
+  if(d==='ice'||d==='yakari'||d==='soya') return {theme:'dark', game:'soya'};
+  if(d==='huaxu'||d==='yakari-light'||d==='soya-light') return {theme:'light', game:'soya'};
+  if(d==='shiden') return {theme:'dark', game:'shiden'};
   if(d==='light') return {theme:'light', game:'none'};
   if(d==='auto') return {theme:'auto', game:'none'};
   return {theme:'dark', game:'none'};
@@ -4518,7 +4522,7 @@ function applyTheme(){
   document.documentElement.dataset.theme=t;
   document.documentElement.dataset.game=sp.game;
   if(sp.game!=='none'){ try{loadGameFont()}catch(e){} }
-  try{ var m=document.querySelector('meta[name=theme-color]'); if(m) m.content=(sp.game==='yakari')?((t==='light')?'#f2ecdf':'#15110b'):(sp.game==='game')?'#0e0c12':(t==='light'?'#f4f6fb':'#0b0d12'); }catch(e){}
+  try{ var m=document.querySelector('meta[name=theme-color]'); if(m) m.content=(sp.game==='soya')?((t==='light')?'#e9eef7':'#0a1020'):(sp.game==='shiden')?'#120a1e':(sp.game==='game')?'#0e0c12':(t==='light'?'#f4f6fb':'#0b0d12'); }catch(e){}
   try{ var dc=document.getElementById('design-current'); if(dc) dc.textContent=designById(d).name; }catch(e){}
   try{ var sw=document.getElementById('design-swatch'); if(sw){ var p=designById(d).pv; sw.style.background=p.bg; sw.style.borderColor=p.line; sw.style.boxShadow='inset 0 0 0 3px '+p.panel; } }catch(e){}
   try{ renderDesignGrid(); }catch(e){}
@@ -4887,146 +4891,293 @@ document.addEventListener('DOMContentLoaded', syncSrsUI);
    夜灯（やあかり）― 墨と灯りの勉強机テーマ（ダーク既定・ライト別版）
    ================================================================== */
 @import url("https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&family=Marcellus&family=Shippori+Mincho:wght@400;500;600;700&display=swap");
-html[data-game="yakari"]{
+html[data-game="soya"]{
   --gserif:"Shippori Mincho","Yu Mincho","YuMincho","Hiragino Mincho ProN","Noto Serif JP",serif;
   --glat:"Marcellus","Cinzel",Georgia,serif;
   --gnum:"Cinzel",ui-monospace,Menlo,monospace;
-  --bg:#15110b;--bg-elev:rgba(28,22,14,.80);--bg-elev-2:rgba(38,30,19,.86);
-  --line:rgba(220,182,120,.22);--line-strong:rgba(236,200,138,.46);
-  --text:#f1e8d8;--text-dim:#c8b89c;--text-mute:#96876e;
-  --accent:#e2a24b;--accent-2:#7fa38c;--on-accent:#1d1509;
-  --ok:#6fbf95;--warn:#dfb45c;--bad:#d97e76;
-  --nav-bg:rgba(20,15,9,.84);--accent-soft:rgba(226,162,75,.13);
-  --advice-bg:linear-gradient(135deg,rgba(226,162,75,.14),rgba(20,15,9,.76));
-  --advice-line:rgba(220,182,120,.26);--danger-line:rgba(217,126,118,.42);
-  --shadow:0 16px 38px rgba(0,0,0,.55);--overlay:rgba(12,9,5,.76);
-  --unrec:#2a2115;--status-bg:#0e0b07;--radius:16px;color-scheme:dark;
-  --lamp:#e2a24b;--lamp-hi:#f6d193;--washi:#efe6d2;
+  --bg:#0b0f15;--bg-elev:rgba(14,20,28,.80);--bg-elev-2:rgba(19,27,38,.86);
+  --line:rgba(120,162,220,.22);--line-strong:rgba(138,179,236,.46);
+  --text:#d8e2f1;--text-dim:#9caec8;--text-mute:#6e7f96;
+  --accent:#4b8ae2;--accent-2:#7fa38c;--on-accent:#09111d;
+  --ok:#6fbf95;--warn:#5c93df;--bad:#d97e76;
+  --nav-bg:rgba(9,14,20,.84);--accent-soft:rgba(75,138,226,.13);
+  --advice-bg:linear-gradient(135deg,rgba(75,138,226,.14),rgba(9,14,20,.76));
+  --advice-line:rgba(120,162,220,.26);--danger-line:rgba(217,126,118,.42);
+  --shadow:0 16px 38px rgba(0,0,0,.55);--overlay:rgba(5,8,12,.76);
+  --unrec:#151e2a;--status-bg:#070a0e;--radius:16px;color-scheme:dark;
+  --lamp:#4b8ae2;--lamp-hi:#93bcf6;--washi:#d2deef;
 }
-html[data-game="yakari"] body{background:#15110b}
-html[data-game="yakari"] .bgfx{
-  display:block;position:fixed;inset:0;z-index:0;pointer-events:none;background-color:#15110b;
+html[data-game="soya"] body{background:#0b0f15}
+html[data-game="soya"] .bgfx{
+  display:block;position:fixed;inset:0;z-index:0;pointer-events:none;background-color:#0b0f15;
   background-image:
-    radial-gradient(90% 46% at 50% -6%, rgba(246,209,147,.20) 0%, rgba(246,209,147,.07) 38%, rgba(21,17,11,0) 72%),
-    radial-gradient(140% 90% at 50% 108%, rgba(10,7,4,.85) 0%, rgba(21,17,11,0) 60%);
+    radial-gradient(90% 46% at 50% -6%, rgba(147,188,246,.20) 0%, rgba(147,188,246,.07) 38%, rgba(11,15,21,0) 72%),
+    radial-gradient(140% 90% at 50% 108%, rgba(4,6,10,.85) 0%, rgba(11,15,21,0) 60%);
   box-shadow:inset 0 0 120px rgba(0,0,0,.45);
 }
-html[data-game="yakari"] .header{
-  border-bottom:1px solid rgba(220,182,120,.20);
-  background:linear-gradient(180deg,rgba(20,15,9,.72),rgba(20,15,9,.28) 64%,rgba(20,15,9,0));
+html[data-game="soya"] .header{
+  border-bottom:1px solid rgba(120,162,220,.20);
+  background:linear-gradient(180deg,rgba(9,14,20,.72),rgba(9,14,20,.28) 64%,rgba(9,14,20,0));
   -webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px)}
-html[data-game="yakari"] .header h1{color:#f6ecd9;text-shadow:0 0 20px rgba(226,162,75,.45),0 1px 0 rgba(0,0,0,.6)}
-html[data-game="yakari"] .header .sub{color:#a5957a}
-html[data-game="yakari"] .card{
-  background:linear-gradient(180deg,rgba(34,26,16,.60),rgba(19,14,9,.70));
-  border:1px solid rgba(220,182,120,.20);border-radius:16px;
-  box-shadow:0 18px 40px rgba(0,0,0,.5),inset 0 1px 0 rgba(246,209,147,.10);
+html[data-game="soya"] .header h1{color:#d9e5f6;text-shadow:0 0 20px rgba(75,138,226,.45),0 1px 0 rgba(0,0,0,.6)}
+html[data-game="soya"] .header .sub{color:#7a8ca5}
+html[data-game="soya"] .card{
+  background:linear-gradient(180deg,rgba(16,23,34,.60),rgba(9,13,19,.70));
+  border:1px solid rgba(120,162,220,.20);border-radius:16px;
+  box-shadow:0 18px 40px rgba(0,0,0,.5),inset 0 1px 0 rgba(147,188,246,.10);
   -webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px)}
-html[data-game="yakari"] .card h2{color:#efe3cc;padding-left:12px;position:relative}
-html[data-game="yakari"] .card h2::before{content:'';position:absolute;left:0;top:.16em;bottom:.16em;width:2px;border-radius:2px;
+html[data-game="soya"] .card h2{color:#ccdbef;padding-left:12px;position:relative}
+html[data-game="soya"] .card h2::before{content:'';position:absolute;left:0;top:.16em;bottom:.16em;width:2px;border-radius:2px;
   background:linear-gradient(180deg,var(--lamp-hi),var(--lamp) 55%,var(--accent-2));
-  box-shadow:0 0 10px rgba(226,162,75,.55)}
-html[data-game="yakari"] .btn{
-  background:linear-gradient(180deg,rgba(56,44,26,.78),rgba(28,21,13,.82));
-  border:1px solid rgba(220,182,120,.24);color:#ecdfc6;border-radius:13px;
-  box-shadow:0 5px 16px rgba(0,0,0,.4),inset 0 1px 0 rgba(246,209,147,.10)}
-html[data-game="yakari"] .btn.primary{
-  background:linear-gradient(180deg,#f6d193,#d99a3e 62%,#b67a28);
-  border:1px solid rgba(246,209,147,.55);color:#1d1509;font-weight:700;
-  box-shadow:0 10px 26px rgba(190,130,50,.38),inset 0 1px 0 rgba(255,255,255,.5)}
-html[data-game="yakari"] .btn.danger{color:#efa09a;border-color:var(--danger-line);background:linear-gradient(180deg,rgba(66,28,26,.72),rgba(30,14,12,.78))}
-html[data-game="yakari"] .btn.ghost{background:transparent;border-color:rgba(220,182,120,.26)}
-html[data-game="yakari"] .chip{background:rgba(255,255,255,.05);border-color:var(--line);color:#c8b89c}
-html[data-game="yakari"] .seg{background:rgba(18,13,8,.64);border:1px solid rgba(220,182,120,.22);border-radius:13px;
+  box-shadow:0 0 10px rgba(75,138,226,.55)}
+html[data-game="soya"] .btn{
+  background:linear-gradient(180deg,rgba(26,38,56,.78),rgba(13,19,28,.82));
+  border:1px solid rgba(120,162,220,.24);color:#c6d6ec;border-radius:13px;
+  box-shadow:0 5px 16px rgba(0,0,0,.4),inset 0 1px 0 rgba(147,188,246,.10)}
+html[data-game="soya"] .btn.primary{
+  background:linear-gradient(180deg,#93bcf6,#3e7fd9 62%,#2863b6);
+  border:1px solid rgba(147,188,246,.55);color:#09111d;font-weight:700;
+  box-shadow:0 10px 26px rgba(50,108,190,.38),inset 0 1px 0 rgba(255,255,255,.5)}
+html[data-game="soya"] .btn.danger{color:#efa09a;border-color:var(--danger-line);background:linear-gradient(180deg,rgba(66,28,26,.72),rgba(30,14,12,.78))}
+html[data-game="soya"] .btn.ghost{background:transparent;border-color:rgba(120,162,220,.26)}
+html[data-game="soya"] .chip{background:rgba(255,255,255,.05);border-color:var(--line);color:#9caec8}
+html[data-game="soya"] .seg{background:rgba(8,12,18,.64);border:1px solid rgba(120,162,220,.22);border-radius:13px;
   -webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px)}
-html[data-game="yakari"] .seg button{color:#96876e;border-radius:10px;font-family:var(--gserif);letter-spacing:.05em}
-html[data-game="yakari"] .seg button.on{background:linear-gradient(180deg,rgba(160,116,52,.66),rgba(96,66,28,.66));
-  color:#f6ecd9;outline:1px solid rgba(236,200,138,.45);box-shadow:0 0 18px rgba(226,162,75,.25)}
-html[data-game="yakari"] .group-tab{background:rgba(24,18,11,.68);border:1px solid rgba(220,182,120,.22);
-  color:#c0ad8c;font-family:var(--gserif);letter-spacing:.04em;
+html[data-game="soya"] .seg button{color:#6e7f96;border-radius:10px;font-family:var(--gserif);letter-spacing:.05em}
+html[data-game="soya"] .seg button.on{background:linear-gradient(180deg,rgba(52,97,160,.66),rgba(28,56,96,.66));
+  color:#d9e5f6;outline:1px solid rgba(138,179,236,.45);box-shadow:0 0 18px rgba(75,138,226,.25)}
+html[data-game="soya"] .group-tab{background:rgba(11,16,24,.68);border:1px solid rgba(120,162,220,.22);
+  color:#8ca2c0;font-family:var(--gserif);letter-spacing:.04em;
   -webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px)}
-html[data-game="yakari"] .group-tab.active{background:linear-gradient(180deg,#f6d193,#d99a3e);color:#1d1509;border-color:rgba(246,209,147,.6)}
-html[data-game="yakari"] .nav{
-  background:linear-gradient(180deg,rgba(22,17,10,.62),rgba(10,7,4,.94));
-  border-top:1px solid rgba(236,200,138,.34);
-  box-shadow:0 -16px 38px rgba(0,0,0,.62),inset 0 1px 0 rgba(246,209,147,.10);
+html[data-game="soya"] .group-tab.active{background:linear-gradient(180deg,#93bcf6,#3e7fd9);color:#09111d;border-color:rgba(147,188,246,.6)}
+html[data-game="soya"] .nav{
+  background:linear-gradient(180deg,rgba(10,15,22,.62),rgba(4,6,10,.94));
+  border-top:1px solid rgba(138,179,236,.34);
+  box-shadow:0 -16px 38px rgba(0,0,0,.62),inset 0 1px 0 rgba(147,188,246,.10);
   -webkit-backdrop-filter:blur(20px) saturate(1.1);backdrop-filter:blur(20px) saturate(1.1)}
-html[data-game="yakari"] .nav button{color:#96876e;position:relative;font-family:var(--gserif);letter-spacing:.09em}
-html[data-game="yakari"] .nav button.active{color:#f6ecd9;text-shadow:0 0 14px rgba(226,162,75,.75)}
-html[data-game="yakari"] .nav button.active svg{filter:drop-shadow(0 0 8px rgba(226,162,75,.8))}
-html[data-game="yakari"] .nav button.active::before{content:'';position:absolute;top:0;left:50%;
+html[data-game="soya"] .nav button{color:#6e7f96;position:relative;font-family:var(--gserif);letter-spacing:.09em}
+html[data-game="soya"] .nav button.active{color:#d9e5f6;text-shadow:0 0 14px rgba(75,138,226,.75)}
+html[data-game="soya"] .nav button.active svg{filter:drop-shadow(0 0 8px rgba(75,138,226,.8))}
+html[data-game="soya"] .nav button.active::before{content:'';position:absolute;top:0;left:50%;
   transform:translateX(-50%);width:30px;height:2px;border-radius:0 0 4px 4px;
-  background:linear-gradient(90deg,rgba(226,162,75,0),#f6d193 50%,rgba(226,162,75,0));
-  box-shadow:0 0 14px rgba(226,162,75,.9)}
-html[data-game="yakari"] .now-card{
-  background:linear-gradient(160deg,rgba(38,29,17,.62),rgba(19,14,9,.72));
-  border:1px solid rgba(220,182,120,.24);border-radius:18px;
-  box-shadow:0 20px 46px rgba(0,0,0,.5),inset 0 1px 0 rgba(246,209,147,.12);
+  background:linear-gradient(90deg,rgba(75,138,226,0),#93bcf6 50%,rgba(75,138,226,0));
+  box-shadow:0 0 14px rgba(75,138,226,.9)}
+html[data-game="soya"] .now-card{
+  background:linear-gradient(160deg,rgba(17,26,38,.62),rgba(9,13,19,.72));
+  border:1px solid rgba(120,162,220,.24);border-radius:18px;
+  box-shadow:0 20px 46px rgba(0,0,0,.5),inset 0 1px 0 rgba(147,188,246,.12);
   -webkit-backdrop-filter:blur(16px);backdrop-filter:blur(16px)}
-html[data-game="yakari"] .now-label{color:#96876e}
-html[data-game="yakari"] .now-name{color:#f6ecd9;font-family:var(--gserif);font-weight:600;letter-spacing:.04em}
-html[data-game="yakari"] .now-time{font-family:var(--gnum);font-weight:600;color:#f8efdc;letter-spacing:.04em;
-  text-shadow:0 0 24px rgba(226,162,75,.5)}
-html[data-game="yakari"] .now-sub{color:#c8b89c}
-html[data-game="yakari"] .stat{
-  background:linear-gradient(180deg,rgba(34,26,16,.56),rgba(19,14,9,.66));
-  border:1px solid rgba(220,182,120,.20);border-radius:16px;
-  box-shadow:0 10px 26px rgba(0,0,0,.42),inset 0 1px 0 rgba(246,209,147,.09);
+html[data-game="soya"] .now-label{color:#6e7f96}
+html[data-game="soya"] .now-name{color:#d9e5f6;font-family:var(--gserif);font-weight:600;letter-spacing:.04em}
+html[data-game="soya"] .now-time{font-family:var(--gnum);font-weight:600;color:#dce8f8;letter-spacing:.04em;
+  text-shadow:0 0 24px rgba(75,138,226,.5)}
+html[data-game="soya"] .now-sub{color:#9caec8}
+html[data-game="soya"] .stat{
+  background:linear-gradient(180deg,rgba(16,23,34,.56),rgba(9,13,19,.66));
+  border:1px solid rgba(120,162,220,.20);border-radius:16px;
+  box-shadow:0 10px 26px rgba(0,0,0,.42),inset 0 1px 0 rgba(147,188,246,.09);
   -webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px)}
-html[data-game="yakari"] .stat .label{color:#96876e}
-html[data-game="yakari"] .stat .value{color:#f4ead6;font-family:var(--gnum);letter-spacing:.03em}
-html[data-game="yakari"] .stat .sub{color:#c8b89c}
-html[data-game="yakari"] .pill{border-color:rgba(220,182,120,.22);background:rgba(255,255,255,.05)}
-html[data-game="yakari"] .hint{color:#96876e}
-html[data-game="yakari"] .sync-badge{color:#c8b89c}
-html[data-game="yakari"] .flip{background:linear-gradient(180deg,rgba(34,26,16,.62),rgba(19,14,9,.72));border-color:rgba(220,182,120,.24)}
-html[data-game="yakari"] .hist{border-bottom-color:rgba(220,182,120,.16)}
-html[data-game="yakari"] .act-btn{background:rgba(28,21,13,.58);border-color:rgba(220,182,120,.20);
+html[data-game="soya"] .stat .label{color:#6e7f96}
+html[data-game="soya"] .stat .value{color:#d6e3f4;font-family:var(--gnum);letter-spacing:.03em}
+html[data-game="soya"] .stat .sub{color:#9caec8}
+html[data-game="soya"] .pill{border-color:rgba(120,162,220,.22);background:rgba(255,255,255,.05)}
+html[data-game="soya"] .hint{color:#6e7f96}
+html[data-game="soya"] .sync-badge{color:#9caec8}
+html[data-game="soya"] .flip{background:linear-gradient(180deg,rgba(16,23,34,.62),rgba(9,13,19,.72));border-color:rgba(120,162,220,.24)}
+html[data-game="soya"] .hist{border-bottom-color:rgba(120,162,220,.16)}
+html[data-game="soya"] .act-btn{background:rgba(13,19,28,.58);border-color:rgba(120,162,220,.20);
   -webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px)}
-html[data-game="yakari"] .act-btn.current{border-color:var(--lamp);background:rgba(226,162,75,.15);
-  box-shadow:0 0 20px rgba(226,162,75,.24)}
-html[data-game="yakari"] input,html[data-game="yakari"] select,html[data-game="yakari"] textarea{
-  background:rgba(19,14,9,.74);border:1px solid rgba(220,182,120,.24);border-radius:12px;color:var(--text)}
-html[data-game="yakari"] .dcard{background:rgba(24,18,11,.72);border-color:rgba(220,182,120,.22)}
+html[data-game="soya"] .act-btn.current{border-color:var(--lamp);background:rgba(75,138,226,.15);
+  box-shadow:0 0 20px rgba(75,138,226,.24)}
+html[data-game="soya"] input,html[data-game="soya"] select,html[data-game="soya"] textarea{
+  background:rgba(9,13,19,.74);border:1px solid rgba(120,162,220,.24);border-radius:12px;color:var(--text)}
+html[data-game="soya"] .dcard{background:rgba(11,16,24,.72);border-color:rgba(120,162,220,.22)}
 
 /* ―― 夜灯・昼（わざ寅色の和紙） ―― */
-html[data-game="yakari"][data-theme="light"]{
-  --bg:#f2ecdf;--bg-elev:rgba(255,252,244,.90);--bg-elev-2:rgba(248,242,228,.94);
-  --line:rgba(126,104,68,.30);--line-strong:rgba(126,104,68,.52);
-  --text:#241d13;--text-dim:#57503f;--text-mute:#857a63;
-  --accent:#a86a1c;--accent-2:#4f7a68;--on-accent:#fffaf1;
-  --ok:#2f7d5f;--warn:#a8752c;--bad:#b5493d;
-  --nav-bg:rgba(250,245,233,.86);--accent-soft:rgba(168,106,28,.10);
-  --advice-bg:linear-gradient(135deg,rgba(168,106,28,.12),rgba(255,252,244,.80));
-  --advice-line:rgba(126,104,68,.30);--danger-line:#dcae9e;
-  --shadow:0 12px 30px rgba(96,74,44,.14);--overlay:rgba(43,35,24,.42);
-  --unrec:#e6dcc4;--status-bg:#241d13;color-scheme:light;
+html[data-game="soya"][data-theme="light"]{
+  --bg:#dfe7f2;--bg-elev:rgba(244,249,255,.90);--bg-elev-2:rgba(228,236,248,.94);
+  --line:rgba(68,92,126,.30);--line-strong:rgba(68,92,126,.52);
+  --text:#131a24;--text-dim:#3f4957;--text-mute:#637185;
+  --accent:#1c56a8;--accent-2:#4f7a68;--on-accent:#f1f7ff;
+  --ok:#2f7d5f;--warn:#2c60a8;--bad:#b5493d;
+  --nav-bg:rgba(233,240,250,.86);--accent-soft:rgba(28,86,168,.10);
+  --advice-bg:linear-gradient(135deg,rgba(28,86,168,.12),rgba(244,249,255,.80));
+  --advice-line:rgba(68,92,126,.30);--danger-line:#9eb8dc;
+  --shadow:0 12px 30px rgba(44,66,96,.14);--overlay:rgba(24,32,43,.42);
+  --unrec:#c4d2e6;--status-bg:#131a24;color-scheme:light;
 }
-html[data-game="yakari"][data-theme="light"] body{background:#f2ecdf}
-html[data-game="yakari"][data-theme="light"] .bgfx{
-  display:block;position:fixed;inset:0;z-index:0;pointer-events:none;background-color:#f2ecdf;
+html[data-game="soya"][data-theme="light"] body{background:#dfe7f2}
+html[data-game="soya"][data-theme="light"] .bgfx{
+  display:block;position:fixed;inset:0;z-index:0;pointer-events:none;background-color:#dfe7f2;
   background-image:
-    radial-gradient(90% 46% at 50% -6%, rgba(255,244,214,.85) 0%, rgba(250,236,200,.35) 40%, rgba(242,236,223,0) 74%),
-    radial-gradient(140% 90% at 50% 110%, rgba(178,150,102,.16) 0%, rgba(242,236,223,0) 60%);
+    radial-gradient(90% 46% at 50% -6%, rgba(214,231,255,.85) 0%, rgba(200,221,250,.35) 40%, rgba(223,231,242,0) 74%),
+    radial-gradient(140% 90% at 50% 110%, rgba(102,134,178,.16) 0%, rgba(223,231,242,0) 60%);
 }
-html[data-game="yakari"][data-theme="light"] .header{border-bottom:1px solid rgba(126,104,68,.24);background:linear-gradient(180deg,rgba(250,245,233,.9),rgba(250,245,233,.4) 64%,rgba(250,245,233,0))}
-html[data-game="yakari"][data-theme="light"] .header h1{color:#2a2214;text-shadow:none}
-html[data-game="yakari"][data-theme="light"] .header .sub{color:#857a63}
-html[data-game="yakari"][data-theme="light"] .card{background:rgba(255,252,244,.86);border:1px solid rgba(126,104,68,.26);box-shadow:0 10px 26px rgba(96,74,44,.10)}
-html[data-game="yakari"][data-theme="light"] .card h2{color:#33291a}
-html[data-game="yakari"][data-theme="light"] .btn{background:linear-gradient(180deg,#fbf6ea,#f0e6d0);border:1px solid rgba(126,104,68,.34);color:#3a3020}
-html[data-game="yakari"][data-theme="light"] .btn.primary{background:linear-gradient(180deg,#c98d3e,#a86a1c);border-color:rgba(168,106,28,.6);color:#fffaf1}
-html[data-game="yakari"][data-theme="light"] .btn.ghost{background:transparent}
-html[data-game="yakari"][data-theme="light"] .seg{background:rgba(244,238,224,.8);border:1px solid rgba(126,104,68,.26)}
-html[data-game="yakari"][data-theme="light"] .seg button{color:#857a63}
-html[data-game="yakari"][data-theme="light"] .seg button.on{background:linear-gradient(180deg,#c98d3e,#a86a1c);color:#fffaf1;outline:1px solid rgba(168,106,28,.5)}
-html[data-game="yakari"][data-theme="light"] .nav{background:linear-gradient(180deg,rgba(250,245,233,.92),rgba(240,232,212,.96));border-top:1px solid rgba(126,104,68,.34)}
-html[data-game="yakari"][data-theme="light"] .nav button{color:#857a63}
-html[data-game="yakari"][data-theme="light"] .nav button.active{color:#2a2214;text-shadow:none}
-html[data-game="yakari"][data-theme="light"] .nav button.active::before{background:linear-gradient(90deg,rgba(168,106,28,0),#a86a1c 50%,rgba(168,106,28,0))}
-html[data-game="yakari"][data-theme="light"] .now-time{color:#2a2214;text-shadow:none}
-html[data-game="yakari"][data-theme="light"] .stat .value{color:#2a2214}
-html[data-game="yakari"][data-theme="light"] input,html[data-game="yakari"][data-theme="light"] select,html[data-game="yakari"][data-theme="light"] textarea{background:rgba(255,252,244,.9);border:1px solid rgba(126,104,68,.32);color:var(--text)}
+html[data-game="soya"][data-theme="light"] .header{border-bottom:1px solid rgba(68,92,126,.24);background:linear-gradient(180deg,rgba(233,240,250,.9),rgba(233,240,250,.4) 64%,rgba(233,240,250,0))}
+html[data-game="soya"][data-theme="light"] .header h1{color:#141d2a;text-shadow:none}
+html[data-game="soya"][data-theme="light"] .header .sub{color:#637185}
+html[data-game="soya"][data-theme="light"] .card{background:rgba(244,249,255,.86);border:1px solid rgba(68,92,126,.26);box-shadow:0 10px 26px rgba(44,66,96,.10)}
+html[data-game="soya"][data-theme="light"] .card h2{color:#1a2433}
+html[data-game="soya"][data-theme="light"] .btn{background:linear-gradient(180deg,#eaf1fb,#d0ddf0);border:1px solid rgba(68,92,126,.34);color:#202b3a}
+html[data-game="soya"][data-theme="light"] .btn.primary{background:linear-gradient(180deg,#3e78c9,#1c56a8);border-color:rgba(28,86,168,.6);color:#f1f7ff}
+html[data-game="soya"][data-theme="light"] .btn.ghost{background:transparent}
+html[data-game="soya"][data-theme="light"] .seg{background:rgba(224,232,244,.8);border:1px solid rgba(68,92,126,.26)}
+html[data-game="soya"][data-theme="light"] .seg button{color:#637185}
+html[data-game="soya"][data-theme="light"] .seg button.on{background:linear-gradient(180deg,#3e78c9,#1c56a8);color:#f1f7ff;outline:1px solid rgba(28,86,168,.5)}
+html[data-game="soya"][data-theme="light"] .nav{background:linear-gradient(180deg,rgba(233,240,250,.92),rgba(212,224,240,.96));border-top:1px solid rgba(68,92,126,.34)}
+html[data-game="soya"][data-theme="light"] .nav button{color:#637185}
+html[data-game="soya"][data-theme="light"] .nav button.active{color:#141d2a;text-shadow:none}
+html[data-game="soya"][data-theme="light"] .nav button.active::before{background:linear-gradient(90deg,rgba(28,86,168,0),#1c56a8 50%,rgba(28,86,168,0))}
+html[data-game="soya"][data-theme="light"] .now-time{color:#141d2a;text-shadow:none}
+html[data-game="soya"][data-theme="light"] .stat .value{color:#141d2a}
+html[data-game="soya"][data-theme="light"] input,html[data-game="soya"][data-theme="light"] select,html[data-game="soya"][data-theme="light"] textarea{background:rgba(244,249,255,.9);border:1px solid rgba(68,92,126,.32);color:var(--text)}
+
+</style>
+<style id="gm-theme3b">
+/* ==================================================================
+   夜灯（やあかり）― 墨と灯りの勉強机テーマ（ダーク既定・ライト別版）
+   ================================================================== */
+@import url("https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&family=Marcellus&family=Shippori+Mincho:wght@400;500;600;700&display=swap");
+html[data-game="shiden"]{
+  --gserif:"Shippori Mincho","Yu Mincho","YuMincho","Hiragino Mincho ProN","Noto Serif JP",serif;
+  --glat:"Marcellus","Cinzel",Georgia,serif;
+  --gnum:"Cinzel",ui-monospace,Menlo,monospace;
+  --bg:#120b15;--bg-elev:rgba(24,14,28,.80);--bg-elev-2:rgba(33,19,38,.86);
+  --line:rgba(195,120,220,.22);--line-strong:rgba(212,138,236,.46);
+  --text:#ebd8f1;--text-dim:#bd9cc8;--text-mute:#8c6e96;
+  --accent:#bc4be2;--accent-2:#7fa38c;--on-accent:#18091d;
+  --ok:#6fbf95;--warn:#be5cdf;--bad:#d97e76;
+  --nav-bg:rgba(17,9,20,.84);--accent-soft:rgba(188,75,226,.13);
+  --advice-bg:linear-gradient(135deg,rgba(188,75,226,.14),rgba(17,9,20,.76));
+  --advice-line:rgba(195,120,220,.26);--danger-line:rgba(217,126,118,.42);
+  --shadow:0 16px 38px rgba(0,0,0,.55);--overlay:rgba(10,5,12,.76);
+  --unrec:#25152a;--status-bg:#0c070e;--radius:16px;color-scheme:dark;
+  --lamp:#bc4be2;--lamp-hi:#dd93f6;--washi:#e8d2ef;
+}
+html[data-game="shiden"] body{background:#120b15}
+html[data-game="shiden"] .bgfx{
+  display:block;position:fixed;inset:0;z-index:0;pointer-events:none;background-color:#120b15;
+  background-image:
+    radial-gradient(90% 46% at 50% -6%, rgba(221,147,246,.20) 0%, rgba(221,147,246,.07) 38%, rgba(18,11,21,0) 72%),
+    radial-gradient(140% 90% at 50% 108%, rgba(8,4,10,.85) 0%, rgba(18,11,21,0) 60%);
+  box-shadow:inset 0 0 120px rgba(0,0,0,.45);
+}
+html[data-game="shiden"] .header{
+  border-bottom:1px solid rgba(195,120,220,.20);
+  background:linear-gradient(180deg,rgba(17,9,20,.72),rgba(17,9,20,.28) 64%,rgba(17,9,20,0));
+  -webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px)}
+html[data-game="shiden"] .header h1{color:#efd9f6;text-shadow:0 0 20px rgba(188,75,226,.45),0 1px 0 rgba(0,0,0,.6)}
+html[data-game="shiden"] .header .sub{color:#9a7aa5}
+html[data-game="shiden"] .card{
+  background:linear-gradient(180deg,rgba(30,16,34,.60),rgba(16,9,19,.70));
+  border:1px solid rgba(195,120,220,.20);border-radius:16px;
+  box-shadow:0 18px 40px rgba(0,0,0,.5),inset 0 1px 0 rgba(221,147,246,.10);
+  -webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px)}
+html[data-game="shiden"] .card h2{color:#e6ccef;padding-left:12px;position:relative}
+html[data-game="shiden"] .card h2::before{content:'';position:absolute;left:0;top:.16em;bottom:.16em;width:2px;border-radius:2px;
+  background:linear-gradient(180deg,var(--lamp-hi),var(--lamp) 55%,var(--accent-2));
+  box-shadow:0 0 10px rgba(188,75,226,.55)}
+html[data-game="shiden"] .btn{
+  background:linear-gradient(180deg,rgba(48,26,56,.78),rgba(24,13,28,.82));
+  border:1px solid rgba(195,120,220,.24);color:#e3c6ec;border-radius:13px;
+  box-shadow:0 5px 16px rgba(0,0,0,.4),inset 0 1px 0 rgba(221,147,246,.10)}
+html[data-game="shiden"] .btn.primary{
+  background:linear-gradient(180deg,#dd93f6,#b23ed9 62%,#9228b6);
+  border:1px solid rgba(221,147,246,.55);color:#18091d;font-weight:700;
+  box-shadow:0 10px 26px rgba(155,50,190,.38),inset 0 1px 0 rgba(255,255,255,.5)}
+html[data-game="shiden"] .btn.danger{color:#efa09a;border-color:var(--danger-line);background:linear-gradient(180deg,rgba(66,28,26,.72),rgba(30,14,12,.78))}
+html[data-game="shiden"] .btn.ghost{background:transparent;border-color:rgba(195,120,220,.26)}
+html[data-game="shiden"] .chip{background:rgba(255,255,255,.05);border-color:var(--line);color:#bd9cc8}
+html[data-game="shiden"] .seg{background:rgba(16,8,18,.64);border:1px solid rgba(195,120,220,.22);border-radius:13px;
+  -webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px)}
+html[data-game="shiden"] .seg button{color:#8c6e96;border-radius:10px;font-family:var(--gserif);letter-spacing:.05em}
+html[data-game="shiden"] .seg button.on{background:linear-gradient(180deg,rgba(133,52,160,.66),rgba(79,28,96,.66));
+  color:#efd9f6;outline:1px solid rgba(212,138,236,.45);box-shadow:0 0 18px rgba(188,75,226,.25)}
+html[data-game="shiden"] .group-tab{background:rgba(21,11,24,.68);border:1px solid rgba(195,120,220,.22);
+  color:#b38cc0;font-family:var(--gserif);letter-spacing:.04em;
+  -webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px)}
+html[data-game="shiden"] .group-tab.active{background:linear-gradient(180deg,#dd93f6,#b23ed9);color:#18091d;border-color:rgba(221,147,246,.6)}
+html[data-game="shiden"] .nav{
+  background:linear-gradient(180deg,rgba(19,10,22,.62),rgba(8,4,10,.94));
+  border-top:1px solid rgba(212,138,236,.34);
+  box-shadow:0 -16px 38px rgba(0,0,0,.62),inset 0 1px 0 rgba(221,147,246,.10);
+  -webkit-backdrop-filter:blur(20px) saturate(1.1);backdrop-filter:blur(20px) saturate(1.1)}
+html[data-game="shiden"] .nav button{color:#8c6e96;position:relative;font-family:var(--gserif);letter-spacing:.09em}
+html[data-game="shiden"] .nav button.active{color:#efd9f6;text-shadow:0 0 14px rgba(188,75,226,.75)}
+html[data-game="shiden"] .nav button.active svg{filter:drop-shadow(0 0 8px rgba(188,75,226,.8))}
+html[data-game="shiden"] .nav button.active::before{content:'';position:absolute;top:0;left:50%;
+  transform:translateX(-50%);width:30px;height:2px;border-radius:0 0 4px 4px;
+  background:linear-gradient(90deg,rgba(188,75,226,0),#dd93f6 50%,rgba(188,75,226,0));
+  box-shadow:0 0 14px rgba(188,75,226,.9)}
+html[data-game="shiden"] .now-card{
+  background:linear-gradient(160deg,rgba(33,17,38,.62),rgba(16,9,19,.72));
+  border:1px solid rgba(195,120,220,.24);border-radius:18px;
+  box-shadow:0 20px 46px rgba(0,0,0,.5),inset 0 1px 0 rgba(221,147,246,.12);
+  -webkit-backdrop-filter:blur(16px);backdrop-filter:blur(16px)}
+html[data-game="shiden"] .now-label{color:#8c6e96}
+html[data-game="shiden"] .now-name{color:#efd9f6;font-family:var(--gserif);font-weight:600;letter-spacing:.04em}
+html[data-game="shiden"] .now-time{font-family:var(--gnum);font-weight:600;color:#f1dcf8;letter-spacing:.04em;
+  text-shadow:0 0 24px rgba(188,75,226,.5)}
+html[data-game="shiden"] .now-sub{color:#bd9cc8}
+html[data-game="shiden"] .stat{
+  background:linear-gradient(180deg,rgba(30,16,34,.56),rgba(16,9,19,.66));
+  border:1px solid rgba(195,120,220,.20);border-radius:16px;
+  box-shadow:0 10px 26px rgba(0,0,0,.42),inset 0 1px 0 rgba(221,147,246,.09);
+  -webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px)}
+html[data-game="shiden"] .stat .label{color:#8c6e96}
+html[data-game="shiden"] .stat .value{color:#ecd6f4;font-family:var(--gnum);letter-spacing:.03em}
+html[data-game="shiden"] .stat .sub{color:#bd9cc8}
+html[data-game="shiden"] .pill{border-color:rgba(195,120,220,.22);background:rgba(255,255,255,.05)}
+html[data-game="shiden"] .hint{color:#8c6e96}
+html[data-game="shiden"] .sync-badge{color:#bd9cc8}
+html[data-game="shiden"] .flip{background:linear-gradient(180deg,rgba(30,16,34,.62),rgba(16,9,19,.72));border-color:rgba(195,120,220,.24)}
+html[data-game="shiden"] .hist{border-bottom-color:rgba(195,120,220,.16)}
+html[data-game="shiden"] .act-btn{background:rgba(24,13,28,.58);border-color:rgba(195,120,220,.20);
+  -webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px)}
+html[data-game="shiden"] .act-btn.current{border-color:var(--lamp);background:rgba(188,75,226,.15);
+  box-shadow:0 0 20px rgba(188,75,226,.24)}
+html[data-game="shiden"] input,html[data-game="shiden"] select,html[data-game="shiden"] textarea{
+  background:rgba(16,9,19,.74);border:1px solid rgba(195,120,220,.24);border-radius:12px;color:var(--text)}
+html[data-game="shiden"] .dcard{background:rgba(21,11,24,.72);border-color:rgba(195,120,220,.22)}
+
+/* ―― 夜灯・昼（わざ寅色の和紙） ―― */
+html[data-game="shiden"][data-theme="light"]{
+  --bg:#eddff2;--bg-elev:rgba(252,244,255,.90);--bg-elev-2:rgba(243,228,248,.94);
+  --line:rgba(112,68,126,.30);--line-strong:rgba(112,68,126,.52);
+  --text:#201324;--text-dim:#513f57;--text-mute:#7d6385;
+  --accent:#851ca8;--accent-2:#4f7a68;--on-accent:#fcf1ff;
+  --ok:#2f7d5f;--warn:#892ca8;--bad:#b5493d;
+  --nav-bg:rgba(246,233,250,.86);--accent-soft:rgba(133,28,168,.10);
+  --advice-bg:linear-gradient(135deg,rgba(133,28,168,.12),rgba(252,244,255,.80));
+  --advice-line:rgba(112,68,126,.30);--danger-line:#cc9edc;
+  --shadow:0 12px 30px rgba(83,44,96,.14);--overlay:rgba(38,24,43,.42);
+  --unrec:#dec4e6;--status-bg:#201324;color-scheme:light;
+}
+html[data-game="shiden"][data-theme="light"] body{background:#eddff2}
+html[data-game="shiden"][data-theme="light"] .bgfx{
+  display:block;position:fixed;inset:0;z-index:0;pointer-events:none;background-color:#eddff2;
+  background-image:
+    radial-gradient(90% 46% at 50% -6%, rgba(245,214,255,.85) 0%, rgba(238,200,250,.35) 40%, rgba(237,223,242,0) 74%),
+    radial-gradient(140% 90% at 50% 110%, rgba(159,102,178,.16) 0%, rgba(237,223,242,0) 60%);
+}
+html[data-game="shiden"][data-theme="light"] .header{border-bottom:1px solid rgba(112,68,126,.24);background:linear-gradient(180deg,rgba(246,233,250,.9),rgba(246,233,250,.4) 64%,rgba(246,233,250,0))}
+html[data-game="shiden"][data-theme="light"] .header h1{color:#25142a;text-shadow:none}
+html[data-game="shiden"][data-theme="light"] .header .sub{color:#7d6385}
+html[data-game="shiden"][data-theme="light"] .card{background:rgba(252,244,255,.86);border:1px solid rgba(112,68,126,.26);box-shadow:0 10px 26px rgba(83,44,96,.10)}
+html[data-game="shiden"][data-theme="light"] .card h2{color:#2d1a33}
+html[data-game="shiden"][data-theme="light"] .btn{background:linear-gradient(180deg,#f7eafb,#e8d0f0);border:1px solid rgba(112,68,126,.34);color:#34203a}
+html[data-game="shiden"][data-theme="light"] .btn.primary{background:linear-gradient(180deg,#a63ec9,#851ca8);border-color:rgba(133,28,168,.6);color:#fcf1ff}
+html[data-game="shiden"][data-theme="light"] .btn.ghost{background:transparent}
+html[data-game="shiden"][data-theme="light"] .seg{background:rgba(239,224,244,.8);border:1px solid rgba(112,68,126,.26)}
+html[data-game="shiden"][data-theme="light"] .seg button{color:#7d6385}
+html[data-game="shiden"][data-theme="light"] .seg button.on{background:linear-gradient(180deg,#a63ec9,#851ca8);color:#fcf1ff;outline:1px solid rgba(133,28,168,.5)}
+html[data-game="shiden"][data-theme="light"] .nav{background:linear-gradient(180deg,rgba(246,233,250,.92),rgba(233,212,240,.96));border-top:1px solid rgba(112,68,126,.34)}
+html[data-game="shiden"][data-theme="light"] .nav button{color:#7d6385}
+html[data-game="shiden"][data-theme="light"] .nav button.active{color:#25142a;text-shadow:none}
+html[data-game="shiden"][data-theme="light"] .nav button.active::before{background:linear-gradient(90deg,rgba(133,28,168,0),#851ca8 50%,rgba(133,28,168,0))}
+html[data-game="shiden"][data-theme="light"] .now-time{color:#25142a;text-shadow:none}
+html[data-game="shiden"][data-theme="light"] .stat .value{color:#25142a}
+html[data-game="shiden"][data-theme="light"] input,html[data-game="shiden"][data-theme="light"] select,html[data-game="shiden"][data-theme="light"] textarea{background:rgba(252,244,255,.9);border:1px solid rgba(112,68,126,.32);color:var(--text)}
 
 </style>
 
