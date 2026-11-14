@@ -2881,6 +2881,10 @@ const CHEM_ORGANIC_ROUTES=[
   {id:'org-nitro-aniline',title:'ベンゼンからフェノール（ジアゾ法）',nodes:['ベンゼン','ニトロベンゼン','アニリン塩酸塩','アニリン','ジアゾニウム塩','フェノール','2,4,6-トリブロモフェノール'],edges:[
     {name:'ニトロ化',condition:'濃硝酸 ＋ 濃硫酸'},{name:'還元',condition:'Sn ＋ HCl'},{name:'弱塩基の遊離',condition:'NaOH'},
     {name:'ジアゾ化',condition:'NaNO₂ ＋ HCl／氷冷'},{name:'加水分解',condition:'温水'},{name:'ハロゲン化',condition:'臭素水'}],builtin:true,source:CHEM_SOURCE.organic},
+  {id:'org-acetanilide',title:'ベンゼンからアセトアニリドへ',nodes:['ベンゼン','ニトロベンゼン','アニリン','アセトアニリド'],edges:[
+    {name:'ニトロ化',condition:'濃硝酸 ＋ 濃硫酸'},{name:'還元',condition:'スズ ＋ 塩酸'},{name:'アセチル化',condition:'無水酢酸'}],builtin:true,source:CHEM_SOURCE.organic},
+  {id:'org-polystyrene',title:'ベンゼンからポリスチレンへ',nodes:['ベンゼン','エチルベンゼン','スチレン','ポリスチレン'],edges:[
+    {name:'アルキル化',condition:'エチレン／AlCl₃'},{name:'脱水素',condition:'Fe₂O₃触媒・加熱'},{name:'付加重合',condition:'加熱・圧力'}],builtin:true,source:CHEM_SOURCE.organic},
   {id:'org-chloro-phenol',title:'クロロベンゼンからフェノールへ',nodes:['ベンゼン','クロロベンゼン','ナトリウムフェノキシド','フェノール','ピクリン酸'],edges:[
     {name:'塩素化',condition:'Cl₂／FeCl₃'},{name:'高温・高圧',condition:'NaOH'},{name:'弱酸の遊離',condition:'HCl'},{name:'ニトロ化',condition:'濃硝酸 ＋ 濃硫酸'}],builtin:true,source:CHEM_SOURCE.organic},
   {id:'org-toluic',title:'トルエンから安息香酸へ',nodes:['ベンゼン','トルエン','安息香酸'],edges:[
@@ -3120,7 +3124,7 @@ function renderChemDeck(s){
    const shelfPositions=Array.from(document.querySelectorAll('.chem-card-shelf')).map(el=>el.scrollTop);
   document.getElementById('deck-title').textContent=s.name+' ラボ';
   document.getElementById('deck-head').innerHTML='';
-   document.getElementById('deck-tabs').innerHTML=[['mix','組み合わせ'],['route','反応経路'],['quiz','確認問題'],['reference','資料']].map(([id,label])=>`<button class="${chemTab===id?'on':''}" onclick="setChemTab('${id}')">${label}</button>`).join('');
+   document.getElementById('deck-tabs').innerHTML=[['mix','無機'],['route','有機'],['quiz','確認問題'],['reference','資料']].map(([id,label])=>`<button class="${chemTab===id?'on':''}" onclick="setChemTab('${id}')">${label}</button>`).join('');
     document.getElementById('deck-pane').innerHTML=`<div class="chem-lab ${chemTab==='mix'?'chem-compact':''}">${chemTab==='mix'?chemMixHTML():chemTab==='route'?chemRouteHTML():chemTab==='quiz'?chemQuizHTML():chemReferenceHTML()}</div>`;
    document.querySelectorAll('.chem-card-shelf').forEach((el,i)=>el.scrollTop=shelfPositions[i]||0);
 }
