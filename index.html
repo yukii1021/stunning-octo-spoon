@@ -2806,14 +2806,14 @@ function chemExpandedResult(ion,reagent,amount){
 }
 
 const CHEM_EXTRA_ROUTES = [
-  {id:'extra-ethene-hydration',title:'エチレンの水和',nodes:['エチレン CH₂=CH₂','エタノール C₂H₅OH'],edges:[{name:'水和',condition:'H₂O（蒸気）／H₃PO₄触媒／約300℃・加圧',source:CHEM_EXPANDED_SOURCES.hydration}],builtin:true,source:CHEM_EXPANDED_SOURCES.hydration},
-  {id:'extra-ethanol-dehydration',title:'エタノールの脱水',nodes:['エタノール C₂H₅OH','エチレン CH₂=CH₂'],edges:[{name:'分子内脱水',condition:'濃H₂SO₄／約170℃',source:CHEM_EXPANDED_SOURCES.dehydration}],builtin:true,source:CHEM_EXPANDED_SOURCES.dehydration},
-  {id:'extra-ethyl-acetate',title:'酢酸エチルの生成',nodes:['酢酸 CH₃COOH ＋ エタノール C₂H₅OH','酢酸エチル CH₃COOC₂H₅ ＋ 水'],edges:[{name:'エステル化（可逆）',condition:'濃H₂SO₄触媒／加熱',source:CHEM_EXPANDED_SOURCES.ester}],builtin:true,source:CHEM_EXPANDED_SOURCES.ester},
-  {id:'extra-benzene-aniline',title:'ベンゼンからアニリンへ',nodes:['ベンゼン C₆H₆','ニトロベンゼン C₆H₅NO₂','アニリニウム塩 C₆H₅NH₃⁺Cl⁻','アニリン C₆H₅NH₂'],edges:[{name:'ニトロ化',condition:'濃HNO₃／濃H₂SO₄・50℃以下',source:CHEM_EXPANDED_SOURCES.aniline},{name:'還元',condition:'Sn／濃HCl・加熱',source:CHEM_EXPANDED_SOURCES.aniline},{name:'遊離',condition:'NaOH水溶液',source:CHEM_EXPANDED_SOURCES.aniline}],builtin:true,source:CHEM_EXPANDED_SOURCES.aniline},
-  {id:'extra-diazonium-phenol',title:'アニリンからフェノールへ',nodes:['アニリン C₆H₅NH₂','塩化ベンゼンジアゾニウム C₆H₅N₂⁺Cl⁻','フェノール C₆H₅OH'],edges:[{name:'ジアゾ化',condition:'NaNO₂／HCl・0～5℃',source:CHEM_EXPANDED_SOURCES.diazo},{name:'加水分解（N₂発生）',condition:'H₂O／温める',source:CHEM_EXPANDED_SOURCES.diazoReactions}],builtin:true,source:CHEM_EXPANDED_SOURCES.diazo},
-  {id:'extra-diazonium-iodobenzene',title:'ジアゾニウム塩からヨードベンゼンへ',nodes:['塩化ベンゼンジアゾニウム C₆H₅N₂⁺Cl⁻','ヨードベンゼン C₆H₅I'],edges:[{name:'置換（N₂発生）',condition:'KI水溶液／冷時',source:CHEM_EXPANDED_SOURCES.diazoReactions}],builtin:true,source:CHEM_EXPANDED_SOURCES.diazoReactions},
-  {id:'extra-toluene-benzoic',title:'トルエンの側鎖酸化',nodes:['トルエン C₆H₅CH₃','安息香酸イオン C₆H₅COO⁻','安息香酸 C₆H₅COOH'],edges:[{name:'側鎖の酸化',condition:'KMnO₄／塩基性・長時間加熱',source:CHEM_EXPANDED_SOURCES.manganese},{name:'酸性にする',condition:'H₂SO₄',source:CHEM_EXPANDED_SOURCES.manganese}],builtin:true,source:CHEM_EXPANDED_SOURCES.manganese},
-  {id:'extra-ethene-diol',title:'エチレンからエチレングリコールへ',nodes:['エチレン CH₂=CH₂','エチレングリコール HOCH₂CH₂OH'],edges:[{name:'酸化',condition:'KMnO₄／穏やかな塩基性水溶液',source:CHEM_EXPANDED_SOURCES.manganese}],builtin:true,source:CHEM_EXPANDED_SOURCES.manganese}
+  {id:'extra-ethene-hydration',title:'エチレンの水和',nodes:['エチレン','エタノール'],edges:[{name:'水の付加',condition:'H₂O（蒸気）／H₃PO₄触媒／約300℃・加圧',source:CHEM_EXPANDED_SOURCES.hydration}],builtin:true,source:CHEM_EXPANDED_SOURCES.hydration},
+  {id:'extra-ethanol-dehydration',title:'エタノールの脱水',nodes:['エタノール','エチレン'],edges:[{name:'脱水',condition:'濃H₂SO₄／約170℃',source:CHEM_EXPANDED_SOURCES.dehydration}],builtin:true,source:CHEM_EXPANDED_SOURCES.dehydration},
+  {id:'extra-ethyl-acetate',title:'酢酸エチルの生成',nodes:['酢酸 ＋ エタノール','酢酸エチル ＋ 水'],edges:[{name:'エステル化（可逆）',condition:'濃H₂SO₄触媒／加熱',source:CHEM_EXPANDED_SOURCES.ester}],builtin:true,source:CHEM_EXPANDED_SOURCES.ester},
+  {id:'extra-benzene-aniline',title:'ベンゼンからアニリンへ',nodes:['ベンゼン','ニトロベンゼン','アニリン塩酸塩','アニリン'],edges:[{name:'ニトロ化',condition:'濃HNO₃／濃H₂SO₄・50℃以下',source:CHEM_EXPANDED_SOURCES.aniline},{name:'還元',condition:'Sn／濃HCl・加熱',source:CHEM_EXPANDED_SOURCES.aniline},{name:'弱塩基の遊離',condition:'NaOH水溶液',source:CHEM_EXPANDED_SOURCES.aniline}],builtin:true,source:CHEM_EXPANDED_SOURCES.aniline},
+  {id:'extra-diazonium-phenol',title:'アニリンからフェノールへ',nodes:['アニリン','ジアゾニウム塩','フェノール'],edges:[{name:'ジアゾ化',condition:'NaNO₂／HCl・0～5℃',source:CHEM_EXPANDED_SOURCES.diazo},{name:'加水分解',condition:'H₂O／温める（N₂発生）',source:CHEM_EXPANDED_SOURCES.diazoReactions}],builtin:true,source:CHEM_EXPANDED_SOURCES.diazo},
+  {id:'extra-diazonium-iodobenzene',title:'ジアゾニウム塩からヨードベンゼンへ',nodes:['ジアゾニウム塩','ヨードベンゼン'],edges:[{name:'置換（N₂発生）',condition:'KI水溶液／冷時',source:CHEM_EXPANDED_SOURCES.diazoReactions}],builtin:true,source:CHEM_EXPANDED_SOURCES.diazoReactions},
+  {id:'extra-toluene-benzoic',title:'トルエンの側鎖酸化',nodes:['トルエン','安息香酸イオン','安息香酸'],edges:[{name:'側鎖の酸化',condition:'KMnO₄／塩基性・長時間加熱',source:CHEM_EXPANDED_SOURCES.manganese},{name:'酸性にする',condition:'H₂SO₄',source:CHEM_EXPANDED_SOURCES.manganese}],builtin:true,source:CHEM_EXPANDED_SOURCES.manganese},
+  {id:'extra-ethene-diol',title:'エチレンからエチレングリコールへ',nodes:['エチレン','エチレングリコール'],edges:[{name:'酸化',condition:'KMnO₄／穏やかな塩基性水溶液',source:CHEM_EXPANDED_SOURCES.manganese}],builtin:true,source:CHEM_EXPANDED_SOURCES.manganese}
 ];
 
 /* 化学ラボ：登録済みの水溶液反応のみを扱う定性的モデル */
@@ -5683,6 +5683,7 @@ html[data-game="haku"] .dcard.on{border-color:#8a6a2f;box-shadow:0 0 0 1px #8a6a
 .chem-ind-eqno{flex:0 0 auto;width:18px;height:18px;border-radius:50%;border:1px solid var(--accent);color:var(--accent);font-size:11px;display:flex;align-items:center;justify-content:center}
 .chem-ind .chem-equation{margin:0}
 @media(max-width:480px){.chem-flow-node{font-size:12px;padding:4px 8px}.chem-flow{gap:5px}}
+.chem-ind-eq{display:block}.chem-ind-eq .chem-ind-eqno{display:inline-flex;align-items:center;justify-content:center;margin-right:8px;vertical-align:2px}.chem-ind-eq .chem-equation{display:inline;overflow-wrap:anywhere;word-break:break-all;white-space:normal!important;max-width:100%}.chem-flow-node{overflow-wrap:anywhere}
 .chem-compounds{display:grid;gap:10px}
 .chem-compound{border:1px solid var(--line);border-radius:12px;background:var(--bg-elev);padding:10px 12px}
 .chem-compound-head{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:6px}
@@ -6052,7 +6053,7 @@ const CHEM_IND=[
   notes:['氷晶石 Na₃AlF₆ を加えて融点（約2050℃→約1000℃）を下げて溶融塩電解','ボーキサイト（Al₂O₃·nH₂O）を NaOH で処理して精製するのがバイヤー法']},
  {name:'石灰の製法（石灰石の熱分解）',flow:['CaCO₃','強熱','CaO','＋H₂O','Ca(OH)₂'],
   eqs:['CaCO₃→CaO＋CO₂（約900℃）','CaO＋H₂O→Ca(OH)₂（発熱）'],
-  notes:['CaO（生石灰）は乾燥剤・セメント原料。Ca(OH)₂（消石灰）はマセメント? 壁・消毒剤']}
+  notes:['CaO（生石灰）は乾燥剤・セメント原料。Ca(OH)₂（消石灰）は壁の塗布・消毒剤・セメント原料に使う']}
 ];
 
 /* 炎色反応の総括（表） */
