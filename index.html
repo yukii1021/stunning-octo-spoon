@@ -3564,7 +3564,7 @@ function listRows(q, kind){
   if(!kind) kind = s.deck==='card' ? 'card' : 'prob';
   const t = todayKey();
   let cs = subjCards(deckSid, kind);
-  if(q){ const qq = q.toLowerCase(); cs = cs.filter(c=>((c.f||'')+(c.b||'')+(c.tag||'')).toLowerCase().includes(qq)) }
+  if(q){ const qq = q.toLowerCase(); cs = cs.filter(c=>((c.f||'')+(c.b||'')+(c.tag||'')+(c.x||'')+(c.y||'')).toLowerCase().includes(qq)) }
   if(!cs.length) return `<div class="empty">該当する${kind==='card'?'カード':kind==='juk'?'熟語':'問題'}がありません</div>`;
   cs = sortCards(cs, kind);
   const meta = c=>(c.w&&c.w.length?'4択 · ':'')+(c.tag?escapeHtml(c.tag)+' · ':'')+((c.due||'0000')<=t?'<span style="color:var(--bad)">今日</span>':'次回 '+mdShort(c.due))+((c.n||0)>0?' · '+(c.n||0)+'回':' · 未挑戦')+(c.warn?' · <span style="color:var(--warn)">要注意</span>':'')+((c.box||0)>=SRS_MASTER?' · <span style="color:var(--ok)">固定'+srsFix().d+'日おき</span>':'');
@@ -3637,7 +3637,9 @@ function addCardManual(){
   }
   if(kind==='prob'){ c.x = (document.getElementById('nc-x').value||'').trim(); c.tag = (document.getElementById('nc-tag').value||'').trim();
     const wEl = document.getElementById('nc-w'); c.w = wEl ? splitWrongs(wEl.value) : [] }
-  state.cards = state.cards||[]; state.cards.push(c);
+  state.cards = state.cards||[];
+  if(dupCard(deckSid,kind,f)){ toast('「'+f+'」は既に登録されているため追加しませんでした'); return }
+  state.cards.push(c);
   addKind = kind;
   saveState(); renderDeck(); toast('追加しました');
 }
@@ -3645,6 +3647,9 @@ function splitList(s){
   return String(s||'').split(/[\n\/、;]+/).map(x=>x.trim()).filter(x=>x);
 }
 function splitWrongs(s){ return splitList(s).slice(0,3) }
+function normCardKey(s){ return String(s==null?'':s).replace(/\s+/g,' ').trim().toLowerCase() }
+function dupCard(sid,kind,f,skipId){ const k=normCardKey(f); if(!k) return null;
+  return (state.cards||[]).find(c=>c.sid===sid&&(c.kind||'card')===kind&&normCardKey(c.f)===k&&c.id!==skipId)||null }
 function isOrdField(s){ return /^整序/.test(String(s||'').trim()) }
 function probRec(p){
   const tag = p[3]||'';
@@ -3689,8 +3694,13 @@ function bulkAddCards(){
   const rows = parseBulk(ta.value, kind);
   if(!rows.length){ toast('読み取れる行がありませんでした'); return }
   state.cards = state.cards||[];
-  rows.forEach(r=>state.cards.push(newCard(Object.assign({kind:kind}, r))));
-  saveState(); renderDeck(); toast(rows.length+'件を追加しました');
+  let skip=0; const add=[];
+  rows.forEach(r=>{ const f=normCardKey(r.f);
+    if(f && (dupCard(deckSid,kind,r.f)||add.some(a=>normCardKey(a.f)===f))){ skip++; return }
+    add.push(newCard(Object.assign({kind:kind}, r))); });
+  if(!add.length){ toast('入力した'+rows.length+'件はすべて既に登録済みのため、追加しませんでした'); return }
+  add.forEach(c=>state.cards.push(c));
+  saveState(); renderDeck(); toast(skip?('新規'+add.length+'件を追加（'+skip+'件は登録済みのためスキップ）'):(add.length+'件を追加しました'));
 }
 /* ---- カード編集 ---- */
 function editCard(id){
