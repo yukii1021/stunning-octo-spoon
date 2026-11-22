@@ -3194,7 +3194,7 @@ const DECK_KIND_RULES = [
   [/世界史|日本史|社会|生物|地学|公民|倫理|政治|経済/, ['card','juk']]
 ];
 function deckKinds(s){ const n = (s&&s.name)||''; for(const r of DECK_KIND_RULES){ if(r[0].test(n)) return r[1].slice() } return ['card','juk','prob'] }
-function kindLabel(k){ return k==='card' ? '単語カード' : k==='juk' ? '熟語カード' : k==='lab' ? 'ラボ' : '問題' }
+function kindLabel(k){ return k==='card' ? '単語' : k==='juk' ? '熟語カード' : k==='lab' ? 'ラボ' : '問題' }
 
 function todayKey(d){ const x = d?new Date(d):new Date(); return x.getFullYear()+'-'+pad2(x.getMonth()+1)+'-'+pad2(x.getDate()) }
 function addDaysKey(n){ const x = new Date(); x.setDate(x.getDate()+n); return todayKey(x) }
@@ -3494,7 +3494,7 @@ function todayMemSection(kind, title, two){
 function deckToday(){
   const s = findSubject(deckSid); if(!s) return '';
   const ks = deckKinds(s), two = ks.length>1, out = [];
-  if(ks.indexOf('card')>=0) out.push(todayMemSection('card','単語カード',two));
+  if(ks.indexOf('card')>=0) out.push(todayMemSection('card','単語',two));
   if(ks.indexOf('juk')>=0) out.push(todayMemSection('juk','熟語',two));
   if(ks.indexOf('prob')>=0){
     const st = cardStats(deckSid,'prob'), d = dailyPick(deckSid);
@@ -3554,7 +3554,7 @@ function deckList(kind){
 }
 function openSortSheet(kind){
   const cur = deckSortOf(kind);
-  document.getElementById('sort-title').textContent = (kind==='prob'?'問題':kind==='juk'?'熟語カード':'単語カード')+'の並び替え';
+  document.getElementById('sort-title').textContent = (kind==='prob'?'問題':kind==='juk'?'熟語カード':'単語')+'の並び替え';
   document.getElementById('sort-list').innerHTML = sortOpts(kind).map(o=>
     `<div class="sort-row${cur===o[0]?' on':''}" onclick="setDeckSort('${kind}','${o[0]}');closeModal('modal-sort')">
       <div style="flex:1"><div class="nm">${o[1]}</div></div>
@@ -3602,7 +3602,7 @@ function deckAdd(){
   return `${two?`<div class="card" style="margin-bottom:12px">
       <div class="hint">追加する種類</div>
       <div class="seg" style="margin-top:6px">
-        <button data-k="card" class="${kind==='card'?'on':''}" onclick="setDeckKind('card')">単語カード</button>
+        <button data-k="card" class="${kind==='card'?'on':''}" onclick="setDeckKind('card')">単語</button>
         ${ks.indexOf('juk')>=0?`<button data-k="juk" class="${kind==='juk'?'on':''}" onclick="setDeckKind('juk')">熟語</button>`:''}
         <button data-k="prob" class="${kind==='prob'?'on':''}" onclick="setDeckKind('prob')">問題</button>
       </div>
