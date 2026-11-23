@@ -11,7 +11,7 @@
 <link rel="manifest" href="./manifest.webmanifest" />
 <link rel="apple-touch-icon" href="./apple-touch-icon.png" />
 <link rel="icon" type="image/png" sizes="64x64" href="./favicon-64.png" />
-<script>(function(){try{var s=(JSON.parse(localStorage.getItem("studytime.v1")||"{}").settings)||{};var mig={yakari:"ruri","yakari-light":"haku",soya:"ruri","soya-light":"haku",shiden:"sumi",ice:"ruri",huaxu:"haku"};var gmap={"ruri":"ruri","sumi":"sumi","hi":"hi","hisui":"hisui","haku":"haku","sakura":"sakura","game":"game"};var d=s.design?mig[s.design]||s.design:((s.game==="game")?"game":(s.game==="ice")?"ruri":(s.game==="huaxu")?"haku":((s.theme==="light"||s.theme==="auto")?s.theme:"dark"));var darks={ruri:1,sumi:1,hi:1,hisui:1,game:1,dark:1};var t=(d==="haku"||d==="sakura")?"light":(d==="auto")?"auto":darks[d]?"dark":(d==="light"?"light":"dark");if(t==="auto")t=(window.matchMedia&&matchMedia("(prefers-color-scheme: light)").matches)?"light":"dark";var g=gmap[d]||"none";document.documentElement.dataset.theme=t;document.documentElement.dataset.game=g;var m=document.querySelector("meta[name=theme-color]");if(m)m.content=({ruri:"#0c1430",sumi:"#0a1230",hi:"#2a1218",hisui:"#0e2a20",sakura:"#f7e2e9"})[g]||(g==="haku")?"#efe8da":(g==="game")?"#0e0c12":(t==="light")?"#f4f6fb":"#0b0d12";}catch(e){}})();</script>
+<script>(function(){try{var s=(JSON.parse(localStorage.getItem("studytime.v1")||"{}").settings)||{};var mig={yakari:"ruri","yakari-light":"haku",soya:"ruri","soya-light":"haku",shiden:"sumi",ice:"ruri",huaxu:"haku"};var gmap={"ruri":"ruri","sumi":"sumi","hi":"hi","hisui":"hisui","haku":"haku","sakura":"sakura","game":"game"};var d=s.design?mig[s.design]||s.design:((s.game==="game")?"game":(s.game==="ice")?"ruri":(s.game==="huaxu")?"haku":((s.theme==="light"||s.theme==="auto")?s.theme:"dark"));var darks={ruri:1,sumi:1,hi:1,hisui:1,game:1,dark:1};var t=(d==="haku"||d==="sakura")?"light":(d==="auto")?"auto":darks[d]?"dark":(d==="light"?"light":"dark");if(t==="auto")t=(window.matchMedia&&matchMedia("(prefers-color-scheme: light)").matches)?"light":"dark";var g=gmap[d]||"none";document.documentElement.dataset.theme=t;document.documentElement.dataset.game=g;var m=document.querySelector("meta[name=theme-color]");if(m)m.content=({ruri:"#0c1430",sumi:"#0a1230",hi:"#2a1218",hisui:"#0e2a20",sakura:"#f7e2e9"})[g]||((g==="haku")?"#efe8da":(g==="game")?"#0e0c12":(t==="light")?"#f4f6fb":"#0b0d12");}catch(e){}})();</script>
 <title>StudyTime — 24時間・勉強管理</title>
 <style>
 :root{
@@ -4414,7 +4414,7 @@ function applyTheme(){
   document.documentElement.dataset.theme=t;
   document.documentElement.dataset.game=sp.game;
   if(sp.game!=='none'){ try{loadGameFont()}catch(e){} }
-  try{ var m=document.querySelector('meta[name=theme-color]'); if(m) m.content=(sp.game==='haku')?'#efe8da':({ruri:'#0c1430',sumi:'#0a1230',hi:'#2a1218',hisui:'#0e2a20',sakura:'#f7e2e9'})[sp.game]||(sp.game==='game')?'#0e0c12':(t==='light'?'#f4f6fb':'#0b0d12'); }catch(e){}
+  try{ var m=document.querySelector('meta[name=theme-color]'); if(m) m.content=({ruri:'#0c1430',sumi:'#0a1230',hi:'#2a1218',hisui:'#0e2a20',sakura:'#f7e2e9'})[sp.game]||((sp.game==='haku')?'#efe8da':(sp.game==='game')?'#0e0c12':(t==='light'?'#f4f6fb':'#0b0d12')); }catch(e){}
   try{ var dc=document.getElementById('design-current'); if(dc) dc.textContent=designById(d).name; }catch(e){}
   try{ var sw=document.getElementById('design-swatch'); if(sw){ var p=designById(d).pv; sw.style.background=p.bg; sw.style.borderColor=p.line; sw.style.boxShadow='inset 0 0 0 3px '+p.panel; } }catch(e){}
   try{ renderDesignGrid(); }catch(e){}
@@ -5514,6 +5514,8 @@ html[data-game="haku"][data-theme="light"] input,html[data-game="haku"][data-the
 html[data-game="haku"][data-theme="light"] .group-tab{background:rgba(255,252,244,.9);border:1px solid rgba(126,112,68,.36);color:#4a4228}
 html[data-game="haku"][data-theme="light"] .group-tab.active{background:linear-gradient(180deg,#c79f40,#98782c);color:#fffcf1;border-color:rgba(152,120,44,.6)}
 html[data-game="haku"][data-theme="light"] .dcard{background:rgba(255,252,244,.92);border-color:rgba(126,112,68,.30)}
+html[data-game="haku"][data-theme="light"] .group-tab,html[data-game="haku"][data-theme="light"] .deck-tabs button,html[data-game="haku"][data-theme="light"] .pie-modes button,html[data-game="haku"][data-theme="light"] .seg button,html[data-game="haku"][data-theme="light"] .chem-enc-cat{background:rgba(255,252,244,.95)!important;border:1px solid rgba(126,112,68,.36)!important;color:#4a4228!important}
+html[data-game="haku"][data-theme="light"] .group-tab.active,html[data-game="haku"][data-theme="light"] .deck-tabs button.on,html[data-game="haku"][data-theme="light"] .pie-modes button.on,html[data-game="haku"][data-theme="light"] .seg button.on,html[data-game="haku"][data-theme="light"] .chem-enc-cat.on{background:linear-gradient(180deg,#c79f40,#98782c)!important;color:#fffcf1!important;border-color:rgba(152,120,44,.6)!important;font-weight:700}
 /* ===== haku（白亜） ===== */
 html[data-game="haku"]{--gserif:"Zen Old Mincho","Yu Mincho","YuMincho","Hiragino Mincho ProN","Noto Serif JP",serif;--glat:"Prata","Times New Roman",Georgia,serif;--gnum:"Prata","Times New Roman",Georgia,serif;--accent:#8a6a2f;--accent-soft:rgba(138,106,47,.12)}
 html[data-game="haku"] .dcard.on{border-color:#8a6a2f;box-shadow:0 0 0 1px #8a6a2f}</style><style id="gm-theme-patch18">
@@ -5591,6 +5593,9 @@ html[data-game="sakura"]{
   --shadow:0 12px 30px rgba(150,90,110,.14);--overlay:rgba(70,40,50,.42);
   --unrec:#efd6dd;--status-bg:#33222a;--radius:16px;color-scheme:light;
   --lamp:#c2566f;--lamp-hi:#e08fa4;--washi:#f9eef1;
+  --gserif:"Zen Old Mincho","Yu Mincho","YuMincho","Hiragino Mincho ProN","Noto Serif JP",serif;
+  --glat:"Prata","Times New Roman",Georgia,serif;
+  --gnum:"Prata","Times New Roman",Georgia,serif;
 }
 html[data-game="sakura"] body{background:#f9eef1}
 html[data-game="sakura"] .bgfx{display:block;position:fixed;inset:0;z-index:0;pointer-events:none;background-color:#f9eef1;
