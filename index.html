@@ -11,7 +11,7 @@
 <link rel="manifest" href="./manifest.webmanifest" />
 <link rel="apple-touch-icon" href="./apple-touch-icon.png" />
 <link rel="icon" type="image/png" sizes="64x64" href="./favicon-64.png" />
-<script>(function(){try{var s=(JSON.parse(localStorage.getItem("studytime.v1")||"{}").settings)||{};var mig={yakari:"ruri","yakari-light":"haku",soya:"ruri","soya-light":"haku",shiden:"sumi",ice:"ruri",huaxu:"haku"};var gmap={"ruri":"ruri","sumi":"sumi","hi":"hi","hisui":"hisui","haku":"haku","game":"game"};var d=s.design?mig[s.design]||s.design:((s.game==="game")?"game":(s.game==="ice")?"ruri":(s.game==="huaxu")?"haku":((s.theme==="light"||s.theme==="auto")?s.theme:"dark"));var darks={ruri:1,sumi:1,hi:1,hisui:1,game:1,dark:1};var t=(d==="haku")?"light":(d==="auto")?"auto":darks[d]?"dark":(d==="light"?"light":"dark");if(t==="auto")t=(window.matchMedia&&matchMedia("(prefers-color-scheme: light)").matches)?"light":"dark";var g=gmap[d]||"none";document.documentElement.dataset.theme=t;document.documentElement.dataset.game=g;var m=document.querySelector("meta[name=theme-color]");if(m)m.content=({ruri:"#060915",sumi:"#08080a",hi:"#150507",hisui:"#04100c"})[g]||(g==="haku")?"#efe8da":(g==="game")?"#0e0c12":(t==="light")?"#f4f6fb":"#0b0d12";}catch(e){}})();</script>
+<script>(function(){try{var s=(JSON.parse(localStorage.getItem("studytime.v1")||"{}").settings)||{};var mig={yakari:"ruri","yakari-light":"haku",soya:"ruri","soya-light":"haku",shiden:"sumi",ice:"ruri",huaxu:"haku"};var gmap={"ruri":"ruri","sumi":"sumi","hi":"hi","hisui":"hisui","haku":"haku","sakura":"sakura","game":"game"};var d=s.design?mig[s.design]||s.design:((s.game==="game")?"game":(s.game==="ice")?"ruri":(s.game==="huaxu")?"haku":((s.theme==="light"||s.theme==="auto")?s.theme:"dark"));var darks={ruri:1,sumi:1,hi:1,hisui:1,game:1,dark:1};var t=(d==="haku"||d==="sakura")?"light":(d==="auto")?"auto":darks[d]?"dark":(d==="light"?"light":"dark");if(t==="auto")t=(window.matchMedia&&matchMedia("(prefers-color-scheme: light)").matches)?"light":"dark";var g=gmap[d]||"none";document.documentElement.dataset.theme=t;document.documentElement.dataset.game=g;var m=document.querySelector("meta[name=theme-color]");if(m)m.content=({ruri:"#0c1430",sumi:"#0a1230",hi:"#2a1218",hisui:"#0e2a20",sakura:"#f7e2e9"})[g]||(g==="haku")?"#efe8da":(g==="game")?"#0e0c12":(t==="light")?"#f4f6fb":"#0b0d12";}catch(e){}})();</script>
 <title>StudyTime — 24時間・勉強管理</title>
 <style>
 :root{
@@ -4356,14 +4356,15 @@ function toast(msg, ms){
 /* ---------------- Render all ---------------- */
 const DESIGNS=[
   {id:'light', name:'ライト', pv:{bg:'linear-gradient(180deg,#ffffff,#e9eef7)', panel:'#ffffff', line:'#dde2ec', acc:'#1f7ae0', txt:'#141821'}},
-  {id:'dark',  name:'ダーク', pv:{bg:'linear-gradient(180deg,#161a20,#0b0d12)', panel:'#1b1f26', line:'#2c333d', acc:'#7cc4ff', txt:'#e8ecf2'}},
+  {id:'dark',  name:'ダーク', pv:{bg:'linear-gradient(180deg,#1e242e,#12161d)', panel:'#242a34', line:'#3a4250', acc:'#7cc4ff', txt:'#e8ecf2'}},
   {id:'auto',  name:'自動',   pv:{bg:'linear-gradient(115deg,#f6f8fc 0 50%,#0b0d12 50% 100%)', panel:'rgba(150,160,176,.6)', line:'rgba(255,255,255,.4)', acc:'#1f7ae0', txt:'#9aa3b2'}},
   {id:'game',  name:'金襴',   pv:{bg:'linear-gradient(180deg,#1d2026,#0d0e11)', panel:'#1a1d22', line:'rgba(255,255,255,.28)', acc:'#e6b450', txt:'#ffffff'}},
-  {id:'ruri', name:'瑠璃', pv:{bg:'linear-gradient(180deg,#060915 0%,#0d1330 46%,#1a2650 78%,#05060e 100%)', panel:'rgba(10,14,30,.88)', line:'rgba(150,160,220,.44)', acc:'#caa96d', txt:'#dcd8e8'}},
+  {id:'ruri', name:'瑠璃', pv:{bg:'linear-gradient(180deg,#0c1430 0%,#142045 46%,#203060 78%,#090e22 100%)', panel:'rgba(16,24,52,.88)', line:'rgba(150,160,220,.44)', acc:'#caa96d', txt:'#dcd8e8'}},
   {id:'haku', name:'白亜', pv:{bg:'linear-gradient(180deg,#f5efe2 0%,#e8ddc8 44%,#d9cbb0 74%,#efe6d4 100%)', panel:'rgba(250,246,236,.94)', line:'rgba(120,100,60,.44)', acc:'#8a6a2f', txt:'#241c10'}},
-  {id:'sumi', name:'墨', pv:{bg:'linear-gradient(180deg,#060607 0%,#0d0d0f 46%,#151518 78%,#050506 100%)', panel:'rgba(12,12,14,.9)', line:'rgba(190,170,120,.35)', acc:'#c8a866', txt:'#e2ddd2'}},
-  {id:'hi', name:'緋', pv:{bg:'linear-gradient(180deg,#150507 0%,#260a10 46%,#4a0f1a 78%,#120406 100%)', panel:'rgba(24,8,12,.88)', line:'rgba(220,120,140,.44)', acc:'#d2a26a', txt:'#f0dce0'}},
-  {id:'hisui', name:'翡翠', pv:{bg:'linear-gradient(180deg,#04100c 0%,#0a1f18 46%,#123a2c 78%,#030b08 100%)', panel:'rgba(6,18,14,.88)', line:'rgba(110,200,160,.44)', acc:'#cfc08e', txt:'#d8e8de'}}
+  {id:'sumi', name:'夜', pv:{bg:'linear-gradient(180deg,#0a1230 0%,#101d42 46%,#1b2d5c 78%,#070c1c 100%)', panel:'rgba(13,21,46,.9)', line:'rgba(150,175,235,.44)', acc:'#c9b478', txt:'#dce2f2'}},
+  {id:'hi', name:'緋', pv:{bg:'linear-gradient(180deg,#2a1218 0%,#3a1a24 46%,#54202e 78%,#1e0c12 100%)', panel:'rgba(40,18,26,.88)', line:'rgba(220,120,140,.44)', acc:'#d2a26a', txt:'#f0dce0'}},
+  {id:'hisui', name:'翡翠', pv:{bg:'linear-gradient(180deg,#0e2a20 0%,#16382a 46%,#1e4f3a 78%,#0a1d16 100%)', panel:'rgba(12,32,24,.88)', line:'rgba(110,200,160,.44)', acc:'#cfc08e', txt:'#d8e8de'}},
+  {id:'sakura', name:'桜', pv:{bg:'linear-gradient(180deg,#fdeef2 0%,#f9dfe7 46%,#f4cfdb 78%,#fdf6f7 100%)', panel:'rgba(255,250,251,.94)', line:'rgba(178,110,132,.40)', acc:'#c2566f', txt:'#33222a'}}
 ];
 function designById(d){ for(var i=0;i<DESIGNS.length;i++){ if(DESIGNS[i].id===d) return DESIGNS[i] } return DESIGNS[1] }
 function currentDesign(){
@@ -4378,6 +4379,7 @@ function currentDesign(){
   return (s.theme==='light'||s.theme==='auto')?s.theme:'dark';
 }
 function designSpec(d){
+  if(d==='sakura') return {theme:'light', game:'sakura'};
   if(d==='game') return {theme:'dark', game:'game'};
   if(d==='ruri'||d==='sumi'||d==='hi'||d==='hisui') return {theme:'dark', game:d};
   if(d==='haku') return {theme:'light', game:'haku'};
@@ -4412,7 +4414,7 @@ function applyTheme(){
   document.documentElement.dataset.theme=t;
   document.documentElement.dataset.game=sp.game;
   if(sp.game!=='none'){ try{loadGameFont()}catch(e){} }
-  try{ var m=document.querySelector('meta[name=theme-color]'); if(m) m.content=(sp.game==='haku')?'#efe8da':({ruri:'#060915',sumi:'#08080a',hi:'#150507',hisui:'#04100c'})[sp.game]||(sp.game==='game')?'#0e0c12':(t==='light'?'#f4f6fb':'#0b0d12'); }catch(e){}
+  try{ var m=document.querySelector('meta[name=theme-color]'); if(m) m.content=(sp.game==='haku')?'#efe8da':({ruri:'#0c1430',sumi:'#0a1230',hi:'#2a1218',hisui:'#0e2a20',sakura:'#f7e2e9'})[sp.game]||(sp.game==='game')?'#0e0c12':(t==='light'?'#f4f6fb':'#0b0d12'); }catch(e){}
   try{ var dc=document.getElementById('design-current'); if(dc) dc.textContent=designById(d).name; }catch(e){}
   try{ var sw=document.getElementById('design-swatch'); if(sw){ var p=designById(d).pv; sw.style.background=p.bg; sw.style.borderColor=p.line; sw.style.boxShadow='inset 0 0 0 3px '+p.panel; } }catch(e){}
   try{ renderDesignGrid(); }catch(e){}
@@ -4923,7 +4925,7 @@ html[data-game="ruri"][data-theme="light"] .stat .value{color:#14182a}
 html[data-game="ruri"][data-theme="light"] input,html[data-game="ruri"][data-theme="light"] select,html[data-game="ruri"][data-theme="light"] textarea{background:rgba(244,246,255,.9);border:1px solid rgba(68,80,126,.32);color:var(--text)}
 /* ===== ruri（瑠璃） ===== */
 html[data-game="ruri"]{--gserif:"Zen Old Mincho","Yu Mincho","YuMincho","Hiragino Mincho ProN","Noto Serif JP",serif;--glat:"Cormorant Garamond","Times New Roman",Georgia,serif;--gnum:"Cormorant Garamond","Times New Roman",Georgia,serif;--accent:#caa96d;--accent-soft:rgba(202,169,109,.13)}
-html[data-game="ruri"] .dcard.on{border-color:#caa96d;box-shadow:0 0 0 1px #caa96d}</style><style id="gm-theme-sumi">/* StudyTime テーマ: 墨 - 墨色と金（ダーク） */
+html[data-game="ruri"] .dcard.on{border-color:#caa96d;box-shadow:0 0 0 1px #caa96d}</style><style id="gm-theme-sumi">/* StudyTime テーマ: 夜 - 夜空と月明かり（ダーク） */
 /* ==================================================================
    夜灯（やあかり）― 墨と灯りの勉強机テーマ（ダーク既定・ライト別版）
    ================================================================== */
@@ -5509,9 +5511,123 @@ html[data-game="haku"][data-theme="light"] .nav button.active::before{background
 html[data-game="haku"][data-theme="light"] .now-time{color:#2a2514;text-shadow:none}
 html[data-game="haku"][data-theme="light"] .stat .value{color:#2a2514}
 html[data-game="haku"][data-theme="light"] input,html[data-game="haku"][data-theme="light"] select,html[data-game="haku"][data-theme="light"] textarea{background:rgba(255,252,244,.9);border:1px solid rgba(126,112,68,.32);color:var(--text)}
+html[data-game="haku"][data-theme="light"] .group-tab{background:rgba(255,252,244,.9);border:1px solid rgba(126,112,68,.36);color:#4a4228}
+html[data-game="haku"][data-theme="light"] .group-tab.active{background:linear-gradient(180deg,#c79f40,#98782c);color:#fffcf1;border-color:rgba(152,120,44,.6)}
+html[data-game="haku"][data-theme="light"] .dcard{background:rgba(255,252,244,.92);border-color:rgba(126,112,68,.30)}
 /* ===== haku（白亜） ===== */
 html[data-game="haku"]{--gserif:"Zen Old Mincho","Yu Mincho","YuMincho","Hiragino Mincho ProN","Noto Serif JP",serif;--glat:"Prata","Times New Roman",Georgia,serif;--gnum:"Prata","Times New Roman",Georgia,serif;--accent:#8a6a2f;--accent-soft:rgba(138,106,47,.12)}
-html[data-game="haku"] .dcard.on{border-color:#8a6a2f;box-shadow:0 0 0 1px #8a6a2f}</style><style id="gm-fonts">@import url("https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=EB+Garamond:wght@400;500;600&family=Forum&family=Noto+Serif+JP:wght@400;500;600;700&family=Playfair+Display:wght@400;500;600;700&family=Prata&family=Sawarabi+Mincho&family=Shippori+Mincho+B1:wght@400;500;600;700&family=Zen+Old+Mincho:wght@400;500;600;700&display=swap");</style>
+html[data-game="haku"] .dcard.on{border-color:#8a6a2f;box-shadow:0 0 0 1px #8a6a2f}</style><style id="gm-theme-patch18">
+/* ============ 夜（旧 墨）: 夜空と月明かり・星 ============ */
+html[data-game="sumi"]{
+  --bg:#0a1128;--bg-elev:rgba(18,26,52,.80);--bg-elev-2:rgba(24,34,64,.86);
+  --line:rgba(150,175,235,.26);--line-strong:rgba(180,200,245,.50);
+  --text:#dce2f2;--text-dim:#a2add0;--text-mute:#7d89ad;
+  --accent:#c9b478;--accent-2:#8fa3cf;--on-accent:#101830;
+  --ok:#8fae8a;--warn:#d2b871;--bad:#d98b8b;
+  --accent-soft:rgba(201,180,120,.13);
+  --lamp:#c9b478;--lamp-hi:#ece0bd;--washi:#dce2f2;color-scheme:dark;
+}
+html[data-game="sumi"] body{background:#0a1128}
+html[data-game="sumi"] .bgfx{background-color:#0a1128;
+  background-image:
+   radial-gradient(1.6px 1.6px at 11% 16%, rgba(255,255,255,.9) 0%, rgba(255,255,255,0) 100%),
+   radial-gradient(1.2px 1.2px at 23% 34%, rgba(255,255,255,.6) 0%, rgba(255,255,255,0) 100%),
+   radial-gradient(1.8px 1.8px at 34% 12%, rgba(255,255,255,.8) 0%, rgba(255,255,255,0) 100%),
+   radial-gradient(1.2px 1.2px at 47% 26%, rgba(255,255,255,.5) 0%, rgba(255,255,255,0) 100%),
+   radial-gradient(1.6px 1.6px at 58% 9%, rgba(255,255,255,.75) 0%, rgba(255,255,255,0) 100%),
+   radial-gradient(1.3px 1.3px at 69% 30%, rgba(255,255,255,.55) 0%, rgba(255,255,255,0) 100%),
+   radial-gradient(1.8px 1.8px at 80% 18%, rgba(255,255,255,.85) 0%, rgba(255,255,255,0) 100%),
+   radial-gradient(1.2px 1.2px at 90% 38%, rgba(255,255,255,.5) 0%, rgba(255,255,255,0) 100%),
+   radial-gradient(1.5px 1.5px at 16% 52%, rgba(255,255,255,.45) 0%, rgba(255,255,255,0) 100%),
+   radial-gradient(1.4px 1.4px at 63% 48%, rgba(255,255,255,.4) 0%, rgba(255,255,255,0) 100%),
+   radial-gradient(26% 22% at 82% 10%, rgba(245,238,215,.28) 0%, rgba(245,238,215,.10) 45%, rgba(245,238,215,0) 72%),
+   radial-gradient(90% 46% at 50% -6%, rgba(110,140,215,.22) 0%, rgba(110,140,215,.07) 38%, rgba(10,17,40,0) 72%),
+   radial-gradient(140% 90% at 50% 108%, rgba(3,6,15,.85) 0%, rgba(10,17,40,0) 60%);
+  box-shadow:inset 0 0 120px rgba(2,4,12,.50)}
+html[data-game="sumi"] .header{border-bottom:1px solid rgba(150,175,235,.22);background:linear-gradient(180deg,rgba(10,17,40,.72),rgba(10,17,40,.28) 64%,rgba(10,17,40,0))}
+html[data-game="sumi"] .header h1{color:#e8edf9;text-shadow:0 0 20px rgba(201,180,120,.40),0 1px 0 rgba(0,0,0,.6)}
+html[data-game="sumi"] .header .sub{color:#7d89ad}
+html[data-game="sumi"] .card{background:linear-gradient(180deg,rgba(24,34,66,.60),rgba(13,20,44,.70));border:1px solid rgba(150,175,235,.22)}
+html[data-game="sumi"] .card h2{color:#d5ddf2}
+html[data-game="sumi"] .btn{background:linear-gradient(180deg,rgba(34,46,84,.78),rgba(18,26,52,.82));border:1px solid rgba(150,175,235,.26);color:#c9d2ec}
+html[data-game="sumi"] .btn.primary{background:linear-gradient(180deg,#ece0bd,#c9b478 62%,#a08c50);border:1px solid rgba(236,224,189,.55);color:#101830;font-weight:700}
+html[data-game="sumi"] .seg{background:rgba(12,20,44,.66);border:1px solid rgba(150,175,235,.24)}
+html[data-game="sumi"] .seg button{color:#7d89ad}
+html[data-game="sumi"] .seg button.on{background:linear-gradient(180deg,rgba(201,180,120,.70),rgba(122,102,56,.70));color:#f4eeda;outline:1px solid rgba(236,224,189,.45)}
+html[data-game="sumi"] .group-tab{background:rgba(14,22,48,.70);border:1px solid rgba(150,175,235,.24);color:#8b97bb}
+html[data-game="sumi"] .group-tab.active{background:linear-gradient(180deg,#ece0bd,#c9b478);color:#101830;border-color:rgba(236,224,189,.60)}
+html[data-game="sumi"] .nav{background:linear-gradient(180deg,rgba(12,20,44,.66),rgba(5,9,22,.94));border-top:1px solid rgba(180,200,245,.36)}
+html[data-game="sumi"] .nav button{color:#7d89ad}
+html[data-game="sumi"] .nav button.active{color:#eef2fb;text-shadow:0 0 14px rgba(201,180,120,.70)}
+html[data-game="sumi"] .nav button.active svg{filter:drop-shadow(0 0 8px rgba(201,180,120,.80))}
+html[data-game="sumi"] .now-card{background:linear-gradient(160deg,rgba(26,37,72,.62),rgba(13,20,44,.72));border:1px solid rgba(150,175,235,.26)}
+html[data-game="sumi"] .now-name{color:#e8edf9}
+html[data-game="sumi"] .now-time{color:#f0f3fb;text-shadow:0 0 24px rgba(201,180,120,.45)}
+html[data-game="sumi"] .stat .value{color:#e8edf9}
+html[data-game="sumi"] input,html[data-game="sumi"] select,html[data-game="sumi"] textarea{background:rgba(12,20,44,.76);border:1px solid rgba(150,175,235,.26);color:var(--text)}
+html[data-game="sumi"] .dcard{background:rgba(14,22,48,.74);border-color:rgba(150,175,235,.24)}
+html[data-game="sumi"] .dcard.on{border-color:#c9b478;box-shadow:0 0 0 1px #c9b478}
+/* ============ ダーク系テーマの背景を少し明るく ============ */
+html[data-game="ruri"]{--bg:#0c1430}
+html[data-game="ruri"] body{background:#0c1430}
+html[data-game="ruri"] .bgfx{background-color:#0c1430;background-image:radial-gradient(90% 46% at 50% -6%, rgba(202,169,109,.22) 0%, rgba(202,169,109,.08) 38%, rgba(12,20,48,0) 72%),radial-gradient(140% 90% at 50% 108%, rgba(4,7,18,.80) 0%, rgba(12,20,48,0) 60%)}
+html[data-game="hi"]{--bg:#2a1218}
+html[data-game="hi"] body{background:#2a1218}
+html[data-game="hi"] .bgfx{background-color:#2a1218;background-image:radial-gradient(90% 46% at 50% -6%, rgba(210,162,106,.20) 0%, rgba(210,162,106,.07) 38%, rgba(42,18,24,0) 72%),radial-gradient(140% 90% at 50% 108%, rgba(16,5,8,.80) 0%, rgba(42,18,24,0) 60%)}
+html[data-game="hisui"]{--bg:#0e2a20}
+html[data-game="hisui"] body{background:#0e2a20}
+html[data-game="hisui"] .bgfx{background-color:#0e2a20;background-image:radial-gradient(90% 46% at 50% -6%, rgba(207,192,142,.20) 0%, rgba(207,192,142,.07) 38%, rgba(14,42,32,0) 72%),radial-gradient(140% 90% at 50% 108%, rgba(4,12,9,.80) 0%, rgba(14,42,32,0) 60%)}
+html[data-theme="dark"][data-game="none"] body{background:#141a24}
+/* ============ 桜: 桜色の春風（ライト） ============ */
+html[data-game="sakura"]{
+  --bg:#f9eef1;--bg-elev:rgba(255,250,251,.90);--bg-elev-2:rgba(252,242,245,.94);
+  --line:rgba(178,110,132,.30);--line-strong:rgba(178,110,132,.52);
+  --text:#33222a;--text-dim:#6e525c;--text-mute:#a08490;
+  --accent:#c2566f;--accent-2:#a86a80;--on-accent:#fff8fa;
+  --ok:#7d5a66;--warn:#a5763a;--bad:#b04a5e;
+  --nav-bg:rgba(253,244,246,.88);--accent-soft:rgba(194,86,111,.10);
+  --advice-bg:linear-gradient(135deg,rgba(194,86,111,.10),rgba(255,250,251,.85));
+  --advice-line:rgba(178,110,132,.30);--danger-line:#e3aebc;
+  --shadow:0 12px 30px rgba(150,90,110,.14);--overlay:rgba(70,40,50,.42);
+  --unrec:#efd6dd;--status-bg:#33222a;--radius:16px;color-scheme:light;
+  --lamp:#c2566f;--lamp-hi:#e08fa4;--washi:#f9eef1;
+}
+html[data-game="sakura"] body{background:#f9eef1}
+html[data-game="sakura"] .bgfx{display:block;position:fixed;inset:0;z-index:0;pointer-events:none;background-color:#f9eef1;
+  background-image:
+   radial-gradient(90% 46% at 50% -6%, rgba(255,236,242,.90) 0%, rgba(250,220,230,.40) 40%, rgba(249,238,241,0) 74%),
+   radial-gradient(140% 90% at 50% 110%, rgba(210,130,155,.14) 0%, rgba(249,238,241,0) 60%)}
+html[data-game="sakura"] .header{border-bottom:1px solid rgba(178,110,132,.24);background:linear-gradient(180deg,rgba(253,244,246,.90),rgba(253,244,246,.40) 64%,rgba(253,244,246,0))}
+html[data-game="sakura"] .header h1{color:#3a262e;text-shadow:none}
+html[data-game="sakura"] .header .sub{color:#a08490}
+html[data-game="sakura"] .card{background:rgba(255,250,251,.88);border:1px solid rgba(178,110,132,.26);box-shadow:0 10px 26px rgba(150,90,110,.10)}
+html[data-game="sakura"] .card h2{color:#432c36}
+html[data-game="sakura"] .btn{background:linear-gradient(180deg,#fdf3f5,#f4dde4);border:1px solid rgba(178,110,132,.34);color:#4a3038}
+html[data-game="sakura"] .btn.primary{background:linear-gradient(180deg,#d4778e,#c2566f);border-color:rgba(194,86,111,.60);color:#fff8fa}
+html[data-game="sakura"] .btn.ghost{background:transparent}
+html[data-game="sakura"] .seg{background:rgba(250,238,242,.85);border:1px solid rgba(178,110,132,.26)}
+html[data-game="sakura"] .seg button{color:#a08490}
+html[data-game="sakura"] .seg button.on{background:linear-gradient(180deg,#d4778e,#c2566f);color:#fff8fa;outline:1px solid rgba(194,86,111,.50)}
+html[data-game="sakura"] .group-tab{background:rgba(255,246,249,.90);border:1px solid rgba(178,110,132,.32);color:#6e525c}
+html[data-game="sakura"] .group-tab.active{background:linear-gradient(180deg,#d4778e,#c2566f);color:#fff8fa;border-color:rgba(194,86,111,.60)}
+html[data-game="sakura"] .nav{background:linear-gradient(180deg,rgba(253,244,246,.92),rgba(246,224,231,.96));border-top:1px solid rgba(178,110,132,.34)}
+html[data-game="sakura"] .nav button{color:#a08490}
+html[data-game="sakura"] .nav button.active{color:#3a262e;text-shadow:none}
+html[data-game="sakura"] .nav button.active::before{background:linear-gradient(90deg,rgba(194,86,111,0),#c2566f 50%,rgba(194,86,111,0))}
+html[data-game="sakura"] .now-card{background:rgba(255,250,251,.90);border:1px solid rgba(178,110,132,.26)}
+html[data-game="sakura"] .now-label{color:#a08490}
+html[data-game="sakura"] .now-name{color:#3a262e}
+html[data-game="sakura"] .now-time{color:#3a262e;text-shadow:none}
+html[data-game="sakura"] .now-sub{color:#6e525c}
+html[data-game="sakura"] .stat{background:rgba(255,250,251,.86);border:1px solid rgba(178,110,132,.24)}
+html[data-game="sakura"] .stat .label{color:#a08490}
+html[data-game="sakura"] .stat .value{color:#3a262e}
+html[data-game="sakura"] .stat .sub{color:#6e525c}
+html[data-game="sakura"] .hint{color:#a08490}
+html[data-game="sakura"] input,html[data-game="sakura"] select,html[data-game="sakura"] textarea{background:rgba(255,250,251,.92);border:1px solid rgba(178,110,132,.32);color:var(--text)}
+html[data-game="sakura"] .dcard{background:rgba(255,246,249,.90);border-color:rgba(178,110,132,.28)}
+html[data-game="sakura"] .dcard.on{border-color:#c2566f;box-shadow:0 0 0 1px #c2566f}
+</style><style id="gm-fonts">@import url("https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=EB+Garamond:wght@400;500;600&family=Forum&family=Noto+Serif+JP:wght@400;500;600;700&family=Playfair+Display:wght@400;500;600;700&family=Prata&family=Sawarabi+Mincho&family=Shippori+Mincho+B1:wght@400;500;600;700&family=Zen+Old+Mincho:wght@400;500;600;700&display=swap");</style>
 
 <style id="yakari-note"></style><style id="chem-enc-style">
 .chem-subtabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px}
